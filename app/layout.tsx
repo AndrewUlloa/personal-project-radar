@@ -22,16 +22,16 @@ const reckless = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Company Researcher",
+  title: "Personal Project Radar",
   description: "Instantly get detailed research insights and know everything about any company inside out.",
   openGraph: {
-    title: 'Company Researcher',
+    title: 'Personal Project Radar',
     description: 'Instantly get detailed research insights and know everything about any company inside out.',
     images: ['https://companyresearcher.exa.ai/opengraph-image.jpg'],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Company Researcher',
+    title: 'Personal Project Radar',
     description: 'Instantly get detailed research insights and know everything about any company inside out.',
     images: ['https://companyresearcher.exa.ai/opengraph-image.jpg'],
   },

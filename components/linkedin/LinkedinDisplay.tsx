@@ -86,7 +86,7 @@ export default function LinkedInDisplay({ data }: { data: LinkedInData }) {
   const processedData = processLinkedInText(data);
 
   return (
-    <div className="bg-white p-6 md:p-8 w-full mx-auto border shadow-sm">
+    <div className="bg-pb-surface p-6 md:p-8 w-full mx-auto border shadow-sm">
       <div className="flex flex-col md:flex-row items-start gap-6 mb-8">
         {processedData.logo && (
           <div className="w-20 h-20 md:w-24 md:h-24 relative flex-shrink-0 mx-0">
@@ -100,7 +100,7 @@ export default function LinkedInDisplay({ data }: { data: LinkedInData }) {
         )}
         <div className="text-left">
           <h2 className="text-2xl font-bold mb-4">{processedData.name}</h2>
-            <p className="text-lg text-gray-800 leading-relaxed line-clamp-6">
+            <p className="text-lg text-pb-muted leading-relaxed line-clamp-6">
               {processedData.description}
             </p>
         </div>
@@ -161,7 +161,7 @@ export default function LinkedInDisplay({ data }: { data: LinkedInData }) {
             {processedData.specialties.map((specialty, index) => (
               <span
                 key={index}
-                className="bg-blue-50 text-blue-700 rounded-full px-3 py-1 text-sm"
+                className="bg-pb-primary/10 text-pb-primary rounded-full px-3 py-1 text-sm"
               >
                 {specialty}
               </span>
@@ -187,21 +187,21 @@ const InfoItem = ({
   maxLines?: number;
 }) => (
   <div className="flex items-start gap-3">
-    <div className="text-blue-600 mt-1">{icon}</div>
+    <div className="text-pb-primary mt-1">{icon}</div>
     <div>
-      <h3 className="font-medium text-gray-700">{label}</h3>
+      <h3 className="font-medium text-pb-foreground">{label}</h3>
 
       {isLink ? (
         <a
           href={value}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-600 hover:underline break-all"
+          className="text-pb-primary hover:underline break-all"
         >
           {value}
         </a>
       ) : (
-        <p className={`text-gray-600 break-words ${maxLines ? 'line-clamp-' + maxLines : ''}`}>{value}</p>
+        <p className={`text-pb-muted break-words ${maxLines ? 'line-clamp-' + maxLines : ''}`}>{value}</p>
       )}
 
     </div>

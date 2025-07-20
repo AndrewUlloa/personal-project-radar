@@ -21,7 +21,7 @@ export default function CrunchbaseDisplay({ data }: CrunchbaseDisplayProps) {
         rel="noopener noreferrer"
         className="block hover:no-underline"
       >
-        <div className="bg-white p-6 rounded-lg border hover:shadow-md transition-all duration-200">
+        <div className="bg-pb-surface p-6 rounded-lg border hover:shadow-md transition-all duration-200">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 flex items-center justify-center">
               <img
@@ -32,10 +32,10 @@ export default function CrunchbaseDisplay({ data }: CrunchbaseDisplayProps) {
             </div>
 
             <div className="flex flex-col">
-              <span className="text-xl font-medium text-gray-900">
+              <span className="text-xl font-medium text-pb-foreground">
                 {orgName}
               </span>
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-pb-muted">
                 on Crunchbase
               </span>
             </div>

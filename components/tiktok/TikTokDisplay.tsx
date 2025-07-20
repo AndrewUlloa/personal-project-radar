@@ -22,13 +22,13 @@ export default function TikTokDisplay({ data }: TikTokDisplayProps) {
         rel="noopener noreferrer"
         className="block"
       >
-        <div className="bg-white p-6 rounded-none border hover:shadow-md transition-all duration-200">
+        <div className="bg-pb-surface p-6 rounded-none border hover:shadow-md transition-all duration-200">
           <div className="flex items-center gap-4">
             
             {/* TikTok Icon */}
-            <div className="p-3 bg-gray-50 rounded-full">
+            <div className="p-3 bg-pb-background rounded-full">
               <svg 
-                className="w-6 h-6 text-black" 
+                className="w-6 h-6 text-pb-foreground" 
                 viewBox="0 0 24 24" 
                 fill="currentColor"
               >
@@ -37,7 +37,7 @@ export default function TikTokDisplay({ data }: TikTokDisplayProps) {
             </div>
 
             <div className="flex flex-col">
-              <span className="text-sm text-gray-500">TikTok Profile</span>
+              <span className="text-sm text-pb-muted">TikTok Profile</span>
               <span className="text-xl transition-colors">
                 @{username}
               </span>

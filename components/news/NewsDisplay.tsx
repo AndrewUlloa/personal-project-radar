@@ -39,7 +39,7 @@ const NewsDisplay: React.FC<NewsDisplayProps> = ({ news }) => {
               href={item.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-shrink-0 w-60 md:w-72 bg-white border rounded-none shadow-sm overflow-hidden transition-all hover:scale-105 hover:shadow-md"
+              className="flex-shrink-0 w-60 md:w-72 bg-pb-surface border rounded-none shadow-sm overflow-hidden transition-all hover:scale-105 hover:shadow-md"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1 }}
@@ -55,16 +55,16 @@ const NewsDisplay: React.FC<NewsDisplayProps> = ({ news }) => {
                       imgElement.onerror = null;
                       // Instead of loading a placeholder image, show a div with background color
                       imgElement.style.display = 'none';
-                      imgElement.parentElement!.classList.add('bg-blue-100');
+                      imgElement.parentElement!.classList.add('bg-pb-primary/20');
                       imgElement.parentElement!.innerHTML = `
-                        <div class="flex items-center justify-center h-full text-gray-500 p-3 group-hover:text-brand-default">
+                        <div class="flex items-center justify-center h-full text-pb-muted p-3 group-hover:text-pb-primary">
                           ${item.title.slice(0, 50)}${item.title.length > 50 ? '...' : ''}
                         </div>
                       `;
                     }}
                   />
                 ) : (
-                  <div className="flex items-center justify-center h-full bg-gray-100 text-gray-500">
+                  <div className="flex items-center justify-center h-full bg-pb-background text-pb-muted">
                     <span className="px-4 text-center">
                       {item.title.slice(0, 50)}${item.title.length > 50 ? '...' : ''}
                     </span>
@@ -75,7 +75,7 @@ const NewsDisplay: React.FC<NewsDisplayProps> = ({ news }) => {
                 <p className="text-normal line-clamp-2 mb-2">
                   {item.title}
                 </p>
-                <div className="text-sm text-gray-500 transition-colors">
+                <div className="text-sm text-pb-muted transition-colors">
                   {extractDomain(item.url)}
                 </div>
               </div>

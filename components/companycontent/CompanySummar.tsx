@@ -13,7 +13,7 @@ const CompanySummary: React.FC<CompanySummaryProps> = ({ summary }) => {
   return (
     <div className="w-full space-y-4">
       
-      <div className="bg-white border shadow-sm p-4 sm:p-8 mt-2">
+      <div className="bg-pb-surface border shadow-sm p-4 sm:p-8 mt-2">
         <div className="space-y-6">
           {summary.map((item, index) => (
             <div key={index} className="space-y-2">
@@ -23,7 +23,7 @@ const CompanySummary: React.FC<CompanySummaryProps> = ({ summary }) => {
                   <p className="font-semibold text-base sm:text-lg">
                     {item.heading.split(' ').slice(1).join(' ')}
                   </p>
-                  <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
+                  <p className="text-pb-muted leading-relaxed text-sm sm:text-base">
                     {item.text}
                   </p>
                 </div>
@@ -31,7 +31,7 @@ const CompanySummary: React.FC<CompanySummaryProps> = ({ summary }) => {
               
               {index < summary.length - 1 && (
                 <div className="pt-4 sm:pt-6">
-                  <div className="border-t border-gray-100"></div>
+                  <div className="border-t border-pb-border"></div>
                 </div>
               )}
             </div>

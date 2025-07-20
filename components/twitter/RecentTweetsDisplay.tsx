@@ -56,7 +56,7 @@ export default function RecentTweetsDisplay({ tweets }: RecentTweetsDisplayProps
       <div className="flex justify-start mt-4 pl-2">
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-sm text-gray-600 hover:text-gray-800 transition-colors flex items-center gap-2"
+          className="text-sm text-pb-muted hover:text-pb-foreground transition-colors flex items-center gap-2"
         >
           {isExpanded ? (
             <>

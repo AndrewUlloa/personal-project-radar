@@ -859,11 +859,11 @@ export default function CompanyResearcher() {
   return (
     <div className="w-full max-w-5xl p-6 z-10 mb-20 mt-6">
       <h1 className="md:text-6xl text-4xl pb-5 font-medium opacity-0 animate-fade-up [animation-delay:200ms]">
-        <span className="text-brand-default"> Company </span>
+        <span className="text-pb-primary"> Company </span>
         Researcher
       </h1>
 
-      <p className="text-black mb-12 opacity-0 animate-fade-up [animation-delay:400ms]">
+      <p className="text-pb-muted mb-12 opacity-0 animate-fade-up [animation-delay:400ms]">
         Enter a company URL for detailed research info. Instantly know any company inside out.
       </p>
 
@@ -872,12 +872,12 @@ export default function CompanyResearcher() {
           value={companyUrl}
           onChange={(e) => setCompanyUrl(e.target.value)}
           placeholder="Enter Company URL (e.g., example.com)"
-          className="w-full bg-white p-3 border box-border outline-none rounded-sm ring-2 ring-brand-default resize-none opacity-0 animate-fade-up [animation-delay:600ms]"
+          className="w-full bg-pb-surface p-3 border box-border outline-none rounded-sm ring-2 ring-pb-ring resize-none opacity-0 animate-fade-up [animation-delay:600ms]"
         />
         <button
           type="submit"
           className={`w-full text-white font-semibold px-2 py-2 rounded-sm transition-opacity opacity-0 animate-fade-up [animation-delay:800ms] min-h-[50px] ${
-            isGenerating ? 'bg-gray-400' : 'bg-brand-default ring-2 ring-brand-default'
+            isGenerating ? 'bg-pb-muted' : 'bg-pb-primary ring-2 ring-pb-ring'
           } transition-colors`}
           disabled={isGenerating}
         >
@@ -885,11 +885,11 @@ export default function CompanyResearcher() {
         </button>
 
         <div className="flex items-center justify-end gap-2 sm:gap-3 pt-4 opacity-0 animate-fade-up [animation-delay:1000ms]">
-          <span className="text-gray-800">Powered by</span>
-          <a 
-            href="https://exa.ai" 
-            target="_blank" 
-            rel="origin"
+          <span className="text-pb-foreground">Powered by</span>
+          <a
+            href="https://exa.ai"
+            target="_blank"
+            rel="noopener noreferrer"
             className="hover:opacity-80 transition-opacity"
           >
             <img src="/exa_logo.png" alt="Exa Logo" className="h-6 sm:h-7 object-contain" />
@@ -1062,8 +1062,8 @@ export default function CompanyResearcher() {
 
                 {isGenerating && companyMap === null ? (
                   <div className="hidden sm:block animate-pulse">
-                    <div className="h-64 bg-secondary-darkest rounded-lg flex items-center justify-center">
-                      <p className="text-gray-400 text-md">Loading...</p>
+                    <div className="h-64 bg-pb-surface rounded-lg flex items-center justify-center">
+                      <p className="text-pb-muted text-md">Loading...</p>
                     </div>
                   </div>
                 ) : companyMap && (
@@ -1076,36 +1076,36 @@ export default function CompanyResearcher() {
 
       </div>
       <div className="flex-grow"></div>
-        <footer className="fixed bottom-0 left-0 right-0 w-full py-4 bg-secondary-default border-t opacity-0 animate-fade-up [animation-delay:1200ms]">
+        <footer className="fixed bottom-0 left-0 right-0 w-full py-4 bg-pb-surface border-t opacity-0 animate-fade-up [animation-delay:1200ms]">
           <div className="max-w-2xl mx-auto flex flex-col sm:flex-row items-center justify-center sm:gap-6 px-4">
-            <Link 
+            <Link
               href="https://github.com/exa-labs/company-researcher"
               target="_blank"
-              rel="origin"
-              className="text-gray-600 hover:underline cursor-pointer text-center"
+              rel="noopener noreferrer"
+              className="text-pb-muted hover:underline cursor-pointer text-center"
             >
               View Project Code
             </Link>
-            <span className="text-gray-400 hidden sm:inline">|</span>
-            <Link 
-                href="https://exa.ai/demos" 
-                target="_blank" 
-                rel="origin"
+            <span className="text-pb-muted hidden sm:inline">|</span>
+            <Link
+                href="https://exa.ai/demos"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="hover:opacity-80 transition-opacity hidden sm:inline"
               >
             <div className="flex items-center gap-2">
-              <span className="text-gray-600 hover:text-gray-600 hover:underline">See More Demos</span>
+              <span className="text-pb-muted hover:text-pb-foreground hover:underline">See More Demos</span>
             </div>
             </Link>
-            <span className="text-gray-400 hidden sm:inline">|</span>
-            <Link 
-                href="https://dashboard.exa.ai" 
-                target="_blank" 
-                rel="origin"
+            <span className="text-pb-muted hidden sm:inline">|</span>
+            <Link
+                href="https://dashboard.exa.ai"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="hover:opacity-80 transition-opacity hidden sm:inline"
               >
             <div className="flex items-center gap-2">
-              <span className="text-gray-600 hover:text-gray-600 hover:underline">Try Exa API</span>
+              <span className="text-pb-muted hover:text-pb-foreground hover:underline">Try Exa API</span>
             </div>
             </Link>
           </div>

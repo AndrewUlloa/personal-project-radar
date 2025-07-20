@@ -3,7 +3,7 @@ import { useEffect, useState, useMemo } from "react";
 
 const YouTubePlayButton = () => (
   <svg width="68" height="48" viewBox="0 0 68 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z" fill="#FF0000"/>
+    <path d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z" fill="#D4AF37"/>
     <path d="M 45,24 27,14 27,34" fill="#FFFFFF"/>
   </svg>
 );
@@ -114,7 +114,7 @@ export default function YoutubeVideosDisplay({ videos }: YoutubeVideosDisplayPro
                 href={video.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-shrink-0 w-[350px] group bg-white rounded-none shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
+                className="flex-shrink-0 w-[350px] group bg-pb-surface rounded-none shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.1 }}
@@ -135,16 +135,16 @@ export default function YoutubeVideosDisplay({ videos }: YoutubeVideosDisplayPro
                 </div>
                 
                 <div className="p-4 space-y-2">
-                  <p className="text-base font-medium line-clamp-2 text-gray-900 transition-colors duration-300">
+                  <p className="text-base font-medium line-clamp-2 text-pb-foreground transition-colors duration-300">
                     {details?.title || video.title}
                   </p>
                   {details && (
                     <>
-                      <p className="text-sm text-gray-600 font-medium">
+                      <p className="text-sm text-pb-muted font-medium">
                         {details.channelTitle}
                       </p>
-                      <p className="text-xs text-gray-500">
-                        {formatViewCount(details.viewCount)} <span className="mx-1.5 text-gray-300">•</span> {getRelativeTime(details.publishedAt)}
+                      <p className="text-xs text-pb-muted">
+                        {formatViewCount(details.viewCount)} <span className="mx-1.5 text-pb-border">•</span> {getRelativeTime(details.publishedAt)}
                       </p>
                     </>
                   )}

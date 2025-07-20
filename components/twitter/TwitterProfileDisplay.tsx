@@ -78,53 +78,53 @@ export default function ProfileDisplay({ rawText, username }: ProfileDisplayProp
   const { name, followers_count, friends_count, statuses_count, created_at, bio } = extractedInfo;
 
   return (
-    <div className="w-full bg-white border shadow-sm rounded-none overflow-hidden">
+    <div className="w-full bg-pb-surface border shadow-sm rounded-none overflow-hidden">
       {/* Header Banner */}
-      <div className="h-32 bg-gradient-to-br from-[#4C9EEB] via-[#1DA1F2] to-[#4C9EEB]"></div>
+      <div className="h-32 bg-gradient-to-br from-pb-primary/20 via-pb-primary/50 to-pb-primary/20"></div>
       
       <div className="px-6">
         {/* Name and Username */}
         <div className="pt-4">
           {name && (
-            <h1 className="text-xl font-bold text-gray-900">{name}</h1>
+            <h1 className="text-xl font-bold text-pb-foreground">{name}</h1>
           )}
           {username && (
-            <h2 className="text-gray-500">@{username}</h2>
+            <h2 className="text-pb-muted">@{username}</h2>
           )}
         </div>
 
         {/* Bio */}
         {bio && (
-          <p className="mt-4 text-gray-800 leading-relaxed">{bio}</p>
+          <p className="mt-4 text-pb-foreground leading-relaxed">{bio}</p>
         )}
 
         {/* Stats Grid */}
         <div className="mt-4 flex flex-wrap gap-6">
           {followers_count && (
-            <div className="flex items-center gap-1.5 text-gray-700">
+            <div className="flex items-center gap-1.5 text-pb-muted">
               <Users className="w-4 h-4" />
               <span className="font-medium">{formatNumber(followers_count)}</span>
-              <span className="text-gray-500">Followers</span>
+              <span className="text-pb-muted">Followers</span>
             </div>
           )}
           {friends_count && (
-            <div className="flex items-center gap-1.5 text-gray-700">
+            <div className="flex items-center gap-1.5 text-pb-muted">
               <UserPlus className="w-4 h-4" />
               <span className="font-medium">{formatNumber(friends_count)}</span>
-              <span className="text-gray-500">Following</span>
+              <span className="text-pb-muted">Following</span>
             </div>
           )}
           {statuses_count && (
-            <div className="flex items-center gap-1.5 text-gray-700">
+            <div className="flex items-center gap-1.5 text-pb-muted">
               <TwitterIcon className="w-4 h-4" />
               <span className="font-medium">{formatNumber(statuses_count)}</span>
-              <span className="text-gray-500">Tweets</span>
+              <span className="text-pb-muted">Tweets</span>
             </div>
           )}
           {created_at && (
-          <div className="flex items-center gap-1.5 text-gray-700">
+          <div className="flex items-center gap-1.5 text-pb-muted">
             <Calendar className="w-4 h-4" />
-            <span className="text-gray-500">Joined <span className="text-gray-700">{created_at}</span> </span>
+            <span className="text-pb-muted">Joined <span className="text-pb-foreground">{created_at}</span> </span>
           </div>
           )}
         </div>
@@ -136,7 +136,7 @@ export default function ProfileDisplay({ rawText, username }: ProfileDisplayProp
               href={`https://x.com/${username}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-1.5 rounded-full border border-gray-300 text-sm font-medium hover:bg-gray-50 transition-colors"
+              className="px-4 py-1.5 rounded-full border border-pb-border text-sm font-medium hover:bg-pb-background transition-colors"
             >
               View on X / Twitter
             </a>

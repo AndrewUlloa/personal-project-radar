@@ -167,22 +167,22 @@ const WikipediaDisplay: React.FC<WikipediaDisplayProps> = ({ data, websiteUrl })
   const timeline = data.text ? extractTimeline(data.text) : [];
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-8 transition-all duration-300 hover:shadow-lg">
+    <div className="bg-pb-surface rounded-lg shadow-md p-8 transition-all duration-300 hover:shadow-lg">
       {/* Header */}
       <div className="flex items-center gap-4 mb-8 border-b pb-4">
-        <div className="bg-[#f6f6f6] p-3 rounded-full">
-          <FaWikipediaW className="text-2xl text-[#666]" />
+        <div className="bg-pb-background p-3 rounded-full">
+          <FaWikipediaW className="text-2xl text-pb-muted" />
         </div>
         <div>
-          <h2 className="text-2xl font-semibold text-gray-900">Wikipedia</h2>
-          <p className="text-sm text-gray-500">From Wikipedia, the free encyclopedia</p>
+          <h2 className="text-2xl font-semibold text-pb-foreground">Wikipedia</h2>
+          <p className="text-sm text-pb-muted">From Wikipedia, the free encyclopedia</p>
         </div>
       </div>
 
       {/* Summary */}
       {summary && (
         <div className="mb-8">
-          <p className="text-gray-700 leading-relaxed text-lg">{summary}</p>
+          <p className="text-pb-muted leading-relaxed text-lg">{summary}</p>
         </div>
       )}
 
@@ -190,13 +190,13 @@ const WikipediaDisplay: React.FC<WikipediaDisplayProps> = ({ data, websiteUrl })
       {Object.keys(companyInfo).length > 0 && (
         <div className="mb-8">
           <p className="text-xl font-semibold mb-4">Company Information</p>
-          <div className="grid md:grid-cols-2 gap-6 bg-gray-50 p-6 rounded-lg">
+          <div className="grid md:grid-cols-2 gap-6 bg-pb-background p-6 rounded-lg">
             {Object.entries(companyInfo).map(([key, value]) => value && (
               <div key={key} className="flex flex-col">
-                <span className="text-sm text-gray-500 font-medium mb-1 capitalize">
+                <span className="text-sm text-pb-muted font-medium mb-1 capitalize">
                   {key === 'type' ? 'Company Type' : key.charAt(0).toUpperCase() + key.slice(1)}
                 </span>
-                <span className="text-gray-800">{value}</span>
+                <span className="text-pb-foreground">{value}</span>
               </div>
             ))}
           </div>
@@ -212,17 +212,17 @@ const WikipediaDisplay: React.FC<WikipediaDisplayProps> = ({ data, websiteUrl })
               .slice(0, showAllEvents ? undefined : 3)
               .map((event, index) => (
               <div key={index} className="flex gap-4 items-start group">
-                <div className="min-w-[80px] bg-brand-default/10 px-3 py-2 rounded-full text-brand-default font-medium text-sm text-center transition-colors">
+                <div className="min-w-[80px] bg-pb-primary/10 px-3 py-2 rounded-full text-pb-primary font-medium text-sm text-center transition-colors">
                   {event.year}
                 </div>
-                <p className="text-gray-700 pt-1">{event.event}</p>
+                <p className="text-pb-muted pt-1">{event.event}</p>
               </div>
             ))}
           </div>
           {timeline.length > 3 && (
             <button
               onClick={() => setShowAllEvents(!showAllEvents)}
-              className="mt-6 flex items-center gap-2 text-brand-default hover:text-brand-default/80 transition-colors"
+              className="mt-6 flex items-center gap-2 text-pb-primary hover:text-pb-primary/80 transition-colors"
             >
               {showAllEvents ? (
                 <>
@@ -244,7 +244,7 @@ const WikipediaDisplay: React.FC<WikipediaDisplayProps> = ({ data, websiteUrl })
           href={data.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 bg-[#f6f6f6] text-gray-700 px-4 py-2 rounded-full hover:bg-gray-300 transition-colors mt-4"
+          className="inline-flex items-center gap-2 bg-pb-background text-pb-muted px-4 py-2 rounded-full hover:bg-pb-border transition-colors mt-4"
         >
           <FaWikipediaW />
           Read full article on Wikipedia

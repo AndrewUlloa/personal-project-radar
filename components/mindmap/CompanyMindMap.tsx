@@ -39,15 +39,15 @@ const CustomNode = ({ nodeDatum, isMobile }: any) => (
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
-      className="bg-[var(--secondary-faint)] p-2 md:p-4 rounded-xl border border-[var(--secondary-darkest)] 
-                 hover:shadow-md hover:border-[var(--secondary-accent)] transition-all duration-300 
+      className="bg-pb-surface p-2 md:p-4 rounded-xl border border-pb-border 
+                 hover:shadow-md hover:border-pb-ring transition-all duration-300 
                  backdrop-blur-sm"
     >
-      <div className="font-semibold text-[11px] md:text-sm text-gray-800 mb-1 md:mb-1.5 line-clamp-1">
+      <div className="font-semibold text-[11px] md:text-sm text-pb-foreground mb-1 md:mb-1.5 line-clamp-1">
         {nodeDatum.name}
       </div>
       {nodeDatum.description && (
-        <div className="text-[9px] md:text-xs text-gray-600 line-clamp-2 leading-relaxed">
+        <div className="text-[9px] md:text-xs text-pb-muted line-clamp-2 leading-relaxed">
           {nodeDatum.description}
         </div>
       )}
@@ -96,8 +96,8 @@ const CompanyMindMap: React.FC<CompanyMindMapProps> = ({ data }) => {
   );
 
   return (
-    <div className="w-full h-[400px] md:h-[700px] bg-[var(--white)] rounded-md shadow-inner relative 
-                    border border-[var(--secondary-darker)]">
+    <div className="w-full h-[400px] md:h-[700px] bg-pb-background rounded-md shadow-inner relative 
+                    border border-pb-border">
       <Tree
         data={treeData}
         orientation="horizontal"
@@ -114,7 +114,7 @@ const CompanyMindMap: React.FC<CompanyMindMapProps> = ({ data }) => {
           y: isMobile ? 180 : 350 
         }}
         renderCustomNodeElement={renderCustomNodeElement}
-        pathClassFunc={() => 'stroke-[var(--secondary-accent)] stroke-[1.5px] transition-all duration-300'}
+        pathClassFunc={() => 'stroke-pb-primary stroke-[1.5px] transition-all duration-300'}
         zoom={isMobile ? 0.6 : 0.5}
         onNodeClick={handleNodeClick}
         enableLegacyTransitions={true}

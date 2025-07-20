@@ -35,17 +35,17 @@ export default function RedditDisplay({ posts }: RedditDisplayProps) {
               href={post.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-shrink-0 w-[350px] bg-white shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200"
+              className="flex-shrink-0 w-[350px] bg-pb-surface shadow-sm border border-pb-border hover:shadow-md transition-all duration-200"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1 }}
             >
               <div className="p-6">
                 <div className="flex items-center space-x-2 mb-4">
-                  <div className="text-[#FF4500]">
+                  <div className="text-pb-muted">
                     <FaReddit size={20} />
                   </div>
-                  <span className="text-sm font-medium text-gray-600">r/{extractSubreddit(post.url)}</span>
+                  <span className="text-sm font-medium text-pb-muted">r/{extractSubreddit(post.url)}</span>
                 </div>
                 <p className="text-lg line-clamp-3">
                   {post.title}

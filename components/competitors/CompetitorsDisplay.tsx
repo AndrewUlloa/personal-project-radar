@@ -43,7 +43,7 @@ export default function CompetitorsDisplay({ competitors }: CompetitorDisplayPro
         {visibleCompetitors.map((competitor) => (
           <div
             key={competitor.url}
-            className="bg-white p-6 border rounded-lg hover:ring-brand-default hover:ring-1 transition-all duration-200"
+            className="bg-pb-surface p-6 border rounded-lg hover:ring-pb-ring hover:ring-1 transition-all duration-200"
           >
             <a
               href={competitor.url}
@@ -51,10 +51,10 @@ export default function CompetitorsDisplay({ competitors }: CompetitorDisplayPro
               rel="noopener noreferrer"
               className="block group"
             >
-              <h3 className="text-lg font-medium text-brand-default group-hover:text-brand-default/80 transition-colors mb-2">
+              <h3 className="text-lg font-medium text-pb-primary group-hover:text-pb-primary/80 transition-colors mb-2">
                 {competitor.title || extractDomain(competitor.url)}
               </h3>
-              <p className="text-sm text-gray-600 mb-3 line-clamp-3">
+              <p className="text-sm text-pb-muted mb-3 line-clamp-3">
                 {competitor.summary}
               </p>
             </a>
@@ -66,7 +66,7 @@ export default function CompetitorsDisplay({ competitors }: CompetitorDisplayPro
         <div className="flex justify-start mt-6">
           <button
             onClick={() => setShowAll(!showAll)}
-            className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200"
+            className="flex items-center gap-2 px-4 py-2 text-sm text-pb-muted hover:text-pb-foreground transition-colors duration-200"
           >
             <span>{showAll ? 'Show Less' : 'Show More'}</span>
             {showAll ? (

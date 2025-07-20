@@ -1,134 +1,127 @@
-import type { Config } from "tailwindcss";
+import type { Config } from 'tailwindcss';
+import { fontFamily } from 'tailwindcss/defaultTheme';
 
 const config: Config = {
-    darkMode: ["class"],
-    content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+  content: [
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
-  	extend: {
-  		colors: {
-  			foreground: 'hsl(var(--foreground))',
-  			'background-start': 'rgb(var(--background-start-rgb))',
-  			'background-end': 'rgb(var(--background-end-rgb))',
-  			'brand-default': 'var(--brand-default)',
-  			'brand-fainter': 'var(--brand-fainter)',
-  			'brand-faint': 'var(--brand-faint)',
-  			'brand-subtle': 'var(--brand-subtle)',
-  			'brand-muted': 'var(--brand-muted)',
-  			'brand-dark': 'var(--brand-dark)',
-  			'brand-darker': 'var(--brand-darker)',
-  			'secondary-accent': 'var(--secondary-accent)',
-  			'secondary-accent2x': 'var(--secondary-accent2x)',
-  			'secondary-dark': 'var(--secondary-dark)',
-  			'secondary-darker': 'var(--secondary-darker)',
-  			'secondary-darkest': 'var(--secondary-darkest)',
-  			'secondary-default': 'var(--secondary-default)',
-  			'secondary-faint': 'var(--secondary-faint)',
-  			'secondary-fainter': 'var(--secondary-fainter)',
-  			'gray-100': 'var(--gray-100)',
-  			'gray-200': 'var(--gray-200)',
-  			'gray-300': 'var(--gray-300)',
-  			'gray-400': 'var(--gray-400)',
-  			'gray-50': 'var(--gray-50)',
-  			'gray-500': 'var(--gray-500)',
-  			'gray-600': 'var(--gray-600)',
-  			'gray-700': 'var(--gray-700)',
-  			'gray-800': 'var(--gray-800)',
-  			'gray-900': 'var(--gray-900)',
-  			'gray-950': 'var(--gray-950)',
-  			black: 'var(--black)',
-  			white: 'var(--white)',
-  			'accent-yellow-light': 'var(--accent-yellow-light)',
-  			'accent-yellow-dark': 'var(--accent-yellow-dark)',
-  			'accent-skyblue-light': 'var(--accent-skyblue-light)',
-  			'accent-skyblue-dark': 'var(--accent-skyblue-dark)',
-  			'accent-green': 'var(--accent-green)',
-  			'accent-red': 'var(--accent-red)',
-  			'accent-darkgreen-dark': 'var(--accent-darkgreen-dark)',
-  			'accent-darkgreen-light': 'var(--accent-darkgreen-light)',
-  			'accent-purple-dark': 'var(--accent-purple-dark)',
-  			'accent-purple-light': 'var(--accent-purple-light)',
-  			'accent-pink-dark': 'var(--accent-pink-dark)',
-  			'accent-pink-light': 'var(--accent-pink-light)',
-  			'accent-maroon-dark': 'var(--accent-maroon-dark)',
-  			'accent-maroon-light': 'var(--accent-maroon-light)',
-  			'dark-accent-skyblue-dark': 'var(--dark-accent-skyblue-dark)',
-  			'dark-accent-skyblue-light': 'var(--dark-accent-skyblue-light)',
-  			'dark-accent-maroon-dark': 'var(--dark-accent-maroon-dark)',
-  			'dark-accent-maroon-light': 'var(--dark-accent-maroon-light)',
-  			'dark-accent-green-dark': 'var(--dark-accent-green-dark)',
-  			'dark-accent-green-light': 'var(--dark-accent-green-light)',
-  			'dark-accent-yellow-dark': 'var(--dark-accent-yellow-dark)',
-  			'dark-accent-yellow-light': 'var(--dark-accent-yellow-light)',
-  			'dark-accent-purple-dark': 'var(--dark-accent-purple-dark)',
-  			'dark-accent-purple-light': 'var(--dark-accent-purple-light)',
-  			'dark-accent-pink-dark': 'var(--dark-accent-pink-dark)',
-  			'dark-accent-pink-light': 'var(--dark-accent-pink-light)',
-  			background: 'hsl(var(--background))',
-  			card: {
-  				DEFAULT: 'hsl(var(--card))',
-  				foreground: 'hsl(var(--card-foreground))'
-  			},
-  			popover: {
-  				DEFAULT: 'hsl(var(--popover))',
-  				foreground: 'hsl(var(--popover-foreground))'
-  			},
-  			primary: {
-  				DEFAULT: 'hsl(var(--primary))',
-  				foreground: 'hsl(var(--primary-foreground))'
-  			},
-  			secondary: {
-  				DEFAULT: 'hsl(var(--secondary))',
-  				foreground: 'hsl(var(--secondary-foreground))'
-  			},
-  			muted: {
-  				DEFAULT: 'hsl(var(--muted))',
-  				foreground: 'hsl(var(--muted-foreground))'
-  			},
-  			accent: {
-  				DEFAULT: 'hsl(var(--accent))',
-  				foreground: 'hsl(var(--accent-foreground))'
-  			},
-  			destructive: {
-  				DEFAULT: 'hsl(var(--destructive))',
-  				foreground: 'hsl(var(--destructive-foreground))'
-  			},
-  			border: 'hsl(var(--border))',
-  			input: 'hsl(var(--input))',
-  			ring: 'hsl(var(--ring))',
-  			chart: {
-  				'1': 'hsl(var(--chart-1))',
-  				'2': 'hsl(var(--chart-2))',
-  				'3': 'hsl(var(--chart-3))',
-  				'4': 'hsl(var(--chart-4))',
-  				'5': 'hsl(var(--chart-5))'
-  			}
-  		},
-  		animation: {
-  			'fade-up': 'fade-up 0.5s ease-out forwards'
-  		},
-  		keyframes: {
-  			'fade-up': {
-  				'0%': {
-  					opacity: '0',
-  					transform: 'translateY(20px)'
-  				},
-  				'100%': {
-  					opacity: '1',
-  					transform: 'translateY(0)'
-  				}
-  			}
-  		},
-  		borderRadius: {
-  			lg: 'var(--radius)',
-  			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
-  		}
-  	}
+    extend: {
+      // 1. Color Palette Tokens (Updated to Light Theme)
+      colors: {
+        'pb-background': '#F8F9FA', // Very light grey for the main background
+        'pb-surface': '#FFFFFF',    // White for cards, modals, sidebars
+        'pb-border': '#E9ECEF',      // Subtle light grey border color
+        'pb-ring': '#6F42C1',        // Interactive purple/blue for focus rings
+
+        'pb-foreground': '#212529',  // Dark charcoal for primary text
+        'pb-muted': '#6C757D',      // Muted grey for secondary text
+
+        // Semantic & Accent Colors (Retained for App Logic)
+        'pb-primary': {
+          DEFAULT: '#D4AF37', // Gold for primary CTAs and high scores
+          foreground: '#212529', // Dark text for contrast on gold
+        },
+        'pb-success': {
+          DEFAULT: '#10B981', // Emerald for success states
+          foreground: '#FFFFFF',
+        },
+        'pb-danger': {
+          DEFAULT: '#EF4444', // Red for low scores and errors
+          foreground: '#FFFFFF',
+        },
+        'pb-warning': {
+          DEFAULT: '#F97316', // Orange for mid-tier scores
+          foreground: '#FFFFFF',
+        },
+      },
+
+      // 2. Typography Tokens
+      fontSize: {
+        'display-lg': ['3rem', { lineHeight: '3.5rem' }],   // 48px / 56px
+        'title-md': ['1.5rem', { lineHeight: '2rem' }],     // 24px / 32px
+        'body-base': ['1rem', { lineHeight: '1.5rem' }],     // 16px / 24px
+        'body-sm': ['0.875rem', { lineHeight: '1.25rem' }], // 14px / 20px
+      },
+      fontFamily: {
+        sans: ['Figtree', ...fontFamily.sans],
+      },
+
+      // 3. Spacing, Sizing & Radius Tokens
+      spacing: {
+        'pb-space-1': '0.25rem', // 4px
+        'pb-space-2': '0.5rem',  // 8px
+        'pb-space-3': '0.75rem', // 12px
+        'pb-space-4': '1rem',    // 16px
+        'pb-space-5': '1.25rem', // 20px
+        'pb-space-6': '1.5rem',  // 24px
+        'sidebar': '18rem',      // For the fixed sidebar width
+      },
+      borderRadius: {
+        lg: '0.5rem',
+        md: 'calc(0.5rem - 2px)',
+        sm: 'calc(0.5rem - 4px)',
+      },
+
+      // 4. Animation & Transition Tokens (Revised for Tactical Variation)
+      keyframes: {
+        // --- For Layered Modals (e.g., Lead-Detail Modal) ---
+        'fade-in': {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+        'slide-up-and-fade-in': {
+          from: { opacity: '0', transform: 'translateY(16px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+
+        // --- For Multi-Step Flows (e.g., Scan Now Modal) ---
+        'cross-fade-and-scale-enter': {
+          from: { opacity: '0', transform: 'scale(0.98)' },
+          to: { opacity: '1', transform: 'scale(1)' },
+        },
+        'cross-fade-and-scale-exit': {
+          from: { opacity: '1', transform: 'scale(1)' },
+          to: { opacity: '0', transform: 'scale(1.02)' },
+        },
+
+        // --- For Delight & Feedback ---
+        'bounce-in': {
+          '0%': { opacity: '0', transform: 'scale(0.8)' },
+          '50%': { opacity: '1', transform: 'scale(1.1)' },
+          '100%': { transform: 'scale(1)' },
+        },
+        'wiggle-once': {
+          '0%, 100%': { transform: 'rotate(-2deg)' },
+          '50%': { transform: 'rotate(2deg)' },
+        },
+        // Backwards compatibility for existing fade-up animations
+        'fade-up': {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
+      animation: {
+        // --- Modal Layer Animations ---
+        'modal-backdrop': 'fade-in 200ms ease-out',
+        'modal-content': 'slide-up-and-fade-in 300ms ease-out',
+
+        // --- Multi-Step Flow Animations ---
+        'step-enter': 'cross-fade-and-scale-enter 250ms ease-out',
+        'step-exit': 'cross-fade-and-scale-exit 250ms ease-out',
+        
+        // --- Delight & Micro-interaction Animations ---
+        'delight-bounce': 'bounce-in 400ms ease-out',
+        'wiggle-once': 'wiggle-once 200ms ease-in-out',
+
+        // Backwards compatibility animation
+        'fade-up': 'fade-up 0.5s ease-out forwards',
+      },
+    },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require('tailwindcss-animate')],
 };
+
 export default config;

@@ -94,17 +94,17 @@ export default function GitHubDisplay({ githubUrl }: GitHubDisplayProps) {
 
   if (loading) {
     return (
-      <div className="animate-pulse bg-white rounded-lg shadow-lg p-6 mb-6">
+      <div className="animate-pulse bg-pb-surface rounded-lg shadow-lg p-6 mb-6">
         <div className="flex items-center space-x-4 mb-6">
-          <div className="rounded-full bg-gray-200 h-16 w-16"></div>
+          <div className="rounded-full bg-pb-border h-16 w-16"></div>
           <div className="space-y-2 flex-1">
-            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+            <div className="h-4 bg-pb-border rounded w-1/4"></div>
+            <div className="h-4 bg-pb-border rounded w-1/2"></div>
           </div>
         </div>
         <div className="space-y-3">
-          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-4 bg-pb-border rounded w-3/4"></div>
+          <div className="h-4 bg-pb-border rounded w-1/2"></div>
         </div>
       </div>
     );
@@ -112,20 +112,20 @@ export default function GitHubDisplay({ githubUrl }: GitHubDisplayProps) {
 
   if (error || !profile) {
     return (
-      <div className="bg-red-50 rounded-lg p-6 mb-6">
-        <h3 className="text-red-800 font-semibold flex items-center gap-2">
+      <div className="bg-pb-danger/10 rounded-lg p-6 mb-6">
+        <h3 className="text-pb-danger font-semibold flex items-center gap-2">
           <FaGithub className="text-xl" />
           Error Loading GitHub Data
         </h3>
-        <p className="text-red-600 mt-2">{error || 'Failed to load GitHub profile'}</p>
+        <p className="text-pb-danger/80 mt-2">{error || 'Failed to load GitHub profile'}</p>
       </div>
     );
   }
 
   return (
     <div>
-    <div className="bg-white rounded-lg shadow-lg p-6 transition-all hover:shadow-xl">
-      <div className="flex items-center gap-2 text-gray-800 mb-6">
+    <div className="bg-pb-surface rounded-lg shadow-lg p-6 transition-all hover:shadow-xl">
+      <div className="flex items-center gap-2 text-pb-foreground mb-6">
         <FaGithub className="text-2xl" />
         <h3 className="text-xl font-semibold">GitHub</h3>
       </div>
@@ -136,16 +136,16 @@ export default function GitHubDisplay({ githubUrl }: GitHubDisplayProps) {
           <img
             src={profile.avatar_url}
             alt={`${profile.login}'s avatar`}
-            className="w-24 h-24 rounded-full border-2 border-gray-100"
+            className="w-24 h-24 rounded-full border-2 border-pb-border"
           />
         </div>
         <div className="flex-grow">
           <div className="flex flex-col md:flex-row md:items-center gap-2 mb-2">
             <p className="text-xl">{profile.name}</p>
-            <span className="text-gray-600">@{profile.login}</span>
+            <span className="text-pb-muted">@{profile.login}</span>
           </div>
-          <p className="text-gray-700 mb-4">{profile.bio}</p>
-          <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
+          <p className="text-pb-muted mb-4">{profile.bio}</p>
+          <div className="flex flex-wrap gap-4 text-sm text-pb-muted mb-4">
             {profile.location && (
               <span className="flex items-center gap-1">
                 <FaMapMarkerAlt />
@@ -163,7 +163,7 @@ export default function GitHubDisplay({ githubUrl }: GitHubDisplayProps) {
             href={profile.html_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block bg-gray-800 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors text-sm"
+            className="inline-block bg-pb-foreground text-pb-background py-2 px-4 rounded-lg hover:bg-pb-foreground/80 transition-colors text-sm"
           >
             View Full Github Profile
           </a>
@@ -182,20 +182,20 @@ export default function GitHubDisplay({ githubUrl }: GitHubDisplayProps) {
               href={repo.html_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="border rounded-lg p-4 hover:border-gray-400 transition-colors bg-gray-50 block"
+              className="border rounded-lg p-4 hover:border-pb-ring transition-colors bg-pb-background block"
             >
               <div className="flex justify-between items-start mb-2">
-                <span className="text-blue-600 hover:text-blue-800 font-semibold">
+                <span className="text-pb-primary hover:text-pb-primary/80 font-semibold">
                   {repo.name}
                 </span>
-                <span className="text-xs px-2 py-1 rounded-full bg-gray-200 text-gray-600">
+                <span className="text-xs px-2 py-1 rounded-full bg-pb-border text-pb-muted">
                   {repo.visibility}
                 </span>
               </div>
-              <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+              <p className="text-pb-muted text-sm mb-3 line-clamp-2">
                 {repo.description || 'No description provided'}
               </p>
-              <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
+              <div className="flex flex-wrap items-center gap-3 text-xs text-pb-muted">
                 {repo.language && (
                   <span className="flex items-center gap-1">
                     <span 
@@ -215,7 +215,7 @@ export default function GitHubDisplay({ githubUrl }: GitHubDisplayProps) {
                 )}
                 {repo.forks_count > 0 && (
                   <span className="flex items-center gap-1">
-                    <FaUsers className="text-gray-400" />
+                    <FaUsers className="text-pb-muted" />
                     {repo.forks_count}
                   </span>
                 )}

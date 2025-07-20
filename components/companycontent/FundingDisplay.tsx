@@ -16,11 +16,11 @@ export default function FundingDisplay({ fundingData }: FundingDisplayProps) {
   return (
     <div className="w-full">
     <h2 className="text-2xl font-normal mb-8">Funding</h2>
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+      <div className="bg-pb-surface rounded-lg p-6 shadow-sm border border-pb-border">
         <div className="prose max-w-none mb-4">
           {fundingData.summary}
         </div>
-        <div className="flex items-center gap-3 text-sm text-gray-600">
+        <div className="flex items-center gap-3 text-sm text-pb-muted">
           {fundingData.favicon && (
             <img 
               src={fundingData.favicon} 
@@ -32,7 +32,7 @@ export default function FundingDisplay({ fundingData }: FundingDisplayProps) {
             href={fundingData.url} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="flex items-center gap-1 font-semibold hover:text-brand-default transition-colors"
+            className="flex items-center gap-1 font-semibold hover:text-pb-primary transition-colors"
           >
             Source
             <ArrowUpRight className="w-4 h-4" />

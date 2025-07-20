@@ -5,7 +5,7 @@ import { useState, FormEvent } from "react";
 import LinkedInDisplay from "./linkedin/LinkedinDisplay";
 import CompetitorsDisplay from "./competitors/CompetitorsDisplay";
 import NewsDisplay from "./news/NewsDisplay";
-import CompanySummary from "./companycontent/CompanySummar";
+import CompanySummary from "./companycontent/CompanySummary";
 import FundingDisplay from "./companycontent/FundingDisplay";
 import ProfileDisplay from "./twitter/TwitterProfileDisplay";
 import RecentTweetsDisplay from "./twitter/RecentTweetsDisplay";

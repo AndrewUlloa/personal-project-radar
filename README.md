@@ -1,13 +1,13 @@
-# 🔎 Company Researcher
+# 🔎 Personal Project Radar
 ### Powered by [Exa.ai](https://exa.ai) - The Search Engine for AI Applications
 
 ![Screenshot](https://companyresearcher.exa.ai/opengraph-image.jpg)
 
 <br>
 
-## 🎯 What is Company Researcher?
+## 🎯 What is Personal Project Radar?
 
-Company Researcher is a free and open-source tool that helps you instantly understand any company inside out. Simply input a company's URL, and the tool gathers comprehensive information from across the web, presenting you with detailed insights about the organization, its products, funding, social presence, and more.
+Personal Project Radar is a free and open-source tool that helps you instantly understand any company inside out. Simply input a company's URL, and the tool gathers comprehensive information from across the web, presenting you with detailed insights about the organization, its products, funding, social presence, and more.
 
 <br>
 
@@ -65,15 +65,13 @@ Company Researcher is a free and open-source tool that helps you instantly under
 
 1. Clone the repository
 ```bash
-git clone https://github.com/exa-labs/company-researcher.git
-cd company-researcher
+git clone https://github.com/exa-labs/personal-project-radar.git
+cd personal-project-radar
 ```
 
 2. Install dependencies
 ```bash
 npm install
-# or
-yarn install
 ```
 
 3. Set up environment variables as described in the section below
@@ -81,8 +79,6 @@ yarn install
 4. Run the development server
 ```bash
 npm run dev
-# or
-yarn dev
 ```
 
 5. Open http://localhost:3000 in your browser

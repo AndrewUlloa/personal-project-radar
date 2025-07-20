@@ -87,6 +87,45 @@ interface Founder {
   [key: string]: any;
 }
 
+interface SummaryItem {
+  heading: string;
+  text: string;
+}
+
+interface FundingInfo {
+  summary: string;
+  url: string;
+  favicon?: string;
+}
+
+interface FinancialReportItem {
+  id: string;
+  url: string;
+  title: string;
+  author: string | null;
+}
+
+interface TwitterProfile {
+  text: string;
+  username?: string | null;
+}
+
+interface TikTokData {
+  url: string;
+  title: string;
+}
+
+interface WikipediaData {
+  text?: string;
+  url?: string;
+  title?: string;
+}
+
+interface SimpleLinkData {
+  url: string;
+  title: string;
+}
+
 // Add new interface for company map data
 interface CompanyMapData {
   companyName: string;
@@ -110,19 +149,19 @@ export default function CompanyResearcher() {
   const [linkedinData, setLinkedinData] = useState<LinkedInData | null>(null);
   const [competitors, setCompetitors] = useState<Competitor[] | null>(null);
   const [news, setNews] = useState<NewsItem[] | null>(null);
-  const [companySummary, setCompanySummary] = useState<any>(null);
-  const [twitterProfileText, setTwitterProfileText] = useState<any>(null);
+  const [companySummary, setCompanySummary] = useState<SummaryItem[] | null>(null);
+  const [twitterProfileText, setTwitterProfileText] = useState<TwitterProfile | null>(null);
   const [recentTweets, setRecentTweets] = useState<Tweet[] | null>(null);
   const [youtubeVideos, setYoutubeVideos] = useState<Video[] | null>(null);
   const [redditPosts, setRedditPosts] = useState<RedditPost[] | null>(null);
   const [githubUrl, setGithubUrl] = useState<string | null>(null);
-  const [fundingData, setFundingData] = useState<any>(null);
-  const [financialReport, setFinancialReport] = useState<any>(null);
-  const [tiktokData, setTiktokData] = useState<any>(null);
-  const [wikipediaData, setWikipediaData] = useState<any>(null);
-  const [crunchbaseData, setCrunchbaseData] = useState<any>(null);
-  const [pitchbookData, setPitchbookData] = useState<any>(null);
-  const [tracxnData, setTracxnData] = useState<any>(null);
+  const [fundingData, setFundingData] = useState<FundingInfo | null>(null);
+  const [financialReport, setFinancialReport] = useState<FinancialReportItem[] | null>(null);
+  const [tiktokData, setTiktokData] = useState<TikTokData | null>(null);
+  const [wikipediaData, setWikipediaData] = useState<WikipediaData | null>(null);
+  const [crunchbaseData, setCrunchbaseData] = useState<SimpleLinkData | null>(null);
+  const [pitchbookData, setPitchbookData] = useState<SimpleLinkData | null>(null);
+  const [tracxnData, setTracxnData] = useState<SimpleLinkData | null>(null);
   const [founders, setFounders] = useState<Founder[] | null>(null);
   const [companyMap, setCompanyMap] = useState<CompanyMapData | null>(null);
 

@@ -50,7 +50,7 @@ export default function Dashboard() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        setIsCommandPaletteOpen(true);
+        setIsCommandPaletteOpen(prev => !prev);
       }
       if (e.key === 'Escape') {
         setIsCommandPaletteOpen(false);

@@ -4,6 +4,7 @@ import { Command } from "cmdk";
 import { Search, Home, User, Settings, Sun, Moon, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -13,6 +14,21 @@ interface CommandPaletteProps {
 }
 
 export function CommandPalette({ isOpen, onClose, isDarkMode, onToggleTheme }: CommandPaletteProps) {
+  // Handle keyboard events when command palette is open
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        e.stopPropagation();
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown, true);
+    return () => document.removeEventListener('keydown', handleKeyDown, true);
+  }, [isOpen, onClose]);
   return (
     <AnimatePresence>
       {isOpen && (

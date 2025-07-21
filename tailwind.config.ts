@@ -11,6 +11,7 @@ const config: Config = {
     extend: {
       // 1. Color Palette Tokens (Updated to Light Theme)
       colors: {
+        // Existing pb- colors for compatibility
         'pb-background': '#F8F9FA', // Very light grey for the main background
         'pb-surface': '#FFFFFF',    // White for cards, modals, sidebars
         'pb-border': '#E9ECEF',      // Subtle light grey border color
@@ -36,6 +37,48 @@ const config: Config = {
           DEFAULT: '#F97316', // Orange for mid-tier scores
           foreground: '#FFFFFF',
         },
+
+        // New shadcn-style color system using CSS variables
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+        chart: {
+          1: "hsl(var(--chart-1))",
+          2: "hsl(var(--chart-2))",
+          3: "hsl(var(--chart-3))",
+          4: "hsl(var(--chart-4))",
+          5: "hsl(var(--chart-5))",
+        },
       },
 
       // 2. Typography Tokens
@@ -60,9 +103,9 @@ const config: Config = {
         'sidebar': '18rem',      // For the fixed sidebar width
       },
       borderRadius: {
-        lg: '0.5rem',
-        md: 'calc(0.5rem - 2px)',
-        sm: 'calc(0.5rem - 4px)',
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
 
       // 4. Animation & Transition Tokens (Revised for Tactical Variation)

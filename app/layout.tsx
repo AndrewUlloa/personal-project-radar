@@ -9,18 +9,31 @@ const figtree = Figtree({
 });
 
 export const metadata: Metadata = {
-  title: "Company Researcher",
-  description: "Instantly get detailed research insights and know everything about any company inside out.",
+  title: "Personal Project Radar - Lead Research Dashboard",
+  description: "Personal Project Radar powered researchers analyze faster. Comprehensive lead research, analytics and insights dashboard for modern business intelligence. Join thousands of researchers for deeper market insights.",
   openGraph: {
-    title: 'Company Researcher',
-    description: 'Instantly get detailed research insights and know everything about any company inside out.',
-    images: ['https://companyresearcher.exa.ai/opengraph-image.jpg'],
+    title: 'Personal Project Radar - Lead Research Dashboard',
+    description: 'Personal Project Radar powered researchers analyze faster. Comprehensive lead research, analytics and insights dashboard for modern business intelligence.',
+    url: 'https://personal-project-radar.vercel.app',
+    siteName: 'Personal Project Radar',
+    images: [{
+      url: '/opengraph-image.png',
+      width: 3840,
+      height: 2500,
+      alt: 'Personal Project Radar - Lead Research Dashboard',
+    }],
+    locale: 'en_US',
+    type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Company Researcher',
-    description: 'Instantly get detailed research insights and know everything about any company inside out.',
-    images: ['https://companyresearcher.exa.ai/opengraph-image.jpg'],
+    title: 'Personal Project Radar - Lead Research Dashboard',
+    description: 'Personal Project Radar powered researchers analyze faster. Comprehensive lead research, analytics and insights dashboard.',
+    images: ['/opengraph-image.png'],
+  },
+  metadataBase: new URL('https://personal-project-radar.vercel.app'),
+  alternates: {
+    canonical: '/',
   },
 };
 

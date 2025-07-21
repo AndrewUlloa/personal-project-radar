@@ -84,7 +84,7 @@ export function CommandPalette({ isOpen, onClose, isDarkMode, onToggleTheme }: C
                   ref={inputRef}
                   placeholder="Search commands..."
                   className={cn(
-                    "flex h-12 w-full bg-transparent py-3 text-sm outline-none placeholder:text-gray-500",
+                    "flex h-12 w-full bg-transparent py-3 text-base outline-none placeholder:text-gray-500",
                     isDarkMode ? "text-white" : "text-gray-900"
                   )}
                 />

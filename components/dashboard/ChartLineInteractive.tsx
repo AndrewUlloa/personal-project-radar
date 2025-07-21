@@ -140,11 +140,11 @@ export function ChartLineInteractive() {
   )
 
   return (
-    <Card className="py-4 sm:py-0">
-      <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">
+    <Card className="h-full flex flex-col py-4 sm:py-0">
+      <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row flex-shrink-0">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 pb-3 sm:pb-0">
-          <CardTitle>Line Chart - Interactive</CardTitle>
-          <CardDescription>
+          <CardTitle className="font-semibold leading-none tracking-tight" style={{ fontSize: 'clamp(1rem, 3vw, 1.5rem)' }}>Line Chart - Interactive</CardTitle>
+          <CardDescription style={{ fontSize: 'clamp(0.75rem, 2vw, 1rem)' }}>
             Showing total visitors for the last 3 months
           </CardDescription>
         </div>
@@ -158,10 +158,10 @@ export function ChartLineInteractive() {
                 className="data-[active=true]:bg-muted/50 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l sm:border-t-0 sm:border-l sm:px-8 sm:py-6"
                 onClick={() => setActiveChart(chart)}
               >
-                <span className="text-muted-foreground text-xs">
+                <span className="text-muted-foreground" style={{ fontSize: 'clamp(0.625rem, 1.5vw, 0.75rem)' }}>
                   {chartConfig[chart].label}
                 </span>
-                <span className="text-lg leading-none font-bold sm:text-3xl">
+                <span className="leading-none font-bold" style={{ fontSize: 'clamp(1rem, 4vw, 1.875rem)' }}>
                   {total[key as keyof typeof total].toLocaleString()}
                 </span>
               </button>
@@ -169,10 +169,10 @@ export function ChartLineInteractive() {
           })}
         </div>
       </CardHeader>
-      <CardContent className="px-2 sm:p-6">
+      <CardContent className="px-2 sm:p-6 flex-1 flex flex-col">
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto h-[250px] w-full"
+          className="aspect-auto flex-1 w-full min-h-0"
         >
           <LineChart
             accessibilityLayer

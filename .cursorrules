@@ -1,28 +1,189 @@
-{
-  "technologies": {
-    "framework": "Next.js 14",
-    "router": "App Router",
-    "language": "TypeScript",
-    "styling": [
-      "TailwindCSS",
-      "shadcn/ui"
-    ]
-  },
-  "guidelines": {
-    "design": {
-      "principles": [
-        "Modern and beautiful UI",
-        "Clean and consistent design language",
-        "Responsive layouts which works on both mobile and desktop",
-        "Smooth transitions and animations"
-      ]
-    },
-    "code": {
-      "style": [
-        "Follow Next.js 14 best practices",
-        "Implement proper error handling",
-        "Write clean, maintainable code"
-      ]
-    }
-  }
-}
+# Personal Project Radar - Cursor Rules
+
+## Project Overview
+Personal Project Radar is a lead researcher dashboard built with modern web technologies for comprehensive research and analytics.
+
+## Technology Stack
+
+### Core Framework
+- **Next.js 14** with App Router
+- **TypeScript** for type safety
+- **React 18** with client/server components
+
+### Styling & UI
+- **TailwindCSS** for utility-first styling
+- **shadcn/ui** component library
+- **Magic UI** for advanced components (dock, etc.)
+- **Framer Motion** (`motion/react`) for animations
+- **Lucide React** for icons
+
+### Animation Libraries
+- **Framer Motion** via `motion/react` import (newer version)
+- **Motion package** for advanced animations
+- Use `"use client"` directive for components with animations
+
+### Development Tools
+- **Turbopack** enabled for faster development (`npm run dev`)
+- **ESLint** for code linting
+- **PostCSS** for CSS processing
+
+## Project Structure
+
+```
+personal-project-radar/
+├── app/                    # Next.js App Router pages
+│   ├── api/               # API routes for research endpoints
+│   ├── dashboard/         # Dashboard page and components
+│   ├── globals.css        # Global styles
+│   ├── layout.tsx         # Root layout
+│   └── page.tsx           # Home page
+├── components/            # React components
+│   ├── ui/               # shadcn/ui base components
+│   ├── magicui/          # Magic UI components
+│   └── [feature]/        # Feature-specific components
+└── lib/                  # Utilities and helpers
+    └── utils.ts          # Common utilities
+```
+
+## Design Principles
+
+### Visual Design
+- **Modern and beautiful UI** with clean aesthetics
+- **Glass morphism effects** with backdrop blur
+- **Responsive layouts** that work on mobile and desktop
+- **Smooth transitions and animations** for enhanced UX
+- **Consistent design language** across all components
+
+### Color Palette
+- Background: `bg-gradient-to-br from-slate-50 to-white`
+- Primary text: `text-gray-900`
+- Secondary text: `text-gray-600`
+- Interactive elements: Purple/blue accents
+
+### Typography
+- Clean, readable fonts with proper hierarchy
+- Use semantic heading levels (h1, h2, h3)
+- Consistent spacing and line heights
+
+## Coding Standards
+
+### React/Next.js Best Practices
+- Use **App Router** file-based routing
+- Implement proper **error handling**
+- Follow **Next.js 14 conventions**
+- Use **TypeScript** for all components
+- Add `"use client"` for interactive/animated components
+
+### Component Guidelines
+- **Client Components**: Use `"use client"` for:
+  - Framer Motion animations
+  - Interactive state management
+  - Browser-only features
+- **Server Components**: Default for:
+  - Static content
+  - Data fetching
+  - SEO-critical pages
+
+### Animation Best Practices
+- Use `motion/react` imports for Framer Motion
+- Implement smooth spring animations with proper physics
+- Avoid hydration mismatches with client-side rendering
+- Test animations across different devices
+
+### File Organization
+- Group related components in feature folders
+- Use descriptive, PascalCase component names
+- Keep API routes organized by functionality
+- Maintain clean import statements
+
+## API Architecture
+
+### Research Endpoints
+The project includes various research API endpoints:
+- Company analysis and summaries
+- Social media scraping (Twitter, Reddit, TikTok)
+- Financial and funding data
+- Competitor analysis
+- News and content aggregation
+
+### Data Flow
+- API routes handle external data fetching
+- Components consume data through proper loading states
+- Implement error boundaries for robustness
+
+## Development Workflow
+
+### Getting Started
+```bash
+npm run dev    # Start development with Turbopack
+npm run build  # Production build
+npm run lint   # Run ESLint
+```
+
+### Code Quality
+- Write **clean, maintainable code**
+- Use **meaningful variable names**
+- Add **comments for complex logic**
+- Follow **TypeScript best practices**
+- Implement **proper error handling**
+
+### Component Development
+- Start with basic functionality
+- Add animations and interactions progressively
+- Test across different screen sizes
+- Ensure accessibility compliance
+
+## AI Assistant Guidelines
+
+### When Helping with This Project
+1. **Follow the established patterns** in existing components
+2. **Use the specified technology stack** - don't suggest alternatives
+3. **Maintain design consistency** with existing UI patterns
+4. **Implement proper TypeScript** types for all code
+5. **Add animations thoughtfully** using Framer Motion best practices
+
+### Code Generation Rules
+- Always use the project's existing import patterns
+- Follow the established file structure
+- Implement responsive design by default
+- Use shadcn/ui components when appropriate
+- Ensure proper error handling and loading states
+
+### Testing and Debugging
+- Test changes in development mode with Turbopack
+- Check for console errors and warnings
+- Verify animations work smoothly
+- Ensure responsive behavior across devices
+- Test with browser developer tools
+
+## Common Patterns
+
+### Import Statements
+```typescript
+"use client"; // For interactive components
+
+import { ComponentName } from "@/components/ui/component";
+import { motion } from "motion/react";
+import { IconName } from "lucide-react";
+```
+
+### Animation Components
+```typescript
+<motion.div
+  whileHover={{ scale: 1.05 }}
+  transition={{ duration: 0.2 }}
+>
+  Content
+</motion.div>
+```
+
+### Responsive Design
+```typescript
+<div className="container mx-auto px-4 py-8">
+  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    {/* Responsive grid content */}
+  </div>
+</div>
+```
+
+This document should be updated as the project evolves and new patterns emerge.

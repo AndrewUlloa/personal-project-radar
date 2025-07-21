@@ -4,7 +4,7 @@ import { Command } from "cmdk";
 import { Search, Home, User, Settings, Sun, Moon, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -14,6 +14,8 @@ interface CommandPaletteProps {
 }
 
 export function CommandPalette({ isOpen, onClose, isDarkMode, onToggleTheme }: CommandPaletteProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   // Handle keyboard events when command palette is open
   useEffect(() => {
     if (!isOpen) return;
@@ -29,6 +31,18 @@ export function CommandPalette({ isOpen, onClose, isDarkMode, onToggleTheme }: C
     document.addEventListener('keydown', handleKeyDown, true);
     return () => document.removeEventListener('keydown', handleKeyDown, true);
   }, [isOpen, onClose]);
+
+  // Auto-focus the input when the command palette opens
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      // Use a small delay to ensure the animation has started
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
   return (
     <AnimatePresence>
       {isOpen && (
@@ -59,6 +73,7 @@ export function CommandPalette({ isOpen, onClose, isDarkMode, onToggleTheme }: C
                   ? "bg-black/20 border-white/10" 
                   : "bg-white/80 border-gray-200/50"
               )}
+              onClick={(e) => e.stopPropagation()}
             >
               {/* Search Input */}
               <div className="flex items-center border-b border-gray-200/20 px-4">
@@ -67,6 +82,7 @@ export function CommandPalette({ isOpen, onClose, isDarkMode, onToggleTheme }: C
                   isDarkMode ? "text-gray-300" : "text-gray-500"
                 )} />
                 <Command.Input
+                  ref={inputRef}
                   placeholder="Search commands..."
                   className={cn(
                     "flex h-12 w-full bg-transparent py-3 text-sm outline-none placeholder:text-gray-500",

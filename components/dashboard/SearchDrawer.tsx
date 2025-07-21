@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useEffect } from "react";
 import { Search, Command, History, TrendingUp, Users, FileText } from "lucide-react";
 import {
   Drawer,
@@ -23,6 +24,44 @@ interface SearchDrawerProps {
 export default function SearchDrawer({ isDarkMode, children, onOpenChange }: SearchDrawerProps) {
   const [searchValue, setSearchValue] = React.useState("");
   const [open, setOpen] = React.useState(false);
+
+  // Disable text selection on the page while drawer is open
+  useEffect(() => {
+    if (open) {
+      document.body.classList.add("select-none");
+    } else {
+      document.body.classList.remove("select-none");
+    }
+    return () => {
+      document.body.classList.remove("select-none");
+    };
+  }, [open]);
+
+  // Handle escape key for this drawer specifically
+  React.useEffect(() => {
+    if (!open) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        const selection = window.getSelection();
+        if (selection && selection.toString().length > 0) {
+          // Clear selection and prevent event from bubbling
+          selection.removeAllRanges();
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
+        // No selection: close drawer
+        setOpen(false);
+        onOpenChange?.(false);
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown, true); // Use capture phase
+    return () => document.removeEventListener('keydown', handleKeyDown, true);
+  }, [open, onOpenChange]);
   
   // Custom frame background style matching DashboardFrame
   const frameBackgroundStyle = {
@@ -60,7 +99,7 @@ export default function SearchDrawer({ isDarkMode, children, onOpenChange }: Sea
       <DrawerTrigger asChild>
         {children}
       </DrawerTrigger>
-      <DrawerContent className="border-none bg-transparent shadow-none fixed inset-12 pointer-events-none focus:outline-none !mt-0 !rounded-none">
+      <DrawerContent className="border-none bg-transparent shadow-none fixed inset-12 z-50 focus:outline-none !mt-0 !rounded-none">
         {/* Custom background with DashboardFrame styling */}
         <div className="w-full relative h-full pointer-events-auto">
           {/* Blurred background layer */}
@@ -72,7 +111,7 @@ export default function SearchDrawer({ isDarkMode, children, onOpenChange }: Sea
           />
           
           {/* Content layer */}
-          <div className="relative z-10 p-8">
+          <div className="relative z-10 p-8 select-text">
             <DrawerHeader className="text-center pb-6">
               <DrawerTitle className="text-2xl font-semibold text-gray-900">
                 Research Search

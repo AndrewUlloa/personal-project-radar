@@ -12,6 +12,7 @@
     "@ai-sdk/anthropic": "^1.0.0",
     "@babel/runtime": "^7.27.1",
     "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-tooltip": "^1.2.7",
     "@vercel/analytics": "^1.4.1",
     "ai": "^4.0.25",
     "class-variance-authority": "^0.7.1",

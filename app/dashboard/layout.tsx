@@ -1,12 +1,13 @@
 "use client";
 
 import { AutoHideDock, DockIcon } from "@/components/magicui/dock";
-import { Home, Search, Settings, User, Sun, Moon, Command } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Home, Settings, User, Sun, Moon, Command } from "lucide-react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { CommandPalette } from "@/components/ui/command-palette";
 import { NoSSR } from "@/components/ui/no-ssr";
 import DashboardFrame from "@/components/dashboard/DashboardFrame";
-import SearchDrawer from "@/components/dashboard/SearchDrawer";
+import DockTooltip from "@/components/dashboard/DockTooltip";
+import SearchDockIcon from "@/components/dashboard/SearchDockIcon";
 
 // Force light theme styles and override Dark Reader
 const lightThemeStyle = `
@@ -47,6 +48,33 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [isSearchDrawerOpen, setIsSearchDrawerOpen] = useState(false);
+  // Ref to track if 'g' was pressed for combo shortcuts
+  const gPressedRef = useRef(false);
+  const [triggerSearch, setTriggerSearch] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const toggleTheme = useCallback(() => {
+    setIsDarkMode(!isDarkMode);
+  }, [isDarkMode]);
+
+  const openCommandPalette = useCallback(() => {
+    setIsCommandPaletteOpen(true);
+  }, []);
+
+  const closeCommandPalette = useCallback(() => {
+    setIsCommandPaletteOpen(false);
+  }, []);
+
+  // Refs for stable callbacks inside keyboard handler
+  const toggleThemeRef = useRef(toggleTheme);
+  const setIsCommandPaletteOpenRef = useRef(setIsCommandPaletteOpen);
+  const setTriggerSearchRef = useRef(setTriggerSearch);
+
+  useEffect(() => {
+    toggleThemeRef.current = toggleTheme;
+    setIsCommandPaletteOpenRef.current = setIsCommandPaletteOpen;
+    setTriggerSearchRef.current = setTriggerSearch;
+  });
 
   useEffect(() => {
     // Set client-side flag
@@ -67,32 +95,83 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       });
     }
 
-    // Keyboard shortcut for command palette (Cmd+K / Ctrl+K)
+    // Keyboard shortcuts
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Command Palette (Cmd+K / Ctrl+K)
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        setIsCommandPaletteOpen(prev => !prev);
+        setIsCommandPaletteOpenRef.current(prev => !prev);
+        return;
       }
+      
+      // Escape key - only handle command palette, let drawers handle themselves
       if (e.key === 'Escape') {
-        setIsCommandPaletteOpen(false);
+        // Only close command palette with escape, drawers will handle their own escape
+        setIsCommandPaletteOpenRef.current(false);
+        gPressedRef.current = false;
+        if (searchTimeoutRef.current) {
+          clearTimeout(searchTimeoutRef.current);
+          searchTimeoutRef.current = null;
+        }
+        setTriggerSearchRef.current(false);
+        return;
+      }
+
+      // G key shortcuts
+      if (e.key.toLowerCase() === 'g' && !gPressedRef.current) {
+        e.preventDefault();
+        gPressedRef.current = true;
+        // Reset G key after 2 seconds
+        setTimeout(() => {
+          gPressedRef.current = false;
+        }, 2000);
+        return;
+      }
+
+      // G + [key] combinations
+      if (gPressedRef.current) {
+        e.preventDefault();
+        gPressedRef.current = false;
+        
+        switch (e.key.toLowerCase()) {
+          case 'h':
+            // Close overlays (search drawer, command palette, etc.)
+            setIsCommandPaletteOpenRef.current(false);
+            setIsSearchDrawerOpen(false);
+            if (searchTimeoutRef.current) {
+              clearTimeout(searchTimeoutRef.current);
+              searchTimeoutRef.current = null;
+            }
+            setTriggerSearchRef.current(false);
+            break;
+          case 's':
+            // Trigger search drawer
+            if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+            setTriggerSearchRef.current(true);
+            searchTimeoutRef.current = setTimeout(() => {
+              setTriggerSearchRef.current(false);
+              searchTimeoutRef.current = null;
+            }, 100);
+            break;
+          case 'u':
+            // Open profile - could add routing here
+            console.log('Open Profile');
+            break;
+          case ';':
+            // Open settings - could add routing here
+            console.log('Open Settings');
+            break;
+          case 't':
+            // Toggle theme
+            toggleThemeRef.current();
+            break;
+        }
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
-
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-  };
-
-  const openCommandPalette = () => {
-    setIsCommandPaletteOpen(true);
-  };
-
-  const closeCommandPalette = () => {
-    setIsCommandPaletteOpen(false);
-  };
 
   return (
     <>
@@ -142,46 +221,59 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               hideDelay={1500}
               showAnimation={true}
             >
-            <DockIcon>
-              <Home className={`h-6 w-6 transition-colors duration-300 ${
-                isDarkMode ? "text-white" : "text-gray-700"
-              }`} />
-            </DockIcon>
-            <SearchDrawer 
-              isDarkMode={isDarkMode}
-              onOpenChange={setIsSearchDrawerOpen}
-            >
-              <DockIcon className="cursor-pointer">
-                <Search className={`h-6 w-6 transition-colors duration-300 ${
+            <DockTooltip content="Home" shortcut="G then H">
+              <DockIcon>
+                <Home className={`h-6 w-6 transition-colors duration-300 ${
                   isDarkMode ? "text-white" : "text-gray-700"
                 }`} />
               </DockIcon>
-            </SearchDrawer>
-            <DockIcon>
-              <User className={`h-6 w-6 transition-colors duration-300 ${
-                isDarkMode ? "text-white" : "text-gray-700"
-              }`} />
-            </DockIcon>
-            <DockIcon>
-              <Settings className={`h-6 w-6 transition-colors duration-300 ${
-                isDarkMode ? "text-white" : "text-gray-700"
-              }`} />
-            </DockIcon>
-            <DockIcon onClick={openCommandPalette} className="cursor-pointer">
-              <Command className={`h-6 w-6 transition-colors duration-300 ${
-                isDarkMode ? "text-white" : "text-gray-700"
-              }`} />
-            </DockIcon>
-            <DockIcon onClick={toggleTheme} className="cursor-pointer">
-              {isDarkMode ? (
-                <Sun className="h-6 w-6 text-yellow-400 transition-colors duration-300" />
-              ) : (
-                <Moon className="h-6 w-6 text-gray-700 transition-colors duration-300" />
-              )}
-            </DockIcon>
+            </DockTooltip>
+            <SearchDockIcon 
+              isDarkMode={isDarkMode}
+              onOpenChange={setIsSearchDrawerOpen}
+            />
+            <DockTooltip content="Profile" shortcut="G then U">
+              <DockIcon>
+                <User className={`h-6 w-6 transition-colors duration-300 ${
+                  isDarkMode ? "text-white" : "text-gray-700"
+                }`} />
+              </DockIcon>
+            </DockTooltip>
+            <DockTooltip content="Settings" shortcut="G then ;">
+              <DockIcon>
+                <Settings className={`h-6 w-6 transition-colors duration-300 ${
+                  isDarkMode ? "text-white" : "text-gray-700"
+                }`} />
+              </DockIcon>
+            </DockTooltip>
+            <DockTooltip content="Command Palette" shortcut="⌘K">
+              <DockIcon onClick={openCommandPalette} className="cursor-pointer">
+                <Command className={`h-6 w-6 transition-colors duration-300 ${
+                  isDarkMode ? "text-white" : "text-gray-700"
+                }`} />
+              </DockIcon>
+            </DockTooltip>
+            <DockTooltip content={isDarkMode ? "Light Mode" : "Dark Mode"} shortcut="G then T">
+              <DockIcon onClick={toggleTheme} className="cursor-pointer">
+                {isDarkMode ? (
+                  <Sun className="h-6 w-6 text-yellow-400 transition-colors duration-300" />
+                ) : (
+                  <Moon className="h-6 w-6 text-gray-700 transition-colors duration-300" />
+                )}
+              </DockIcon>
+            </DockTooltip>
             </AutoHideDock>
           </div>
         </NoSSR>
+
+        {/* Invisible SearchDockIcon to listen for keyboard shortcut even when dock hidden */}
+        <div className="hidden">
+          <SearchDockIcon
+            isDarkMode={isDarkMode}
+            onOpenChange={setIsSearchDrawerOpen}
+            shouldOpen={triggerSearch}
+          />
+        </div>
       </div>
     </>
   );

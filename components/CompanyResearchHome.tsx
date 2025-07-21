@@ -1075,41 +1075,7 @@ export default function CompanyResearcher() {
             )}
 
       </div>
-      <div className="flex-grow"></div>
-        <footer className="fixed bottom-0 left-0 right-0 w-full py-4 bg-pb-surface border-t opacity-0 animate-fade-up [animation-delay:1200ms]">
-          <div className="max-w-2xl mx-auto flex flex-col sm:flex-row items-center justify-center sm:gap-6 px-4">
-            <Link
-              href="https://github.com/exa-labs/company-researcher"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-pb-muted hover:underline cursor-pointer text-center"
-            >
-              View Project Code
-            </Link>
-            <span className="text-pb-muted hidden sm:inline">|</span>
-            <Link
-                href="https://exa.ai/demos"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:opacity-80 transition-opacity hidden sm:inline"
-              >
-            <div className="flex items-center gap-2">
-              <span className="text-pb-muted hover:text-pb-foreground hover:underline">See More Demos</span>
-            </div>
-            </Link>
-            <span className="text-pb-muted hidden sm:inline">|</span>
-            <Link
-                href="https://dashboard.exa.ai"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:opacity-80 transition-opacity hidden sm:inline"
-              >
-            <div className="flex items-center gap-2">
-              <span className="text-pb-muted hover:text-pb-foreground hover:underline">Try Exa API</span>
-            </div>
-            </Link>
-          </div>
-        </footer>
+      {/* Footer removed as per request */}
     </div>  
   );
 }

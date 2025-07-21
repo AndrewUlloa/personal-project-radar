@@ -9,26 +9,26 @@ const figtree = Figtree({
 });
 
 export const metadata: Metadata = {
-  title: "Personal Project Radar - Lead Research Dashboard",
-  description: "Personal Project Radar powered researchers analyze faster. Comprehensive lead research, analytics and insights dashboard for modern business intelligence. Join thousands of researchers for deeper market insights.",
+  title: "Personal Project Radar",
+  description: "Personal Project Radar powered researchers analyze faster. Advanced research and insights platform for modern business intelligence. Join thousands of researchers for deeper market insights.",
   openGraph: {
-    title: 'Personal Project Radar - Lead Research Dashboard',
-    description: 'Personal Project Radar powered researchers analyze faster. Comprehensive lead research, analytics and insights dashboard for modern business intelligence.',
+    title: 'Personal Project Radar',
+    description: 'Personal Project Radar powered researchers analyze faster. Advanced research and insights platform for modern business intelligence.',
     url: 'https://personal-project-radar.vercel.app',
     siteName: 'Personal Project Radar',
     images: [{
       url: '/opengraph-image.png',
       width: 3840,
       height: 2500,
-      alt: 'Personal Project Radar - Lead Research Dashboard',
+      alt: 'Personal Project Radar',
     }],
     locale: 'en_US',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Personal Project Radar - Lead Research Dashboard',
-    description: 'Personal Project Radar powered researchers analyze faster. Comprehensive lead research, analytics and insights dashboard.',
+    title: 'Personal Project Radar',
+    description: 'Personal Project Radar powered researchers analyze faster. Advanced research and insights platform.',
     images: ['/opengraph-image.png'],
   },
   metadataBase: new URL('https://personal-project-radar.vercel.app'),

@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { CommandPalette } from "@/components/ui/command-palette";
 import { NoSSR } from "@/components/ui/no-ssr";
 import DashboardFrame from "@/components/dashboard/DashboardFrame";
+import SearchDrawer from "@/components/dashboard/SearchDrawer";
 
 // Force light theme styles and override Dark Reader
 const lightThemeStyle = `
@@ -45,6 +46,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [isSearchDrawerOpen, setIsSearchDrawerOpen] = useState(false);
 
   useEffect(() => {
     // Set client-side flag
@@ -124,7 +126,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         
         {/* Dock positioned at center bottom */}
         <NoSSR fallback={
-          <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+          <div className={`fixed bottom-6 left-1/2 transform -translate-x-1/2 z-10 transition-opacity duration-300 ${isSearchDrawerOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             <div className="mx-auto mt-8 flex h-[58px] w-max items-center justify-center gap-2 rounded-2xl border p-2 backdrop-blur-md bg-white/80 border-gray-200/50">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className="flex aspect-square cursor-pointer items-center justify-center rounded-full p-2">
@@ -134,21 +136,27 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
           </div>
         }>
-          <AutoHideDock 
-            triggerHeight={30}
-            hideDelay={1500}
-            showAnimation={true}
-          >
+          <div className={`fixed bottom-6 left-1/2 transform -translate-x-1/2 z-10 transition-opacity duration-300 ${isSearchDrawerOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+            <AutoHideDock 
+              triggerHeight={30}
+              hideDelay={1500}
+              showAnimation={true}
+            >
             <DockIcon>
               <Home className={`h-6 w-6 transition-colors duration-300 ${
                 isDarkMode ? "text-white" : "text-gray-700"
               }`} />
             </DockIcon>
-            <DockIcon>
-              <Search className={`h-6 w-6 transition-colors duration-300 ${
-                isDarkMode ? "text-white" : "text-gray-700"
-              }`} />
-            </DockIcon>
+            <SearchDrawer 
+              isDarkMode={isDarkMode}
+              onOpenChange={setIsSearchDrawerOpen}
+            >
+              <DockIcon className="cursor-pointer">
+                <Search className={`h-6 w-6 transition-colors duration-300 ${
+                  isDarkMode ? "text-white" : "text-gray-700"
+                }`} />
+              </DockIcon>
+            </SearchDrawer>
             <DockIcon>
               <User className={`h-6 w-6 transition-colors duration-300 ${
                 isDarkMode ? "text-white" : "text-gray-700"
@@ -171,7 +179,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <Moon className="h-6 w-6 text-gray-700 transition-colors duration-300" />
               )}
             </DockIcon>
-          </AutoHideDock>
+            </AutoHideDock>
+          </div>
         </NoSSR>
       </div>
     </>

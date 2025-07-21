@@ -35,12 +35,8 @@ export function CommandPalette({ isOpen, onClose, isDarkMode, onToggleTheme }: C
   // Auto-focus the input when the command palette opens
   useEffect(() => {
     if (isOpen && inputRef.current) {
-      // Use a small delay to ensure the animation has started
-      const timer = setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
-      
-      return () => clearTimeout(timer);
+      // Focus immediately when modal opens
+      inputRef.current.focus();
     }
   }, [isOpen]);
   return (
@@ -58,7 +54,10 @@ export function CommandPalette({ isOpen, onClose, isDarkMode, onToggleTheme }: C
           />
 
           {/* Command Palette */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            onClick={onClose}
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: -20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}

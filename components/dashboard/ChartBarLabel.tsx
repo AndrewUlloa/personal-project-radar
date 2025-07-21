@@ -41,7 +41,7 @@ export function ChartBarLabel() {
     <Card className="h-full flex flex-col">
       <CardHeader className="pb-2">
         <CardTitle className="font-medium leading-none tracking-tight" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)' }}>New Leads Added Today</CardTitle>
-        <CardDescription style={{ fontSize: 'clamp(0.75rem, 2vw, 1rem)' }}>Today's hourly import velocity</CardDescription>
+        <CardDescription style={{ fontSize: 'clamp(0.75rem, 2vw, 1rem)' }}>Today&apos;s hourly import velocity</CardDescription>
       </CardHeader>
       <div className="flex-1 min-h-0 px-6">
         <ChartContainer config={chartConfig} className="w-full h-full">

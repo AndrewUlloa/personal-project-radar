@@ -54,6 +54,14 @@ const lightThemeStyle = `
     text-align: center !important;
     width: 100% !important;
   }
+  /* Fix hover issue when drawer overlay present */
+  [data-sonner-toaster] {
+    z-index: 100000000 !important;
+    pointer-events: auto !important;
+  }
+  [data-sonner-toast] {
+    pointer-events: auto !important;
+  }
 `;
 
 interface DashboardLayoutProps {
@@ -63,7 +71,7 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
-  const [isClient, setIsClient] = useState(false);
+  const [, setIsClient] = useState(false);
   const [isSearchDrawerOpen, setIsSearchDrawerOpen] = useState(false);
   // Ref to track if 'g' was pressed for combo shortcuts
   const gPressedRef = useRef(false);
@@ -122,7 +130,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     toggleThemeRef.current = toggleTheme;
     setIsCommandPaletteOpenRef.current = setIsCommandPaletteOpen;
     setTriggerSearchRef.current = setTriggerSearch;
-  });
+  }, [toggleTheme, setIsCommandPaletteOpen, setTriggerSearch]);
 
   useEffect(() => {
     // Set client-side flag

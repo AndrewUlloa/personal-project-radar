@@ -26,7 +26,7 @@ export default function DockTooltip({
       <Tooltip>
         <TooltipTrigger 
           asChild
-          onClick={(e) => {
+          onClick={() => {
             // Don't prevent default or stop propagation 
             // Let the click event bubble up to parent components
           }}

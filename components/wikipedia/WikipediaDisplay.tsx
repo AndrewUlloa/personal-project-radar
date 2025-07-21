@@ -107,7 +107,7 @@ const WikipediaDisplay: React.FC<WikipediaDisplayProps> = ({ data, websiteUrl })
   // Function to extract the main summary (first proper paragraph)
   const extractSummary = (text: string): string => {
     const sentences = text.split(/\.\s+/);
-    let summaryParts = [];
+    const summaryParts = [];
     
     // Skip metadata and find first real sentence
     for (let i = 0; i < sentences.length; i++) {

@@ -38,8 +38,6 @@ export default function YoutubeVideosDisplay({ videos }: YoutubeVideosDisplayPro
     return videos.filter(video => getVideoId(video.url) !== null);
   }, [videos]);
 
-  if (!validVideos || validVideos.length === 0) return null;
-
   useEffect(() => {
     const fetchVideoDetails = async () => {
       const videoIds = validVideos.map(video => getVideoId(video.url)).filter(Boolean);
@@ -56,6 +54,8 @@ export default function YoutubeVideosDisplay({ videos }: YoutubeVideosDisplayPro
 
     fetchVideoDetails();
   }, [validVideos]);
+
+  if (!validVideos || validVideos.length === 0) return null;
 
   const formatViewCount = (viewCount: string) => {
     const count = parseInt(viewCount);

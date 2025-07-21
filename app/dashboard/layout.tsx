@@ -8,6 +8,8 @@ import { NoSSR } from "@/components/ui/no-ssr";
 import DashboardFrame from "@/components/dashboard/DashboardFrame";
 import DockTooltip from "@/components/dashboard/DockTooltip";
 import SearchDockIcon from "@/components/dashboard/SearchDockIcon";
+import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 // Force light theme styles and override Dark Reader
 const lightThemeStyle = `
@@ -37,6 +39,21 @@ const lightThemeStyle = `
   .dashboard-container [data-darkreader-inline-boxshadow] {
     box-shadow: unset !important;
   }
+  
+  /* Center align Sonner toasts */
+  [data-sonner-toast] {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+  [data-sonner-toast] > div {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
 `;
 
 interface DashboardLayoutProps {
@@ -63,6 +80,37 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const closeCommandPalette = useCallback(() => {
     setIsCommandPaletteOpen(false);
+  }, []);
+
+  // Toast helper for dock icon clicks with custom JSX content
+  const showKeyboardShortcutToast = useCallback((action: string, keys: string[]) => {
+    toast((
+      <div className="flex items-center justify-center gap-1 text-sm text-center w-full">
+        <span>Next time, hit</span>
+        <div className="flex items-center gap-1 mx-1">
+          {keys.map((key, index) => (
+            <div key={index} className="flex items-center gap-1">
+              <kbd className="px-2 py-1 text-xs font-mono bg-gray-100 border border-gray-300 rounded-md shadow-sm">
+                {key}
+              </kbd>
+              {index < keys.length - 1 && <span className="text-gray-500">then</span>}
+            </div>
+          ))}
+        </div>
+        <span>{action}</span>
+      </div>
+    ), {
+      duration: 4000,
+      position: "top-center",
+      style: {
+        textAlign: 'center',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%'
+      },
+      className: "!justify-center !text-center"
+    });
   }, []);
 
   // Refs for stable callbacks inside keyboard handler
@@ -222,7 +270,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               showAnimation={true}
             >
             <DockTooltip content="Home" shortcut="G then H">
-              <DockIcon>
+              <DockIcon 
+                onClick={() => showKeyboardShortcutToast("to go Home", ["G", "H"])}
+                className="cursor-pointer"
+              >
                 <Home className={`h-6 w-6 transition-colors duration-300 ${
                   isDarkMode ? "text-white" : "text-gray-700"
                 }`} />
@@ -231,30 +282,49 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <SearchDockIcon 
               isDarkMode={isDarkMode}
               onOpenChange={setIsSearchDrawerOpen}
+              isKeyboardTriggered={false}
             />
             <DockTooltip content="Profile" shortcut="G then U">
-              <DockIcon>
+              <DockIcon 
+                onClick={() => showKeyboardShortcutToast("to go to Profile", ["G", "U"])}
+                className="cursor-pointer"
+              >
                 <User className={`h-6 w-6 transition-colors duration-300 ${
                   isDarkMode ? "text-white" : "text-gray-700"
                 }`} />
               </DockIcon>
             </DockTooltip>
             <DockTooltip content="Settings" shortcut="G then ;">
-              <DockIcon>
+              <DockIcon 
+                onClick={() => showKeyboardShortcutToast("to go to Settings", ["G", ";"])}
+                className="cursor-pointer"
+              >
                 <Settings className={`h-6 w-6 transition-colors duration-300 ${
                   isDarkMode ? "text-white" : "text-gray-700"
                 }`} />
               </DockIcon>
             </DockTooltip>
             <DockTooltip content="Command Palette" shortcut="⌘K">
-              <DockIcon onClick={openCommandPalette} className="cursor-pointer">
+              <DockIcon 
+                onClick={() => {
+                  openCommandPalette();
+                  showKeyboardShortcutToast("to use Command Palette", ["⌘K"]);
+                }} 
+                className="cursor-pointer"
+              >
                 <Command className={`h-6 w-6 transition-colors duration-300 ${
                   isDarkMode ? "text-white" : "text-gray-700"
                 }`} />
               </DockIcon>
             </DockTooltip>
             <DockTooltip content={isDarkMode ? "Light Mode" : "Dark Mode"} shortcut="G then T">
-              <DockIcon onClick={toggleTheme} className="cursor-pointer">
+              <DockIcon 
+                onClick={() => {
+                  toggleTheme();
+                  showKeyboardShortcutToast("to swap theme", ["G", "T"]);
+                }} 
+                className="cursor-pointer"
+              >
                 {isDarkMode ? (
                   <Sun className="h-6 w-6 text-yellow-400 transition-colors duration-300" />
                 ) : (
@@ -272,9 +342,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             isDarkMode={isDarkMode}
             onOpenChange={setIsSearchDrawerOpen}
             shouldOpen={triggerSearch}
+            isKeyboardTriggered={true}
           />
         </div>
       </div>
+      <Toaster />
     </>
   );
 } 

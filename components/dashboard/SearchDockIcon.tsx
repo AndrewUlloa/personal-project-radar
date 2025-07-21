@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useEffect } from "react";
 import { Search } from "lucide-react";
+import { toast } from "sonner";
 import CompanyResearcher from "../CompanyResearchHome";
 import { DockIcon } from "@/components/magicui/dock";
 import {
@@ -25,9 +26,10 @@ interface SearchDockIconProps {
   isDarkMode: boolean;
   onOpenChange?: (open: boolean) => void;
   shouldOpen?: boolean;
+  isKeyboardTriggered?: boolean;
 }
 
-export default function SearchDockIcon({ isDarkMode, onOpenChange, shouldOpen }: SearchDockIconProps) {
+export default function SearchDockIcon({ isDarkMode, onOpenChange, shouldOpen, isKeyboardTriggered = false }: SearchDockIconProps) {
   const [open, setOpen] = React.useState(shouldOpen ?? false);
 
   useEffect(() => {
@@ -39,10 +41,40 @@ export default function SearchDockIcon({ isDarkMode, onOpenChange, shouldOpen }:
     return () => document.body.classList.remove("select-none");
   }, [open]);
   
-  const handleOpenChange = React.useCallback((newOpen: boolean) => {
+  const handleOpenChange = React.useCallback((newOpen: boolean, fromClick = false) => {
     setOpen(newOpen);
     onOpenChange?.(newOpen);
-  }, [onOpenChange]);
+    
+    // Show toast only when opened via click (not keyboard)
+    if (newOpen && fromClick && !isKeyboardTriggered) {
+      toast((
+        <div className="flex items-center justify-center gap-1 text-sm text-center w-full">
+          <span>Next time, hit</span>
+          <div className="flex items-center gap-1 mx-1">
+            <kbd className="px-2 py-1 text-xs font-mono bg-gray-100 border border-gray-300 rounded-md shadow-sm">
+              G
+            </kbd>
+            <span className="text-gray-500">then</span>
+            <kbd className="px-2 py-1 text-xs font-mono bg-gray-100 border border-gray-300 rounded-md shadow-sm">
+              S
+            </kbd>
+          </div>
+          <span>to use Search</span>
+        </div>
+      ), {
+        duration: 4000,
+        position: "top-center",
+        style: {
+          textAlign: 'center',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '100%'
+        },
+        className: "!justify-center !text-center"
+      });
+    }
+  }, [onOpenChange, isKeyboardTriggered]);
 
   // Handle escape key for this drawer specifically
   useEffect(() => {
@@ -96,7 +128,7 @@ export default function SearchDockIcon({ isDarkMode, onOpenChange, shouldOpen }:
             <div>
               <DockIcon 
                 className="cursor-pointer"
-                onClick={() => handleOpenChange(true)}
+                onClick={() => handleOpenChange(true, true)}
               >
                 <Search className={`h-6 w-6 transition-colors duration-300 ${
                   isDarkMode ? "text-white" : "text-gray-700"

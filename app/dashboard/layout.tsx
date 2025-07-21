@@ -44,11 +44,25 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    // Disable Dark Reader for this specific page
+    // Set client-side flag
+    setIsClient(true);
+    
+    // Disable Dark Reader for this specific page more aggressively
     if (typeof document !== 'undefined') {
       document.documentElement.setAttribute('data-darkreader-ignore', 'true');
+      document.documentElement.setAttribute('data-darkreader-mode', 'disabled');
+      document.body.setAttribute('data-darkreader-ignore', 'true');
+      
+      // Remove any existing Dark Reader attributes
+      const elementsWithDarkReader = document.querySelectorAll('[data-darkreader-inline-bgcolor], [data-darkreader-inline-bgimage], [data-darkreader-inline-boxshadow]');
+      elementsWithDarkReader.forEach(el => {
+        el.removeAttribute('data-darkreader-inline-bgcolor');
+        el.removeAttribute('data-darkreader-inline-bgimage');
+        el.removeAttribute('data-darkreader-inline-boxshadow');
+      });
     }
 
     // Keyboard shortcut for command palette (Cmd+K / Ctrl+K)
@@ -82,6 +96,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     <>
       <style dangerouslySetInnerHTML={{ __html: lightThemeStyle }} />
       
+      {/* Prevent Dark Reader */}
+      <meta name="darkreader-lock" content="true" />
+      
       {/* Command Palette */}
       <CommandPalette 
         isOpen={isCommandPaletteOpen}
@@ -94,6 +111,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           isDarkMode ? "dark-mode" : ""
         }`}
         suppressHydrationWarning={true}
+        data-darkreader-ignore="true"
         style={{
           colorScheme: isDarkMode ? "dark" : "light",
           transition: "all 0.3s ease-in-out"

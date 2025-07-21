@@ -16,15 +16,17 @@ export default function DashboardFrame({ isDarkMode, children }: DashboardFrameP
   };
 
   return (
-    <div className="w-full h-full p-12 relative">
+    <div className="w-full h-full relative">
       {/* Background layer with blur effects */}
       <div 
         className="absolute inset-12"
         style={frameBackgroundStyle}
+        suppressHydrationWarning={true}
+        data-darkreader-ignore="true"
       />
       
-      {/* Content layer on top - crisp and unblurred */}
-      <div className="relative z-10 w-full h-full p-6">
+      {/* Content layer on top - crisp and unblurred, positioned to match background */}
+      <div className="absolute inset-12 z-10 p-6">
         <div className="grid gap-6 h-full">
           {children}
         </div>

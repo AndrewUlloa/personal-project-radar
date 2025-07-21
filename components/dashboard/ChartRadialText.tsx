@@ -27,11 +27,11 @@ const chartData = [
 
 const chartConfig = {
   visitors: {
-    label: "Visitors",
+    label: "Lead Score",
   },
   safari: {
-    label: "Safari",
-    color: "var(--chart-2)",
+    label: "Quality Index",
+    color: "hsl(43, 96%, 56%)", // Warm amber for quality metrics
   },
 } satisfies ChartConfig
 
@@ -39,8 +39,8 @@ export function ChartRadialText() {
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="items-center pb-2">
-        <CardTitle className="font-medium leading-none tracking-tight" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)' }}>Radial Chart - Text</CardTitle>
-        <CardDescription style={{ fontSize: 'clamp(0.75rem, 2vw, 1rem)' }}>January - June 2024</CardDescription>
+        <CardTitle className="font-medium leading-none tracking-tight" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)' }}>Average Lead Score</CardTitle>
+        <CardDescription style={{ fontSize: 'clamp(0.75rem, 2vw, 1rem)' }}>0-100 quality index</CardDescription>
       </CardHeader>
       <div className="flex-1 min-h-0 flex items-center justify-center px-6">
         <ChartContainer
@@ -79,7 +79,7 @@ export function ChartRadialText() {
                           className="fill-foreground font-bold"
                           style={{ fontSize: 'clamp(1rem, 3vw, 1.5rem)' }}
                         >
-                          {chartData[0].visitors.toLocaleString()}
+                          74.3
                         </tspan>
                         <tspan
                           x={viewBox.cx}
@@ -87,7 +87,7 @@ export function ChartRadialText() {
                           className="fill-muted-foreground"
                           style={{ fontSize: 'clamp(0.625rem, 1.5vw, 0.75rem)' }}
                         >
-                          Visitors
+                          Score
                         </tspan>
                       </text>
                     )
@@ -100,10 +100,10 @@ export function ChartRadialText() {
       </div>
       <CardFooter className="pt-2 flex-col gap-1">
         <div className="flex items-center gap-2 leading-none font-medium" style={{ fontSize: 'clamp(0.75rem, 2vw, 0.875rem)' }}>
-          Trending up by 5.2% this month <TrendingUp style={{ width: 'clamp(0.875rem, 2.5vw, 1.125rem)', height: 'clamp(0.875rem, 2.5vw, 1.125rem)' }} />
+          +4.1 pts past 30 d 📈
         </div>
         <div className="text-muted-foreground leading-none" style={{ fontSize: 'clamp(0.625rem, 1.5vw, 0.75rem)' }}>
-          Showing total visitors for the last 6 months
+          Lead qualification performance
         </div>
       </CardFooter>
     </Card>

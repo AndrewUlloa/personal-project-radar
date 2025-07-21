@@ -1,7 +1,7 @@
 "use client"
 
 import { TrendingUp } from "lucide-react"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 import {
   Card,
@@ -31,12 +31,12 @@ const chartData = [
 
 const chartConfig = {
   desktop: {
-    label: "Desktop",
-    color: "var(--chart-1)",
+    label: "Projected Revenue",
+    color: "hsl(142, 76%, 36%)", // Success green for revenue
   },
   mobile: {
-    label: "Mobile",
-    color: "var(--chart-2)",
+    label: "Pipeline Value",
+    color: "hsl(217, 91%, 60%)", // Professional blue for pipeline
   },
 } satisfies ChartConfig
 
@@ -44,10 +44,21 @@ export function ChartAreaGradient() {
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="pb-2">
-        <CardTitle className="font-medium leading-none tracking-tight" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)' }}>Area Chart - Gradient</CardTitle>
+        <CardTitle className="font-medium leading-none tracking-tight" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)' }}>Projected Revenue & Pipeline (30-Day Roll)</CardTitle>
         <CardDescription style={{ fontSize: 'clamp(0.75rem, 2vw, 1rem)' }}>
-          Showing total visitors for the last 6 months
+          Weighted by lead-score
         </CardDescription>
+        {/* Legend */}
+        <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 rounded-full bg-[hsl(217,91%,60%)]"></div>
+            <span>Pipeline</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 rounded-full bg-[hsl(142,76%,36%)]"></div>
+            <span>Projected</span>
+          </div>
+        </div>
       </CardHeader>
       <div className="flex-1 min-h-0 px-6">
         <ChartContainer config={chartConfig} className="w-full h-full">
@@ -67,7 +78,21 @@ export function ChartAreaGradient() {
               tickMargin={8}
               tickFormatter={(value) => value.slice(0, 3)}
             />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickFormatter={(value) => `$${Math.round(value/1000)} K`}
+              domain={[0, 800]}
+              ticks={[0, 200, 400, 600, 800]}
+            />
+            <ChartTooltip 
+              cursor={false} 
+              content={<ChartTooltipContent 
+                formatter={(value, name) => [`$${Math.round(value)} K`, name]}
+                labelFormatter={(label) => `${label}`}
+              />} 
+            />
             <defs>
               <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
                 <stop
@@ -95,19 +120,21 @@ export function ChartAreaGradient() {
               </linearGradient>
             </defs>
             <Area
-              dataKey="mobile"
-              type="natural"
-              fill="url(#fillMobile)"
-              fillOpacity={0.4}
-              stroke="var(--color-mobile)"
-              stackId="a"
-            />
-            <Area
               dataKey="desktop"
               type="natural"
               fill="url(#fillDesktop)"
-              fillOpacity={0.4}
+              fillOpacity={0.3}
               stroke="var(--color-desktop)"
+              strokeWidth={2.5}
+              stackId="a"
+            />
+            <Area
+              dataKey="mobile"
+              type="natural"
+              fill="url(#fillMobile)"
+              fillOpacity={0.6}
+              stroke="var(--color-mobile)"
+              strokeWidth={1.5}
               stackId="a"
             />
           </AreaChart>
@@ -117,10 +144,10 @@ export function ChartAreaGradient() {
         <div className="flex w-full items-start gap-2">
           <div className="grid gap-1">
             <div className="flex items-center gap-2 leading-none font-medium" style={{ fontSize: 'clamp(0.75rem, 2vw, 0.875rem)' }}>
-              Trending up by 5.2% this month <TrendingUp style={{ width: 'clamp(0.875rem, 2.5vw, 1.125rem)', height: 'clamp(0.875rem, 2.5vw, 1.125rem)' }} />
+              Pipeline value +$22.8 K vs. prior 30 d 📈
             </div>
             <div className="text-muted-foreground flex items-center gap-2 leading-none" style={{ fontSize: 'clamp(0.625rem, 1.5vw, 0.75rem)' }}>
-              January - June 2024
+              Projected monthly growth
             </div>
           </div>
         </div>

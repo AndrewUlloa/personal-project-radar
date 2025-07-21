@@ -27,11 +27,11 @@ const chartData = [
 
 const chartConfig = {
   visitors: {
-    label: "Visitors",
+    label: "Leads",
   },
   safari: {
-    label: "Safari",
-    color: "var(--chart-2)",
+    label: "High-Priority",
+    color: "hsl(0, 84%, 60%)", // Attention red for high priority
   },
 } satisfies ChartConfig
 
@@ -39,8 +39,8 @@ export function ChartRadialShape() {
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="items-center pb-2">
-        <CardTitle className="font-medium leading-none tracking-tight" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)' }}>Radial Chart - Shape</CardTitle>
-        <CardDescription style={{ fontSize: 'clamp(0.75rem, 2vw, 1rem)' }}>January - June 2024</CardDescription>
+        <CardTitle className="font-medium leading-none tracking-tight" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)' }}>High-Priority Leads</CardTitle>
+        <CardDescription style={{ fontSize: 'clamp(0.75rem, 2vw, 1rem)' }}>Score ≥ 80 — 18% of total</CardDescription>
       </CardHeader>
       <div className="flex-1 min-h-0 flex items-center justify-center px-6">
         <ChartContainer
@@ -78,7 +78,7 @@ export function ChartRadialShape() {
                           className="fill-foreground font-bold"
                           style={{ fontSize: 'clamp(1rem, 3vw, 1.5rem)' }}
                         >
-                          {chartData[0].visitors.toLocaleString()}
+                          {chartData[0].visitors.toLocaleString().replace(/,/g, ' ')}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
@@ -86,7 +86,7 @@ export function ChartRadialShape() {
                           className="fill-muted-foreground"
                           style={{ fontSize: 'clamp(0.625rem, 1.5vw, 0.75rem)' }}
                         >
-                          Visitors
+                          Leads
                         </tspan>
                       </text>
                     )
@@ -99,10 +99,10 @@ export function ChartRadialShape() {
       </div>
       <CardFooter className="pt-2 flex-col gap-1">
         <div className="flex items-center gap-2 leading-none font-medium" style={{ fontSize: 'clamp(0.75rem, 2vw, 0.875rem)' }}>
-          Trending up by 5.2% this month <TrendingUp style={{ width: 'clamp(0.875rem, 2.5vw, 1.125rem)', height: 'clamp(0.875rem, 2.5vw, 1.125rem)' }} />
+          Quality band +8.7% vs. 7-day avg 📈
         </div>
         <div className="text-muted-foreground leading-none" style={{ fontSize: 'clamp(0.625rem, 1.5vw, 0.75rem)' }}>
-          Showing total visitors for the last 6 months
+          Hot lead identification accuracy
         </div>
       </CardFooter>
     </Card>

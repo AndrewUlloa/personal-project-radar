@@ -115,15 +115,15 @@ const chartData = [
 
 const chartConfig = {
   views: {
-    label: "Page Views",
+    label: "Lead Sources",
   },
   desktop: {
-    label: "Desktop",
-    color: "hsl(var(--chart-1))",
+    label: "Web Crawler",
+    color: "hsl(217, 91%, 60%)", // Professional blue
   },
   mobile: {
-    label: "Mobile",
-    color: "hsl(var(--chart-2))",
+    label: "LinkedIn API", 
+    color: "hsl(142, 76%, 36%)", // LinkedIn green
   },
 } satisfies ChartConfig
 
@@ -143,9 +143,9 @@ export function ChartLineInteractive() {
     <Card className="h-full flex flex-col py-4 sm:py-0">
       <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row flex-shrink-0">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 pb-3 sm:pb-0">
-          <CardTitle className="font-semibold leading-none tracking-tight" style={{ fontSize: 'clamp(1rem, 3vw, 1.5rem)' }}>Line Chart - Interactive</CardTitle>
+          <CardTitle className="font-semibold leading-none tracking-tight" style={{ fontSize: 'clamp(1rem, 3vw, 1.5rem)' }}>Total Leads in Database</CardTitle>
           <CardDescription style={{ fontSize: 'clamp(0.75rem, 2vw, 1rem)' }}>
-            Showing total visitors for the last 3 months
+            90-day discovery trend — Web crawler vs. LinkedIn enrichment
           </CardDescription>
         </div>
         <div className="flex">
@@ -159,10 +159,10 @@ export function ChartLineInteractive() {
                 onClick={() => setActiveChart(chart)}
               >
                 <span className="text-muted-foreground" style={{ fontSize: 'clamp(0.625rem, 1.5vw, 0.75rem)' }}>
-                  {chartConfig[chart].label}
+                  {chart === 'desktop' ? 'Web Crawler (50%)' : 'LinkedIn API (50%)'}
                 </span>
                 <span className="leading-none font-bold" style={{ fontSize: 'clamp(1rem, 4vw, 1.875rem)' }}>
-                  {total[key as keyof typeof total].toLocaleString()}
+                  {total[key as keyof typeof total].toLocaleString().replace(/,/g, ' ')} Leads
                 </span>
               </button>
             )

@@ -331,9 +331,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           {children}
         </DashboardFrame>
         
-        {/* Dock positioned at center bottom */}
+        {/* Dock positioned at center bottom - hidden on screens smaller than 1280px */}
         <NoSSR fallback={
-          <div className="fixed bottom-3 left-1/2 transform -translate-x-1/2 dock-container opacity-100">
+          <div className="fixed bottom-3 left-1/2 transform -translate-x-1/2 dock-container opacity-100 hidden xl:block">
             <div className="mx-auto mt-8 flex h-[58px] w-max items-center justify-center gap-2 rounded-2xl border p-2 backdrop-blur-md bg-white/80 border-gray-200/50">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className="flex aspect-square cursor-pointer items-center justify-center rounded-full p-2">
@@ -343,7 +343,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
           </div>
         }>
-          <div className="fixed bottom-3 left-1/2 transform -translate-x-1/2 dock-container opacity-100">
+          <div className="fixed bottom-3 left-1/2 transform -translate-x-1/2 dock-container opacity-100 hidden xl:block">
             <AutoHideDock 
               triggerHeight={128}
               hideDelay={175}

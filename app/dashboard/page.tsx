@@ -1,3 +1,5 @@
+"use client";
+
 import { ChartLineInteractive } from "@/components/dashboard/ChartLineInteractive";
 import { ChartAreaGradient } from "@/components/dashboard/ChartAreaGradient";
 import { ChartBarLabel } from "@/components/dashboard/ChartBarLabel";
@@ -6,8 +8,60 @@ import { ChartRadialText } from "@/components/dashboard/ChartRadialText";
 import { ChartRadarGridCustom } from "@/components/dashboard/ChartRadarGridCustom";
 import { ChartBarStacked } from "@/components/dashboard/ChartBarStacked";
 import { NoSSR } from "@/components/ui/no-ssr";
+import { useState, useEffect } from "react";
+import { Monitor } from "lucide-react";
 
 export default function Dashboard() {
+  const [isDesktop, setIsDesktop] = useState(true);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsDesktop(window.innerWidth >= 1280);
+    };
+
+    // Check initial screen size
+    checkScreenSize();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', checkScreenSize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
+  // Desktop-only message component
+  const DesktopOnlyMessage = () => (
+    <div className="flex items-center justify-center h-full">
+      <div 
+        className="flex flex-col items-center text-center space-y-6 opacity-0"
+        style={{ animation: 'fadeUp 600ms ease-out 2400ms forwards' }}
+      >
+        <div className="p-4 rounded-full bg-gray-100/60 backdrop-blur-sm">
+          <Monitor className="h-12 w-12 text-gray-600" />
+        </div>
+        <div className="space-y-3 max-w-md">
+          <h2 className="text-2xl font-medium text-gray-900">
+            Desktop Experience Required
+          </h2>
+          <p className="text-gray-600 leading-relaxed">
+            Personal Project Radar is optimized for desktop environments. 
+            Please access this dashboard from a device with a screen width of at least 1280px 
+            for the best experience.
+          </p>
+        </div>
+        <div className="text-sm text-gray-500 bg-gray-50/60 backdrop-blur-sm px-4 py-2 rounded-lg border border-gray-200/60">
+          Current width: <span className="font-mono">{typeof window !== 'undefined' ? window.innerWidth : 0}px</span>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Show desktop-only message for screens smaller than 1280px
+  if (!isDesktop) {
+    return <DesktopOnlyMessage />;
+  }
+
+  // Regular dashboard widgets for desktop screens
   return (
     <div className="grid grid-rows-3 gap-6 h-[calc(100vh-9rem)]">
       {/* Chart Widget - takes exactly 1/3 of available height (same as each row in 3x2 grid) */}

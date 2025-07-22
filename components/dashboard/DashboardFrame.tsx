@@ -1,11 +1,30 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 interface DashboardFrameProps {
   isDarkMode: boolean;
   children?: React.ReactNode;
 }
 
 export default function DashboardFrame({ isDarkMode, children }: DashboardFrameProps) {
+  const [isDesktop, setIsDesktop] = useState(true);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsDesktop(window.innerWidth >= 1280);
+    };
+
+    // Check initial screen size
+    checkScreenSize();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', checkScreenSize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
   const frameBackgroundStyle = {
     borderRadius: '12px',
     background: 'rgba(255, 255, 255, 0.50)',
@@ -14,6 +33,11 @@ export default function DashboardFrame({ isDarkMode, children }: DashboardFrameP
     backdropFilter: 'blur(4.5px)',
     transition: 'all 0.3s ease-in-out'
   };
+
+  // For non-desktop screens, use a different logo animation that stays visible longer
+  const logoAnimationStyle = isDesktop 
+    ? { animation: 'logoFade 2000ms ease-out forwards' }
+    : { animation: 'logoFadeDesktopOnly 3000ms ease-out forwards' };
 
   return (
     <div className="w-full h-full relative">
@@ -34,9 +58,7 @@ export default function DashboardFrame({ isDarkMode, children }: DashboardFrameP
           fill="none" 
           xmlns="http://www.w3.org/2000/svg"
           className="opacity-0 animate-pulse"
-          style={{
-            animation: 'logoFade 2000ms ease-out forwards'
-          }}
+          style={logoAnimationStyle}
         >
           <path d="M35.7948 1.98252V30.7488L0 1.28015V46.048H8.22397V17.5872L44.0187 46.7198V1.98252H35.7948Z" fill="#0C0C0B"/>
           <path d="M64.5946 1.98254H55.9609V46.048H64.5946V1.98254Z" fill="#0C0C0B"/>

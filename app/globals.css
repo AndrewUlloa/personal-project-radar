@@ -120,6 +120,30 @@
   }
 }
 
+/* Logo animation for desktop-only message - stays visible longer */
+@keyframes logoFadeDesktopOnly {
+  0% {
+    opacity: 0;
+    filter: blur(4px);
+    transform: scale(0.8);
+  }
+  20% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: scale(1.0);
+  }
+  80% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: scale(1.0);
+  }
+  100% {
+    opacity: 0.3;
+    filter: blur(1px);
+    transform: scale(0.95);
+  }
+}
+
 /* Widget fade-up animation with ease-out */
 @keyframes fadeUp {
   0% {

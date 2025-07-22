@@ -62,6 +62,18 @@ const lightThemeStyle = `
   [data-sonner-toast] {
     pointer-events: auto !important;
   }
+  
+  /* Ensure dock is always on top of everything including toasts */
+  .dock-container {
+    z-index: 200000000 !important;
+    pointer-events: auto !important;
+  }
+  
+  /* Ensure dock trigger area always works */
+  .dock-trigger-area {
+    z-index: 200000001 !important;
+    pointer-events: auto !important;
+  }
 `;
 
 interface DashboardLayoutProps {
@@ -261,7 +273,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         
         {/* Dock positioned at center bottom */}
         <NoSSR fallback={
-          <div className={`fixed bottom-6 left-1/2 transform -translate-x-1/2 z-10 transition-opacity duration-300 ${isSearchDrawerOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+          <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 dock-container opacity-100">
             <div className="mx-auto mt-8 flex h-[58px] w-max items-center justify-center gap-2 rounded-2xl border p-2 backdrop-blur-md bg-white/80 border-gray-200/50">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className="flex aspect-square cursor-pointer items-center justify-center rounded-full p-2">
@@ -271,10 +283,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
           </div>
         }>
-          <div className={`fixed bottom-6 left-1/2 transform -translate-x-1/2 z-10 transition-opacity duration-300 ${isSearchDrawerOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+          <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 dock-container opacity-100">
             <AutoHideDock 
-              triggerHeight={30}
-              hideDelay={1500}
+              triggerHeight={128}
+              hideDelay={175}
               showAnimation={true}
             >
             <DockTooltip content="Home" shortcut="G then H">

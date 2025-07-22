@@ -190,14 +190,14 @@ const AutoHideDock = React.forwardRef<HTMLDivElement, AutoHideDockProps>(
 
     return (
       <>
-        {/* Invisible trigger area */}
+        {/* Invisible trigger area - larger safe zone */}
         <div
-          className="fixed bottom-0 left-1/4 w-1/2 z-40 pointer-events-none"
+          className="fixed bottom-0 left-1/6 w-2/3 dock-trigger-area"
           style={{ height: triggerHeight }}
         />
         
         {/* Dock container */}
-        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 dock-container">
           <AnimatePresence>
             {isVisible && (
               <motion.div

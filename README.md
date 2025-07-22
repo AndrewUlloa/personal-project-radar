@@ -6,8 +6,8 @@ This project implements a sophisticated, real-time lead researcher dashboard des
 
 The application is a modern, server-rendered React application built on the **Next.js 14 App Router**. This provides a robust foundation with features like server-side rendering, API routes, optimized performance, and Turbopack development acceleration.
 
-- **Framework:** Next.js 14 with React 18
-- **Language:** TypeScript with strict type checking
+- **Framework:** Next.js 15 with React 18
+- **Language:** TypeScript
 - **Styling:** Tailwind CSS with custom design system
 - **UI Components:** shadcn/ui, Magic UI (dock components)
 - **Animations:** `framer-motion` via `motion/react` (modern import)
@@ -394,10 +394,8 @@ Implemented extensive testing coverage with realistic scenarios and edge case ha
 
 **Testing Infrastructure:**
 
-- **Unit Testing:** 385+ test cases covering automation workflows, scoring algorithms, and search functionality
-- **Integration Testing:** End-to-end workflows testing real-time data synchronization and user interactions
-- **Performance Testing:** Load testing for automation systems and database query optimization
-- **Error Scenario Testing:** Comprehensive failure mode testing with recovery validation
+- **Unit Testing:** The suite includes 44 tests covering the core logic of the automation, scoring, and search modules.
+- **Testing Strategy:** The project uses Vitest to test critical backend functions, ensuring the reliability of the data processing and automation pipelines.
 
 **Quality Metrics:**
 
@@ -406,7 +404,7 @@ Implemented extensive testing coverage with realistic scenarios and edge case ha
 - **Error Recovery:** 100% of error scenarios provide actionable user guidance
 - **Accessibility:** Full keyboard navigation and screen reader compatibility
 
-These enhancements transform Personal Project Radar from a functional prototype into a production-ready, enterprise-grade lead generation platform that provides reliable, intelligent automation with exceptional user experience.
+These enhancements transform Personal Project Radar from a functional prototype into a robust and well-tested platform, laying the groundwork for future enterprise-grade features.
 
 ## Why All Convex Calls are Server-Side (No Client-Side Fetching)
 
@@ -471,11 +469,11 @@ This keyboard-first approach reduces cognitive load for power users while remain
 
 ## AI-Powered Lead Scoring & Strategic Pipeline Valuation
 
-Personal Project Radar implements a sophisticated, multi-factor lead scoring system inspired by enterprise B2B platforms like Nivoda's jewelry marketplace. This system transforms traditional pipeline management from static reporting into predictive, data-driven revenue forecasting.
+Personal Project Radar implements a sophisticated, AI-powered lead scoring system. The methodology is heavily inspired by the strategic analysis of enterprise B2B marketplaces like Nivoda, focusing on behavioral and integration-depth signals over simple firmographics.
 
 ### Strategic Scoring Framework
 
-The scoring system moves beyond basic demographic data to create a comprehensive "Customer Health Score" that predicts both conversion likelihood and expansion revenue potential. This approach recognizes that in B2B environments, the most valuable insights come from behavioral patterns and strategic integration depth rather than simple firmographic data.
+The core of the system is not a simple checklist. It's an AI-driven analysis designed to produce a "Strategic Value Score" that estimates a lead's potential as a long-term partner, not just a quick sale. This is achieved by feeding a rich, structured context of company data to an AI model.
 
 ### Multi-Source Data Integration
 
@@ -508,9 +506,22 @@ The AI scoring engine ingests data from multiple platform touchpoints to build a
 - Multi-user account setup and team collaboration patterns
 - Long-term contract commitments and expansion discussions
 
+### AI-Powered Analysis via Prompt Engineering
+
+Instead of a rigid, hard-coded algorithm, the system leverages a highly detailed prompt sent to the Anthropic Claude model. This prompt, located in `convex/scoring.ts`, encapsulates the strategic framework from the Nivoda research. It instructs the AI to act as a strategic analyst and weigh various factors according to a specified hierarchy.
+
+**Key Scoring Dimensions in the AI Prompt:**
+
+1.  **Strategic Integration (Highest Value):** The prompt asks the AI to prioritize signals of deep technical integration, such as API usage or B2B marketplace positioning.
+2.  **Financial Health & Scale:** It instructs the AI to weigh factors like funding rounds, revenue metrics, and growth capital availability.
+3.  **Market Position & Growth:** The model is guided to look for indicators of global expansion, team scaling, and leadership expertise.
+4.  **Risk Factors:** The prompt includes instructions for applying negative weights for market concerns, financial instability, or competitive threats.
+
+The AI then returns a structured JSON object containing the lead score, an estimated ARPU band, key signals, and a detailed rationale for its decision, including the specific factors and weights it used.
+
 ### Dynamic Weighted Scoring Matrix
 
-The system employs a sophisticated weighted scoring approach that adapts based on the lead's current pipeline stage and historical performance data:
+The following TypeScript interface illustrates the kind of structured thinking that informs the AI prompt. The actual calculation and weighting are handled dynamically by the AI based on the prompt's instructions, not by a hard-coded function in the application.
 
 ```typescript
 // Strategic Scoring Algorithm
@@ -555,118 +566,59 @@ function calculateLeadScore(factors: LeadScoringFactors): number {
   const riskPenalty =
     factors.churnRisk + factors.supportBurden + factors.paymentIssues;
 
-  return Math.max(
-    0,
-    Math.min(
-      100,
-      strategicScore * 0.35 +
-        financialScore * 0.25 +
-        marketScore * 0.15 +
-        riskPenalty
-    )
-  );
+  // The final score is a weighted sum, but the AI determines the precise weights
+  // for each factor based on the provided data and strategic framework.
+  const finalScore =
+    strategicScore * 0.4 +
+    financialScore * 0.3 +
+    marketScore * 0.2 +
+    riskPenalty;
+
+  return Math.max(0, Math.min(100, finalScore));
 }
 ```
-
-### Advanced Pipeline Valuation Model
-
-Traditional pipeline calculations use simple formulas like `Pipeline Value = Number of deals × Average deal size`. Our system implements a sophisticated weighted model that accounts for varying conversion probabilities and customer lifetime value potential:
-
-**Account Pipeline Valuation:**
-
-```typescript
-// Weighted pipeline value calculation
-const accountPipelineValue = accounts.reduce((total, account) => {
-  const projectedAnnualValue = calculateProjectedARPU(account);
-  const stageConversionRate = getStageConversionRate(account.stage);
-  const scoringMultiplier = getScoreMultiplier(account.leadScore);
-
-  return total + projectedAnnualValue * stageConversionRate * scoringMultiplier;
-}, 0);
-```
-
-**Dynamic Conversion Probabilities by Stage:**
-
-| Pipeline Stage               | Base Conversion Rate | Score-Based Multiplier | Weighted Value Formula                   |
-| ---------------------------- | -------------------- | ---------------------- | ---------------------------------------- |
-| **Marketing Qualified Lead** | 25%                  | 0.5 - 1.5x             | Estimated ARPU × 0.25 × Score Multiplier |
-| **Sales Qualified Lead**     | 45%                  | 0.7 - 1.8x             | Estimated ARPU × 0.45 × Score Multiplier |
-| **Technical Evaluation**     | 65%                  | 0.8 - 2.0x             | Estimated ARPU × 0.65 × Score Multiplier |
-| **Commercial Negotiation**   | 80%                  | 0.9 - 2.2x             | Estimated ARPU × 0.80 × Score Multiplier |
-| **Contract Pending**         | 95%                  | 0.95 - 1.1x            | Estimated ARPU × 0.95 × Score Multiplier |
 
 ### Real-Time Score Updates & Event-Driven Architecture
 
-The scoring system operates on an event-driven architecture, automatically recalculating scores when significant business events occur:
+The scoring system operates on an event-driven architecture. When a new company is added or significant new information is discovered through enrichment, the `scoreLead` action is automatically triggered.
 
 ```typescript
-// Event-driven scoring updates
-interface ScoringEvent {
-  type:
-    | "api_integration"
-    | "large_transaction"
-    | "feature_adoption"
-    | "support_ticket";
-  accountId: string;
-  metadata: Record<string, any>;
-  timestamp: number;
-}
+// The core `scoreLead` action in `convex/scoring.ts`
+export const scoreLead = internalAction({
+  args: { companyId: v.id("companies") },
+  handler: async (ctx, args) => {
+    // 1. Check the circuit breaker to ensure API health
+    if (anthropicCircuitBreaker.isOpen()) {
+      throw new Error("Circuit breaker is open.");
+    }
 
-async function handleScoringEvent(event: ScoringEvent) {
-  // Fetch current account data
-  const account = await getAccountData(event.accountId);
-  const historicalData = await getAccountHistory(event.accountId);
+    // 2. Gather all raw enrichment data for the company
+    const enrichmentData = await ctx.runQuery(
+      internal.scoring.getEnrichmentData,
+      { companyId: args.companyId }
+    );
 
-  // Recalculate score using updated data
-  const newScore = await calculateLeadScore({
-    ...account,
-    ...processEventData(event, historicalData),
-  });
+    // 3. Prepare the structured data and strategic prompt for the AI
+    const combinedData = await prepareDataForAI(enrichmentData);
 
-  // Update score and trigger downstream actions
-  await updateAccountScore(event.accountId, newScore);
-  await triggerPipelineRevaluation(event.accountId);
-  await notifyAccountManager(event.accountId, newScore);
-}
+    // 4. Call the Anthropic API to get the score and analysis
+    const scoringResult = await callAnthropicForScoring(combinedData);
+
+    // 5. Save the structured JSON response to the database
+    await ctx.runMutation(internal.scoring.saveScore, {
+      companyId: args.companyId,
+      ...scoringResult,
+    });
+  },
+});
 ```
 
-### Predictive Analytics & Expansion Revenue Forecasting
+### Business Impact
 
-The system extends beyond initial conversion to predict expansion revenue opportunities:
+This AI-powered scoring system transforms Personal Project Radar from a simple lead tracking tool into a revenue intelligence platform. It enables data-driven decision-making by:
 
-**Expansion Indicators:**
+- **Prioritizing Efforts:** Sales and marketing can focus on leads that the AI has identified as having the highest strategic value.
+- **Providing Deeper Insights:** The AI's rationale gives teams a clear understanding of _why_ a lead is valuable, enabling more tailored outreach.
+- **Ensuring Consistency:** The system provides a consistent and unbiased evaluation for every lead, removing subjective guesswork from the qualification process.
 
-- **Usage Growth Patterns:** Tracking API call volume, feature adoption velocity, and user seat expansion
-- **Integration Depth:** Monitoring how deeply the platform becomes embedded in customer workflows
-- **Support Interaction Quality:** Analyzing support tickets for expansion opportunities vs. churn risks
-- **Competitive Displacement:** Identifying accounts likely to consolidate vendors or expand use cases
-
-**Churn Prediction & Prevention:**
-
-- **Early Warning Signals:** Declining usage patterns, reduced API calls, support escalations
-- **Risk Scoring:** Separate algorithm identifying accounts at risk of churning within 90 days
-- **Proactive Intervention:** Automated alerts to customer success teams with recommended actions
-
-### Business Impact & ROI
-
-This sophisticated scoring system delivers measurable business outcomes:
-
-**Sales Efficiency Improvements:**
-
-- **35% increase in conversion rates** through better lead prioritization
-- **50% reduction in sales cycle length** by focusing on high-intent prospects
-- **25% improvement in average deal size** through better qualification and targeting
-
-**Revenue Forecasting Accuracy:**
-
-- **90%+ accuracy** in quarterly revenue predictions vs. 65% with traditional methods
-- **Real-time pipeline adjustments** based on score changes and behavioral signals
-- **Predictive expansion revenue** identification 6+ months in advance
-
-**Customer Success Optimization:**
-
-- **Proactive churn prevention** with 85% success rate when intervention occurs within 30 days of risk detection
-- **Expansion revenue growth** of 40% through systematic upselling to high-scoring accounts
-- **Customer lifetime value optimization** through strategic account management prioritization
-
-This AI-powered scoring system transforms Personal Project Radar from a simple lead tracking tool into a comprehensive revenue intelligence platform, enabling data-driven decision making across sales, marketing, and customer success functions.
+By embedding a sophisticated analytical framework directly into an AI prompt, the system achieves a high level of intelligence without the need to build and maintain complex, rigid scoring algorithms in the application code itself.

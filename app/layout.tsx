@@ -10,26 +10,26 @@ const figtree = Figtree({
 });
 
 export const metadata: Metadata = {
-  title: "Personal Project Radar",
-  description: "Personal Project Radar powered researchers analyze faster. Advanced research and insights platform for modern business intelligence. Join thousands of researchers for deeper market insights.",
+  title: "Nivoda Lead Researcher Dashboard",
+  description: "Advanced diamond and jewelry industry research platform. Comprehensive market intelligence, competitor analysis, and business insights for Nivoda's lead researchers and strategic teams.",
   openGraph: {
-    title: 'Personal Project Radar',
-    description: 'Personal Project Radar powered researchers analyze faster. Advanced research and insights platform for modern business intelligence.',
+    title: 'Nivoda Lead Researcher Dashboard',
+    description: 'Advanced diamond and jewelry industry research platform. Comprehensive market intelligence and competitor analysis for strategic decision making.',
     url: 'https://personal-project-radar.vercel.app',
-    siteName: 'Personal Project Radar',
+    siteName: 'Nivoda Lead Researcher Dashboard',
     images: [{
       url: 'https://gb4pqrhxyr1ffqke.public.blob.vercel-storage.com/personalproject_og_image.png',
       width: 3840,
       height: 2500,
-      alt: 'Personal Project Radar',
+      alt: 'Nivoda Lead Researcher Dashboard',
     }],
     locale: 'en_US',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Personal Project Radar',
-    description: 'Personal Project Radar powered researchers analyze faster. Advanced research and insights platform.',
+    title: 'Nivoda Lead Researcher Dashboard',
+    description: 'Advanced diamond and jewelry industry research platform for strategic market intelligence.',
     images: ['https://gb4pqrhxyr1ffqke.public.blob.vercel-storage.com/personalproject_og_image.png'],
   },
   metadataBase: new URL('https://personal-project-radar.vercel.app'),

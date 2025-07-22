@@ -11,7 +11,7 @@ export default function Dashboard() {
   return (
     <div className="grid grid-rows-3 gap-6 h-[calc(100vh-9rem)]">
       {/* Chart Widget - takes exactly 1/3 of available height (same as each row in 3x2 grid) */}
-      <div className="h-full">
+      <div className="h-full opacity-0 scale-95 animate-fade-up [animation-delay:200ms]">
         <NoSSR fallback={
           <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
             <div className="p-6 h-full flex flex-col gap-4">
@@ -29,7 +29,7 @@ export default function Dashboard() {
       <div className="row-span-2 h-full">
         <div className="grid grid-cols-2 grid-rows-3 md:grid-cols-3 md:grid-rows-2 gap-6 h-full">
           {/* Widget 2: New Leads Discovered Today */}
-          <div className="h-full">
+          <div className="h-full opacity-0 scale-95 animate-fade-up [animation-delay:400ms]">
             <NoSSR fallback={
               <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
                 <div className="p-6 h-full flex flex-col gap-4">
@@ -43,7 +43,7 @@ export default function Dashboard() {
             </NoSSR>
           </div>
           {/* Widget 3: High-Priority Leads (Score ≥ 80) */}
-          <div className="h-full">
+          <div className="h-full opacity-0 scale-95 animate-fade-up [animation-delay:600ms]">
             <NoSSR fallback={
               <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
                 <div className="p-6 h-full flex flex-col gap-4">
@@ -57,7 +57,7 @@ export default function Dashboard() {
             </NoSSR>
           </div>
           {/* Widget 4: Average Lead Score */}
-          <div className="h-full">
+          <div className="h-full opacity-0 scale-95 animate-fade-up [animation-delay:800ms]">
             <NoSSR fallback={
               <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
                 <div className="p-6 h-full flex flex-col gap-4">
@@ -71,7 +71,7 @@ export default function Dashboard() {
             </NoSSR>
           </div>
           {/* Widget 5: Score Distribution (Low/Mid/High) */}
-          <div className="h-full">
+          <div className="h-full opacity-0 scale-95 animate-fade-up [animation-delay:1000ms]">
             <NoSSR fallback={
               <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
                 <div className="p-6 h-full flex flex-col gap-4">
@@ -85,7 +85,7 @@ export default function Dashboard() {
             </NoSSR>
           </div>
           {/* Widget 6: ARPU Forecast (rolling 30d) */}
-          <div className="h-full">
+          <div className="h-full opacity-0 scale-95 animate-fade-up [animation-delay:1200ms]">
             <NoSSR fallback={
               <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
                 <div className="p-6 h-full flex flex-col gap-4">
@@ -99,7 +99,7 @@ export default function Dashboard() {
             </NoSSR>
           </div>
           {/* Widget 7: Relevant News Alerts (24h) */}
-          <div className="h-full">
+          <div className="h-full opacity-0 scale-95 animate-fade-up [animation-delay:1400ms]">
             <NoSSR fallback={
               <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
                 <div className="p-6 h-full flex flex-col gap-4">

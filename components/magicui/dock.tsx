@@ -112,7 +112,7 @@ const AutoHideDock = React.forwardRef<HTMLDivElement, AutoHideDockProps>(
     },
     ref,
   ) => {
-    const [isVisible, setIsVisible] = useState(showOnLoad);
+    const [isVisible, setIsVisible] = useState(false); // Always start hidden, show via timeout
     const [isHovered, setIsHovered] = useState(false);
     const [hasInitiallyShown, setHasInitiallyShown] = useState(!showOnLoad);
     const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -120,14 +120,22 @@ const AutoHideDock = React.forwardRef<HTMLDivElement, AutoHideDockProps>(
     // Handle initial show timeout
     useEffect(() => {
       if (showOnLoad && !hasInitiallyShown) {
-        const initialTimeout = setTimeout(() => {
+        // Delay the initial show to happen after dashboard widgets finish animating
+        const showTimeout = setTimeout(() => {
+          setIsVisible(true);
+        }, 2000); // Show after last widget (1400ms) + animation duration (~600ms)
+
+        const hideTimeout = setTimeout(() => {
           if (!isHovered) {
             setIsVisible(false);
           }
           setHasInitiallyShown(true);
-        }, initialShowDuration);
+        }, 2000 + initialShowDuration);
 
-        return () => clearTimeout(initialTimeout);
+        return () => {
+          clearTimeout(showTimeout);
+          clearTimeout(hideTimeout);
+        };
       }
     }, [showOnLoad, hasInitiallyShown, isHovered, initialShowDuration]);
 

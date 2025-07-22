@@ -64,7 +64,14 @@ export function ChartBarStacked() {
               axisLine={false}
               tickFormatter={(value) => value.slice(0, 3)}
             />
-            <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+            <ChartTooltip content={({ active, payload, label }) => {
+              if (active && payload && payload.length) {
+                // Reverse the order: High -> Mid -> Low
+                const reversedPayload = [...payload].reverse();
+                return <ChartTooltipContent hideLabel active={active} payload={reversedPayload} label={label} />;
+              }
+              return <ChartTooltipContent hideLabel />;
+            }} />
             <ChartLegend content={<ChartLegendContent />} />
             <Bar
               dataKey="desktop"

@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { LoadingDisplay, ErrorDisplay } from "@/components/ui/error-boundary";
 import { useState } from "react";
 import { Search, Plus, TrendingUp, Users, CheckCircle, AlertCircle, Clock } from "lucide-react";
-import { toast } from "sonner";
 
 export function Phase6TestDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,7 +19,8 @@ export function Phase6TestDashboard() {
   // Test search functionality
   const handleTestSearch = async () => {
     if (!searchTerm.trim() || !website.trim()) {
-      toast.error("Please enter both company name and website");
+      // toast.error("Please enter both company name and website"); // TEMPORARILY REMOVED
+      console.log("Please enter both company name and website");
       return;
     }
 
@@ -33,9 +33,11 @@ export function Phase6TestDashboard() {
       });
 
       if (result.isNew) {
-        toast.success(`🎉 ${searchTerm} added to Lead Radar! Enrichment in progress...`);
+        // toast.success(`🎉 ${searchTerm} added to Lead Radar! Enrichment in progress...`); // TEMPORARILY REMOVED
+        console.log(`🎉 ${searchTerm} added to Lead Radar! Enrichment in progress...`);
       } else {
-        toast.info(`${searchTerm} is already in your Lead Radar`);
+        // toast.info(`${searchTerm} is already in your Lead Radar`); // TEMPORARILY REMOVED
+        console.log(`${searchTerm} is already in your Lead Radar`);
       }
 
       // Clear form
@@ -44,7 +46,8 @@ export function Phase6TestDashboard() {
       
     } catch (error) {
       console.error("Search test failed:", error);
-      toast.error(`Failed to add ${searchTerm}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      // toast.error(`Failed to add ${searchTerm}: ${error instanceof Error ? error.message : 'Unknown error'}`); // TEMPORARILY REMOVED
+      console.error(`Failed to add ${searchTerm}: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsSearching(false);
     }

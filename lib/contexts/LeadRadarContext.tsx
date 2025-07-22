@@ -71,15 +71,7 @@ export function LeadRadarProvider({ children }: { children: ReactNode }) {
         companyName: newLead.companyName 
       });
       
-      toast.success(
-        <div className="flex items-center gap-2">
-          <span>Added {newLead.companyName} to lead radar</span>
-        </div>,
-        {
-          duration: 3000,
-          position: "top-center",
-        }
-      );
+      toast.success(`Added ${newLead.companyName} to lead radar`);
     } catch (error) {
       toast.error(`Failed to add ${newLead.companyName}: ${error}`);
     }
@@ -95,15 +87,9 @@ export function LeadRadarProvider({ children }: { children: ReactNode }) {
       if (!lead) return;
 
       const result = await deleteLeadMutation({ companyId: id as any });
-      toast.success(`Removed ${result.companyName} from lead radar`, {
-        position: "top-center",
-        duration: 3000,
-      });
+      toast.success(`Removed ${result.companyName} from lead radar`);
     } catch (error) {
-      toast.error(`Failed to remove lead: ${error}`, {
-        position: "top-center",
-        duration: 3000,
-      });
+      toast.error(`Failed to remove lead: ${error}`);
     }
   };
 
@@ -113,15 +99,9 @@ export function LeadRadarProvider({ children }: { children: ReactNode }) {
       if (companyIds.length === 0) return;
 
       const result = await bulkDeleteMutation({ companyIds });
-      toast.success(`Removed ${result.successful} leads from radar`, {
-        position: "top-center",
-        duration: 3000,
-      });
+      toast.success(`Removed ${result.successful} leads from radar`);
     } catch (error) {
-      toast.error(`Failed to clear leads: ${error}`, {
-        position: "top-center",
-        duration: 3000,
-      });
+      toast.error(`Failed to clear leads: ${error}`);
     }
   };
 
@@ -134,15 +114,9 @@ export function LeadRadarProvider({ children }: { children: ReactNode }) {
       });
       
       const lead = leads.find(l => l.id === id);
-      toast.success(`Updated ${lead?.companyName} status to ${status}`, {
-        position: "top-center",
-        duration: 2000,
-      });
+      toast.success(`Updated ${lead?.companyName} status to ${status}`);
     } catch (error) {
-      toast.error(`Failed to update status: ${error}`, {
-        position: "top-center",
-        duration: 3000,
-      });
+      toast.error(`Failed to update status: ${error}`);
     }
   };
 

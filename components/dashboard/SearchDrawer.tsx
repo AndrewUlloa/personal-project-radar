@@ -16,7 +16,6 @@ import {
 import { buttonVariants } from "@/components/ui/button";
 import { useAction, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { toast } from "sonner";
 
 interface SearchDrawerProps {
   isDarkMode: boolean;
@@ -99,7 +98,8 @@ export default function SearchDrawer({ isDarkMode, children, onOpenChange }: Sea
   // Handle adding company to Lead Radar
   const handleAddCompany = async () => {
     if (!companyName.trim() || !website.trim()) {
-      toast.error("Please enter both company name and website");
+      // toast.error("Please enter both company name and website"); // TEMPORARILY REMOVED
+      console.log("Please enter both company name and website");
       return;
     }
 
@@ -112,9 +112,11 @@ export default function SearchDrawer({ isDarkMode, children, onOpenChange }: Sea
       });
 
       if (result.isNew) {
-        toast.success(`🎉 ${companyName} added to Lead Radar! Enrichment in progress...`);
+        // toast.success(`🎉 ${companyName} added to Lead Radar! Enrichment in progress...`); // TEMPORARILY REMOVED
+        console.log(`🎉 ${companyName} added to Lead Radar! Enrichment in progress...`);
       } else {
-        toast.info(`${companyName} is already in your Lead Radar`);
+        // toast.info(`${companyName} is already in your Lead Radar`); // TEMPORARILY REMOVED
+        console.log(`${companyName} is already in your Lead Radar`);
       }
 
       // Clear form and close drawer
@@ -126,7 +128,8 @@ export default function SearchDrawer({ isDarkMode, children, onOpenChange }: Sea
       
     } catch (error) {
       console.error("Failed to add company:", error);
-      toast.error(`Failed to add ${companyName}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      // toast.error(`Failed to add ${companyName}: ${error instanceof Error ? error.message : 'Unknown error'}`); // TEMPORARILY REMOVED
+      console.error(`Failed to add ${companyName}: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsSubmitting(false);
     }

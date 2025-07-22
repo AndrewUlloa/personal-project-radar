@@ -4,7 +4,6 @@
 import { useState, FormEvent } from "react";
 import { useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { toast } from "sonner";
 import LinkedInDisplay from "./linkedin/LinkedinDisplay";
 import CompetitorsDisplay from "./competitors/CompetitorsDisplay";
 import NewsDisplay from "./news/NewsDisplay";
@@ -746,13 +745,15 @@ export default function CompanyResearcher() {
   // Add to Lead Radar functionality
   const handleAddToRadar = async () => {
     if (!companyUrl.trim()) {
-      toast.error("Please enter a company URL first");
+      // toast.error("Please enter a company URL first"); // TEMPORARILY REMOVED
+      console.log("Please enter a company URL first");
       return;
     }
 
     const domain = extractDomain(companyUrl);
     if (!domain) {
-      toast.error("Please enter a valid company URL");
+      // toast.error("Please enter a valid company URL"); // TEMPORARILY REMOVED
+      console.log("Please enter a valid company URL");
       return;
     }
 
@@ -776,14 +777,17 @@ export default function CompanyResearcher() {
       });
 
       if (result.isNew) {
-        toast.success(`🎉 ${companyName} added to Lead Radar! Enrichment in progress...`);
+        // toast.success(`🎉 ${companyName} added to Lead Radar! Enrichment in progress...`); // TEMPORARILY REMOVED
+        console.log(`🎉 ${companyName} added to Lead Radar! Enrichment in progress...`);
       } else {
-        toast.info(`${companyName} is already in your Lead Radar`);
+        // toast.info(`${companyName} is already in your Lead Radar`); // TEMPORARILY REMOVED
+        console.log(`${companyName} is already in your Lead Radar`);
       }
 
     } catch (error) {
       console.error("Failed to add company to radar:", error);
-      toast.error(`Failed to add ${companyName}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      // toast.error(`Failed to add ${companyName}: ${error instanceof Error ? error.message : 'Unknown error'}`); // TEMPORARILY REMOVED
+      console.error(`Failed to add ${companyName}: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsAddingToRadar(false);
     }

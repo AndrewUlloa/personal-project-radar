@@ -551,23 +551,30 @@ function extractEmployeeSizeFromText(text: string): { range: string; midpoint: n
         return { range: `${min}-${max}`, midpoint };
       } else if (type === 'minimum') {
         const min = parseInt(match[1]);
-        // Estimate range based on minimum
+        // Estimate range based on minimum - with realistic enterprise midpoints
         if (min < 10) return { range: '1-10', midpoint: 5 };
         if (min < 50) return { range: '11-50', midpoint: 30 };
         if (min < 200) return { range: '51-200', midpoint: 125 };
-        if (min < 1000) return { range: '201-1K', midpoint: 600 };
-        return { range: '1K+', midpoint: 1500 };
+        if (min < 500) return { range: '201-500', midpoint: 350 };
+        if (min < 1000) return { range: '501-1K', midpoint: 750 };
+        if (min < 2500) return { range: '1K-2.5K', midpoint: 1750 };
+        if (min < 5000) return { range: '2.5K-5K', midpoint: 3750 };
+        if (min < 10000) return { range: '5K-10K', midpoint: 7500 };
+        if (min < 25000) return { range: '10K-25K', midpoint: 17500 };
+        if (min < 50000) return { range: '25K-50K', midpoint: 37500 };
+        return { range: '50K+', midpoint: min * 1.5 }; // Use 1.5x the minimum as estimate
       }
     }
   }
 
-  // Check for company size keywords
+  // Check for company size keywords - updated with realistic midpoints
   const sizeKeywords = {
     'startup': { range: '1-10', midpoint: 5 },
     'small business': { range: '1-50', midpoint: 25 },
-    'mid-size': { range: '51-200', midpoint: 125 },
-    'enterprise': { range: '201-1K', midpoint: 600 },
-    'large corporation': { range: '1K+', midpoint: 1500 },
+    'mid-size': { range: '51-500', midpoint: 275 },
+    'enterprise': { range: '501-5K', midpoint: 2750 },
+    'large corporation': { range: '5K-25K', midpoint: 15000 },
+    'multinational': { range: '25K+', midpoint: 50000 },
   };
 
   const lowercaseText = text.toLowerCase();

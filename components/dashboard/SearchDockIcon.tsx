@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useEffect } from "react";
-import { Search } from "lucide-react";
+import { Telescope } from "lucide-react";
 import { toast } from "sonner";
 import CompanyResearcher from "../CompanyResearchHome";
 import { DockIcon } from "@/components/magicui/dock";
@@ -27,10 +27,20 @@ interface SearchDockIconProps {
   onOpenChange?: (open: boolean) => void;
   shouldOpen?: boolean;
   isKeyboardTriggered?: boolean;
+  forceCloseSignal?: number; // New prop to trigger external close
 }
 
-export default function SearchDockIcon({ isDarkMode, onOpenChange, shouldOpen, isKeyboardTriggered = false }: SearchDockIconProps) {
+export default function SearchDockIcon({ isDarkMode, onOpenChange, shouldOpen, isKeyboardTriggered = false, forceCloseSignal }: SearchDockIconProps) {
   const [open, setOpen] = React.useState(shouldOpen ?? false);
+
+  // Close drawer if forceCloseSignal changes
+  React.useEffect(() => {
+    if (open) {
+      setOpen(false);
+      onOpenChange?.(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [forceCloseSignal]);
 
   useEffect(() => {
     if (open) {
@@ -130,7 +140,7 @@ export default function SearchDockIcon({ isDarkMode, onOpenChange, shouldOpen, i
                 className="cursor-pointer"
                 onClick={() => handleOpenChange(true, true)}
               >
-                <Search className={`h-6 w-6 transition-colors duration-300 ${
+                <Telescope className={`h-6 w-6 transition-colors duration-300 ${
                   isDarkMode ? "text-white" : "text-gray-700"
                 }`} />
               </DockIcon>

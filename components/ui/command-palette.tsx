@@ -1,7 +1,9 @@
 "use client";
 
+import * as React from "react";
 import { Command } from "cmdk";
 import { Search, Home, User, Settings, Sun, Moon, X } from "lucide-react";
+import { BookmarkCheckIcon } from "@/components/ui/icons";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef } from "react";
@@ -11,34 +13,155 @@ interface CommandPaletteProps {
   onClose: () => void;
   isDarkMode: boolean;
   onToggleTheme: () => void;
+  onOpenSearch?: () => void;
+  onOpenLeadRadar?: () => void;
+  onCloseAllDrawers?: () => void;
 }
 
-export function CommandPalette({ isOpen, onClose, isDarkMode, onToggleTheme }: CommandPaletteProps) {
+export function CommandPalette({ 
+  isOpen, 
+  onClose, 
+  isDarkMode, 
+  onToggleTheme, 
+  onOpenSearch,
+  onOpenLeadRadar,
+  onCloseAllDrawers 
+}: CommandPaletteProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const gPressedRef = useRef(false);
 
   // Handle keyboard events when command palette is open
   useEffect(() => {
     if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Handle Cmd+K to close command palette
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         e.stopPropagation();
         onClose();
+        return;
+      }
+      
+      // Handle Escape to close command palette
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        onClose();
+        gPressedRef.current = false;
+        return;
+      }
+
+      // Handle G key combinations within command palette
+      if (e.key.toLowerCase() === 'g' && !gPressedRef.current) {
+        e.preventDefault();
+        e.stopPropagation();
+        gPressedRef.current = true;
+        // Reset G key after 2 seconds
+        setTimeout(() => {
+          gPressedRef.current = false;
+        }, 2000);
+        return;
+      }
+
+      // G + [key] combinations
+      if (gPressedRef.current) {
+        e.preventDefault();
+        e.stopPropagation();
+        gPressedRef.current = false;
+        
+        switch (e.key.toLowerCase()) {
+          case 'h':
+            // Close all overlays including command palette
+            onCloseAllDrawers?.();
+            onClose();
+            break;
+          case 's':
+            // Open Search
+            handleSearchCommand();
+            break;
+          case 'w':
+            // Open Lead Radar
+            handleLeadRadarCommand();
+            break;
+          case ';':
+            // Settings - for now just close palette
+            onClose();
+            console.log('Open Settings');
+            break;
+          case 't':
+            // Toggle theme
+            onToggleTheme();
+            onClose();
+            break;
+        }
+        return;
+      }
+      
+      // Block dock shortcuts when command palette is open to prevent interference
+      const isDockShortcut = (
+        e.key.toLowerCase() === 'g' ||
+        (e.key.toLowerCase() === 's' && !e.metaKey && !e.ctrlKey) ||
+        (e.key.toLowerCase() === 'w' && !e.metaKey && !e.ctrlKey) ||
+        (e.key.toLowerCase() === 'h' && !e.metaKey && !e.ctrlKey) ||
+        (e.key.toLowerCase() === 'u' && !e.metaKey && !e.ctrlKey) ||
+        (e.key.toLowerCase() === 't' && !e.metaKey && !e.ctrlKey) ||
+        (e.key === ';' && !e.metaKey && !e.ctrlKey)
+      );
+      
+      if (isDockShortcut) {
+        e.stopPropagation();
+        // Don't prevent default to allow normal typing in input
       }
     };
 
+    // Use capture phase to intercept events before they reach dashboard layout
     document.addEventListener('keydown', handleKeyDown, true);
     return () => document.removeEventListener('keydown', handleKeyDown, true);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, onToggleTheme, onCloseAllDrawers]);
 
   // Auto-focus the input when the command palette opens
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      // Focus immediately when modal opens
-      inputRef.current.focus();
+    if (isOpen) {
+      if (inputRef.current) {
+        // Focus immediately when modal opens
+        inputRef.current.focus();
+      }
     }
   }, [isOpen]);
+
+  const handleSearchCommand = () => {
+    // Close any open drawers first
+    onCloseAllDrawers?.();
+    // Delay to ensure smooth ease-out transition completes before opening new drawer
+    setTimeout(() => {
+      onOpenSearch?.();
+    }, 150);
+    onClose();
+  };
+
+  const handleLeadRadarCommand = () => {
+    // Close any open drawers first
+    onCloseAllDrawers?.();
+    // Delay to ensure smooth ease-out transition completes before opening new drawer
+    setTimeout(() => {
+      onOpenLeadRadar?.();
+    }, 150);
+    onClose();
+  };
+
+  const handleHomeCommand = () => {
+    // Close all drawers and command palette
+    onCloseAllDrawers?.();
+    onClose();
+  };
+
+  const handleSettingsCommand = () => {
+    // For now just close the palette, in future could add routing
+    onClose();
+    console.log('Open Settings');
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -49,14 +172,22 @@ export function CommandPalette({ isOpen, onClose, isDarkMode, onToggleTheme }: C
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
-            style={{ willChange: 'opacity' }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+            style={{ 
+              willChange: 'opacity', 
+              zIndex: 200000002,
+              pointerEvents: 'auto'
+            }}
             onClick={onClose}
           />
 
           {/* Command Palette */}
           <div 
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 flex items-center justify-center p-4"
+            style={{ 
+              zIndex: 200000003,
+              pointerEvents: 'auto'
+            }}
             onClick={onClose}
           >
             <motion.div
@@ -74,7 +205,13 @@ export function CommandPalette({ isOpen, onClose, isDarkMode, onToggleTheme }: C
                   ? "bg-black/20 border-white/10" 
                   : "bg-white/80 border-gray-200/50"
               )}
+              style={{ pointerEvents: 'auto' }}
               onClick={(e) => e.stopPropagation()}
+              shouldFilter={true}
+              filter={(value, search, keywords) => {
+                const extendValue = value + " " + (keywords?.join(" ") || "");
+                return extendValue.toLowerCase().includes(search.toLowerCase()) ? 1 : 0;
+              }}
             >
               {/* Search Input */}
               <div className="flex items-center border-b border-gray-200/20 px-4">
@@ -114,40 +251,158 @@ export function CommandPalette({ isOpen, onClose, isDarkMode, onToggleTheme }: C
                 </Command.Empty>
 
                 <Command.Group 
+                  heading="Quick Actions" 
+                  className={cn(
+                    "mb-2 px-2 py-1.5 text-xs font-medium",
+                    isDarkMode ? "text-gray-400" : "text-gray-600"
+                  )}
+                >
+                  <Command.Item 
+                    keywords={["search", "find", "discover", "research", "company"]}
+                    onSelect={handleSearchCommand}
+                    className={cn(
+                      "flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
+                      isDarkMode 
+                        ? "hover:bg-white/10 text-gray-200 data-[selected=true]:bg-white/10" 
+                        : "hover:bg-gray-100/80 text-gray-800 data-[selected=true]:bg-gray-100/80"
+                    )}
+                  >
+                    <Search className="h-4 w-4" />
+                    <span>Open Search</span>
+                    <div className="ml-auto flex items-center gap-1">
+                      <kbd className={cn(
+                        "px-1.5 py-0.5 text-xs font-mono rounded border",
+                        isDarkMode 
+                          ? "bg-gray-800 border-gray-600 text-gray-300" 
+                          : "bg-gray-100 border-gray-300 text-gray-600"
+                      )}>
+                        G
+                      </kbd>
+                      <span className={cn("text-xs", isDarkMode ? "text-gray-400" : "text-gray-500")}>
+                        then
+                      </span>
+                      <kbd className={cn(
+                        "px-1.5 py-0.5 text-xs font-mono rounded border",
+                        isDarkMode 
+                          ? "bg-gray-800 border-gray-600 text-gray-300" 
+                          : "bg-gray-100 border-gray-300 text-gray-600"
+                      )}>
+                        S
+                      </kbd>
+                    </div>
+                  </Command.Item>
+
+                  <Command.Item 
+                    keywords={["lead", "radar", "leads", "pipeline", "tracking", "watch", "watcher"]}
+                    onSelect={handleLeadRadarCommand}
+                    className={cn(
+                      "flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
+                      isDarkMode 
+                        ? "hover:bg-white/10 text-gray-200 data-[selected=true]:bg-white/10" 
+                        : "hover:bg-gray-100/80 text-gray-800 data-[selected=true]:bg-gray-100/80"
+                    )}
+                  >
+                    <BookmarkCheckIcon className="h-4 w-4" />
+                    <span>Open Lead Radar</span>
+                    <div className="ml-auto flex items-center gap-1">
+                      <kbd className={cn(
+                        "px-1.5 py-0.5 text-xs font-mono rounded border",
+                        isDarkMode 
+                          ? "bg-gray-800 border-gray-600 text-gray-300" 
+                          : "bg-gray-100 border-gray-300 text-gray-600"
+                      )}>
+                        G
+                      </kbd>
+                      <span className={cn("text-xs", isDarkMode ? "text-gray-400" : "text-gray-500")}>
+                        then
+                      </span>
+                      <kbd className={cn(
+                        "px-1.5 py-0.5 text-xs font-mono rounded border",
+                        isDarkMode 
+                          ? "bg-gray-800 border-gray-600 text-gray-300" 
+                          : "bg-gray-100 border-gray-300 text-gray-600"
+                      )}>
+                        W
+                      </kbd>
+                    </div>
+                  </Command.Item>
+                </Command.Group>
+
+                <Command.Group 
                   heading="Navigation" 
                   className={cn(
                     "mb-2 px-2 py-1.5 text-xs font-medium",
                     isDarkMode ? "text-gray-400" : "text-gray-600"
                   )}
                 >
-                  <Command.Item className={cn(
-                    "flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
-                    isDarkMode 
-                      ? "hover:bg-white/10 text-gray-200" 
-                      : "hover:bg-gray-100/80 text-gray-800"
-                  )}>
+                  <Command.Item 
+                    keywords={["home", "dashboard", "main", "close", "overlays"]}
+                    onSelect={handleHomeCommand}
+                    className={cn(
+                      "flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
+                      isDarkMode 
+                        ? "hover:bg-white/10 text-gray-200 data-[selected=true]:bg-white/10" 
+                        : "hover:bg-gray-100/80 text-gray-800 data-[selected=true]:bg-gray-100/80"
+                    )}
+                  >
                     <Home className="h-4 w-4" />
                     <span>Go to Home</span>
+                    <div className="ml-auto flex items-center gap-1">
+                      <kbd className={cn(
+                        "px-1.5 py-0.5 text-xs font-mono rounded border",
+                        isDarkMode 
+                          ? "bg-gray-800 border-gray-600 text-gray-300" 
+                          : "bg-gray-100 border-gray-300 text-gray-600"
+                      )}>
+                        G
+                      </kbd>
+                      <span className={cn("text-xs", isDarkMode ? "text-gray-400" : "text-gray-500")}>
+                        then
+                      </span>
+                      <kbd className={cn(
+                        "px-1.5 py-0.5 text-xs font-mono rounded border",
+                        isDarkMode 
+                          ? "bg-gray-800 border-gray-600 text-gray-300" 
+                          : "bg-gray-100 border-gray-300 text-gray-600"
+                      )}>
+                        H
+                      </kbd>
+                    </div>
                   </Command.Item>
 
-                  <Command.Item className={cn(
-                    "flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
-                    isDarkMode 
-                      ? "hover:bg-white/10 text-gray-200" 
-                      : "hover:bg-gray-100/80 text-gray-800"
-                  )}>
-                    <User className="h-4 w-4" />
-                    <span>Profile</span>
-                  </Command.Item>
-
-                  <Command.Item className={cn(
-                    "flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
-                    isDarkMode 
-                      ? "hover:bg-white/10 text-gray-200" 
-                      : "hover:bg-gray-100/80 text-gray-800"
-                  )}>
+                  <Command.Item 
+                    keywords={["settings", "preferences", "config", "configuration"]}
+                    onSelect={handleSettingsCommand}
+                    className={cn(
+                      "flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
+                      isDarkMode 
+                        ? "hover:bg-white/10 text-gray-200 data-[selected=true]:bg-white/10" 
+                        : "hover:bg-gray-100/80 text-gray-800 data-[selected=true]:bg-gray-100/80"
+                    )}
+                  >
                     <Settings className="h-4 w-4" />
                     <span>Settings</span>
+                    <div className="ml-auto flex items-center gap-1">
+                      <kbd className={cn(
+                        "px-1.5 py-0.5 text-xs font-mono rounded border",
+                        isDarkMode 
+                          ? "bg-gray-800 border-gray-600 text-gray-300" 
+                          : "bg-gray-100 border-gray-300 text-gray-600"
+                      )}>
+                        G
+                      </kbd>
+                      <span className={cn("text-xs", isDarkMode ? "text-gray-400" : "text-gray-500")}>
+                        then
+                      </span>
+                      <kbd className={cn(
+                        "px-1.5 py-0.5 text-xs font-mono rounded border",
+                        isDarkMode 
+                          ? "bg-gray-800 border-gray-600 text-gray-300" 
+                          : "bg-gray-100 border-gray-300 text-gray-600"
+                      )}>
+                        ;
+                      </kbd>
+                    </div>
                   </Command.Item>
                 </Command.Group>
 
@@ -159,12 +414,16 @@ export function CommandPalette({ isOpen, onClose, isDarkMode, onToggleTheme }: C
                   )}
                 >
                   <Command.Item 
-                    onSelect={onToggleTheme}
+                    keywords={["theme", "dark", "light", "mode", "appearance", "toggle"]}
+                    onSelect={() => {
+                      onToggleTheme();
+                      onClose();
+                    }}
                     className={cn(
                       "flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
                       isDarkMode 
-                        ? "hover:bg-white/10 text-gray-200" 
-                        : "hover:bg-gray-100/80 text-gray-800"
+                        ? "hover:bg-white/10 text-gray-200 data-[selected=true]:bg-white/10" 
+                        : "hover:bg-gray-100/80 text-gray-800 data-[selected=true]:bg-gray-100/80"
                     )}
                   >
                     {isDarkMode ? (
@@ -178,6 +437,27 @@ export function CommandPalette({ isOpen, onClose, isDarkMode, onToggleTheme }: C
                         <span>Switch to Dark Mode</span>
                       </>
                     )}
+                    <div className="ml-auto flex items-center gap-1">
+                      <kbd className={cn(
+                        "px-1.5 py-0.5 text-xs font-mono rounded border",
+                        isDarkMode 
+                          ? "bg-gray-800 border-gray-600 text-gray-300" 
+                          : "bg-gray-100 border-gray-300 text-gray-600"
+                      )}>
+                        G
+                      </kbd>
+                      <span className={cn("text-xs", isDarkMode ? "text-gray-400" : "text-gray-500")}>
+                        then
+                      </span>
+                      <kbd className={cn(
+                        "px-1.5 py-0.5 text-xs font-mono rounded border",
+                        isDarkMode 
+                          ? "bg-gray-800 border-gray-600 text-gray-300" 
+                          : "bg-gray-100 border-gray-300 text-gray-600"
+                      )}>
+                        T
+                      </kbd>
+                    </div>
                   </Command.Item>
                 </Command.Group>
               </Command.List>

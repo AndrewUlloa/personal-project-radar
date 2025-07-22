@@ -8,6 +8,8 @@ import { NoSSR } from "@/components/ui/no-ssr";
 import DashboardFrame from "@/components/dashboard/DashboardFrame";
 import DockTooltip from "@/components/dashboard/DockTooltip";
 import SearchDockIcon from "@/components/dashboard/SearchDockIcon";
+import LeadRadarDockIcon from "@/components/dashboard/LeadRadarDockIcon";
+import { LeadRadarProvider } from "@/lib/contexts/LeadRadarContext";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 
@@ -85,10 +87,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [, setIsClient] = useState(false);
   const [isSearchDrawerOpen, setIsSearchDrawerOpen] = useState(false);
+  const [isLeadRadarDrawerOpen, setIsLeadRadarDrawerOpen] = useState(false);
   // Ref to track if 'g' was pressed for combo shortcuts
   const gPressedRef = useRef(false);
   const [triggerSearch, setTriggerSearch] = useState(false);
+  const [triggerLeadRadar, setTriggerLeadRadar] = useState(false);
+  const [closeDrawersSignal, setCloseDrawersSignal] = useState(0);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const leadRadarTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const toggleTheme = useCallback(() => {
     setIsDarkMode(!isDarkMode);
@@ -100,6 +106,41 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const closeCommandPalette = useCallback(() => {
     setIsCommandPaletteOpen(false);
+  }, []);
+
+  const handleOpenSearch = useCallback(() => {
+    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    setTriggerSearch(true);
+    searchTimeoutRef.current = setTimeout(() => {
+      setTriggerSearch(false);
+      searchTimeoutRef.current = null;
+    }, 100);
+  }, []);
+
+  const handleOpenLeadRadar = useCallback(() => {
+    if (leadRadarTimeoutRef.current) clearTimeout(leadRadarTimeoutRef.current);
+    setTriggerLeadRadar(true);
+    leadRadarTimeoutRef.current = setTimeout(() => {
+      setTriggerLeadRadar(false);
+      leadRadarTimeoutRef.current = null;
+    }, 100);
+  }, []);
+
+  const handleCloseAllDrawers = useCallback(() => {
+    setCloseDrawersSignal(prev => prev + 1); // Signal drawers to close
+    setIsSearchDrawerOpen(false);
+    setIsLeadRadarDrawerOpen(false);
+    // Clear any pending triggers
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+      searchTimeoutRef.current = null;
+    }
+    if (leadRadarTimeoutRef.current) {
+      clearTimeout(leadRadarTimeoutRef.current);
+      leadRadarTimeoutRef.current = null;
+    }
+    setTriggerSearch(false);
+    setTriggerLeadRadar(false);
   }, []);
 
   // Toast helper for dock icon clicks with custom JSX content
@@ -137,12 +178,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const toggleThemeRef = useRef(toggleTheme);
   const setIsCommandPaletteOpenRef = useRef(setIsCommandPaletteOpen);
   const setTriggerSearchRef = useRef(setTriggerSearch);
+  const setTriggerLeadRadarRef = useRef(setTriggerLeadRadar);
+  const handleCloseAllDrawersRef = useRef(handleCloseAllDrawers);
 
   useEffect(() => {
     toggleThemeRef.current = toggleTheme;
     setIsCommandPaletteOpenRef.current = setIsCommandPaletteOpen;
     setTriggerSearchRef.current = setTriggerSearch;
-  }, [toggleTheme, setIsCommandPaletteOpen, setTriggerSearch]);
+    setTriggerLeadRadarRef.current = setTriggerLeadRadar;
+    handleCloseAllDrawersRef.current = handleCloseAllDrawers;
+  }, [toggleTheme, setIsCommandPaletteOpen, setTriggerSearch, setTriggerLeadRadar, handleCloseAllDrawers]);
 
   useEffect(() => {
     // Set client-side flag
@@ -169,6 +214,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         setIsCommandPaletteOpenRef.current(prev => !prev);
+        return;
+      }
+      
+      // Skip all other shortcuts when command palette is open
+      if (isCommandPaletteOpen) {
         return;
       }
       
@@ -205,26 +255,33 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           case 'h':
             // Close overlays (search drawer, command palette, etc.)
             setIsCommandPaletteOpenRef.current(false);
-            setIsSearchDrawerOpen(false);
-            if (searchTimeoutRef.current) {
-              clearTimeout(searchTimeoutRef.current);
-              searchTimeoutRef.current = null;
-            }
-            setTriggerSearchRef.current(false);
+            handleCloseAllDrawersRef.current();
             break;
           case 's':
-            // Trigger search drawer
-            if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
-            setTriggerSearchRef.current(true);
-            searchTimeoutRef.current = setTimeout(() => {
-              setTriggerSearchRef.current(false);
-              searchTimeoutRef.current = null;
-            }, 100);
+            // Close other drawers first, then trigger search drawer with ease-out timing
+            handleCloseAllDrawersRef.current();
+            setTimeout(() => {
+              if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+              setTriggerSearchRef.current(true);
+              searchTimeoutRef.current = setTimeout(() => {
+                setTriggerSearchRef.current(false);
+                searchTimeoutRef.current = null;
+              }, 100);
+            }, 150);
             break;
-          case 'u':
-            // Open profile - could add routing here
-            console.log('Open Profile');
+          case 'w':
+            // Close other drawers first, then trigger lead radar drawer with ease-out timing
+            handleCloseAllDrawersRef.current();
+            setTimeout(() => {
+              if (leadRadarTimeoutRef.current) clearTimeout(leadRadarTimeoutRef.current);
+              setTriggerLeadRadarRef.current(true);
+              leadRadarTimeoutRef.current = setTimeout(() => {
+                setTriggerLeadRadarRef.current(false);
+                leadRadarTimeoutRef.current = null;
+              }, 100);
+            }, 150);
             break;
+
           case ';':
             // Open settings - could add routing here
             console.log('Open Settings');
@@ -239,10 +296,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [isCommandPaletteOpen]);
 
   return (
-    <>
+    <LeadRadarProvider>
       <style dangerouslySetInnerHTML={{ __html: lightThemeStyle }} />
       
       {/* Prevent Dark Reader */}
@@ -254,6 +311,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         onClose={closeCommandPalette}
         isDarkMode={isDarkMode}
         onToggleTheme={toggleTheme}
+        onOpenSearch={handleOpenSearch}
+        onOpenLeadRadar={handleOpenLeadRadar}
+        onCloseAllDrawers={handleCloseAllDrawers}
       />
       <div 
         className={`h-screen w-screen relative dashboard-container ${
@@ -273,7 +333,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         
         {/* Dock positioned at center bottom */}
         <NoSSR fallback={
-          <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 dock-container opacity-100">
+          <div className="fixed bottom-3 left-1/2 transform -translate-x-1/2 dock-container opacity-100">
             <div className="mx-auto mt-8 flex h-[58px] w-max items-center justify-center gap-2 rounded-2xl border p-2 backdrop-blur-md bg-white/80 border-gray-200/50">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className="flex aspect-square cursor-pointer items-center justify-center rounded-full p-2">
@@ -283,7 +343,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
           </div>
         }>
-          <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 dock-container opacity-100">
+          <div className="fixed bottom-3 left-1/2 transform -translate-x-1/2 dock-container opacity-100">
             <AutoHideDock 
               triggerHeight={128}
               hideDelay={175}
@@ -304,14 +364,25 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <SearchDockIcon 
               isDarkMode={isDarkMode}
               onOpenChange={setIsSearchDrawerOpen}
+              forceCloseSignal={closeDrawersSignal}
               isKeyboardTriggered={false}
             />
-            <DockTooltip content="Profile" shortcut="G then U">
+            <LeadRadarDockIcon 
+              isDarkMode={isDarkMode}
+              onOpenChange={setIsLeadRadarDrawerOpen}
+              forceCloseSignal={closeDrawersSignal}
+              isKeyboardTriggered={false}
+            />
+
+            <DockTooltip content="Command Palette" shortcut="⌘K">
               <DockIcon 
-                onClick={() => showKeyboardShortcutToast("to go to Profile", ["G", "U"])}
+                onClick={() => {
+                  openCommandPalette();
+                  showKeyboardShortcutToast("to use Command Palette", ["⌘K"]);
+                }} 
                 className="cursor-pointer"
               >
-                <User className={`h-6 w-6 transition-colors duration-300 ${
+                <Command className={`h-6 w-6 transition-colors duration-300 ${
                   isDarkMode ? "text-white" : "text-gray-700"
                 }`} />
               </DockIcon>
@@ -322,19 +393,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 className="cursor-pointer"
               >
                 <Settings className={`h-6 w-6 transition-colors duration-300 ${
-                  isDarkMode ? "text-white" : "text-gray-700"
-                }`} />
-              </DockIcon>
-            </DockTooltip>
-            <DockTooltip content="Command Palette" shortcut="⌘K">
-              <DockIcon 
-                onClick={() => {
-                  openCommandPalette();
-                  showKeyboardShortcutToast("to use Command Palette", ["⌘K"]);
-                }} 
-                className="cursor-pointer"
-              >
-                <Command className={`h-6 w-6 transition-colors duration-300 ${
                   isDarkMode ? "text-white" : "text-gray-700"
                 }`} />
               </DockIcon>
@@ -364,11 +422,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             isDarkMode={isDarkMode}
             onOpenChange={setIsSearchDrawerOpen}
             shouldOpen={triggerSearch}
+            forceCloseSignal={closeDrawersSignal}
+            isKeyboardTriggered={true}
+          />
+          <LeadRadarDockIcon
+            isDarkMode={isDarkMode}
+            onOpenChange={setIsLeadRadarDrawerOpen}
+            shouldOpen={triggerLeadRadar}
+            forceCloseSignal={closeDrawersSignal}
             isKeyboardTriggered={true}
           />
         </div>
-      </div>
-      <Toaster />
-    </>
+              </div>
+        <Toaster offset="12px" />
+    </LeadRadarProvider>
   );
 } 

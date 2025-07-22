@@ -225,7 +225,7 @@ const AutoHideDock = React.forwardRef<HTMLDivElement, AutoHideDockProps>(
         />
         
         {/* Dock container */}
-        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 dock-container">
+        <div className="fixed bottom-3 left-1/2 transform -translate-x-1/2 dock-container">
           <AnimatePresence>
             {isVisible && (
               <motion.div

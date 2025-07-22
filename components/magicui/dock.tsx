@@ -123,14 +123,14 @@ const AutoHideDock = React.forwardRef<HTMLDivElement, AutoHideDockProps>(
         // Delay the initial show to happen after dashboard widgets finish animating
         const showTimeout = setTimeout(() => {
           setIsVisible(true);
-        }, 2000); // Show after last widget (1400ms) + animation duration (~600ms)
+        }, 4400); // Show after last widget (3600ms) + animation duration (~800ms)
 
         const hideTimeout = setTimeout(() => {
           if (!isHovered) {
             setIsVisible(false);
           }
           setHasInitiallyShown(true);
-        }, 2000 + initialShowDuration);
+        }, 4400 + initialShowDuration);
 
         return () => {
           clearTimeout(showTimeout);

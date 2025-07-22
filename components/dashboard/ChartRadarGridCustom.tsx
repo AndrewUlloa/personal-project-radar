@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { ChartConfig, ChartContainer } from "@/components/ui/chart"
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import { LoadingDisplay } from "@/components/ui/error-boundary"
@@ -49,11 +49,11 @@ export function ChartRadarGridCustom() {
           className="w-full h-full"
         >
           <RadarChart data={alertsData?.alerts ?? []} margin={{ top: 20, right: 30, bottom: 20, left: 30 }}>
-            {/* <ChartTooltip
+            <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
-            /> */}
-            <PolarGrid radialLines={false} polarRadius={[70]} strokeWidth={1} />
+            />
+            <PolarGrid radialLines={false} polarRadius={[90]} strokeWidth={1} />
             <PolarAngleAxis dataKey="category" />
             <Radar
               dataKey="value"

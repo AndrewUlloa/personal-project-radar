@@ -192,6 +192,77 @@ export const createInitialCompany = internalMutation({
   },
 });
 
+// Helper function to process news and social media content into structured records
+async function processNewsAndSocialContent(ctx: any, companyId: any, results: Array<{ source: string; data: any }>) {
+  const newsAndSocialSources = ['news', 'twitter', 'reddit', 'tiktok', 'youtube'];
+  
+  for (const result of results) {
+    const { source, data } = result;
+    
+    // Only process news and social media sources
+    if (!newsAndSocialSources.includes(source) || !data) continue;
+    
+    // Handle both array and object data structures
+    const items = Array.isArray(data) ? data : [data];
+    
+    for (const item of items) {
+      if (!item || !item.title) continue; // Skip items without titles
+      
+      try {
+        await ctx.db.insert("news_content", {
+          company_id: companyId,
+          source: source,
+          title: item.title || '',
+          content: item.text || item.content || '',
+          url: item.url || '',
+          author: item.author || '',
+          published_at: item.publishedDate ? new Date(item.publishedDate).getTime() : Date.now(),
+          sentiment: determineSentiment(item.title, item.text || item.content || ''),
+          relevance_score: calculateRelevanceScore(item.title, item.text || item.content || ''),
+        });
+      } catch (error) {
+        console.error(`Failed to insert news content for source ${source}:`, error);
+        // Continue processing other items even if one fails
+      }
+    }
+  }
+}
+
+// Helper function to determine sentiment (simple keyword-based approach)
+function determineSentiment(title: string, content: string): string {
+  const text = `${title} ${content}`.toLowerCase();
+  
+  const positiveWords = ['success', 'growth', 'funding', 'partnership', 'launch', 'achievement', 'win', 'breakthrough'];
+  const negativeWords = ['failure', 'loss', 'decline', 'lawsuit', 'scandal', 'bankruptcy', 'crisis', 'controversy'];
+  
+  const positiveCount = positiveWords.filter(word => text.includes(word)).length;
+  const negativeCount = negativeWords.filter(word => text.includes(word)).length;
+  
+  if (positiveCount > negativeCount) return 'positive';
+  if (negativeCount > positiveCount) return 'negative';
+  return 'neutral';
+}
+
+// Helper function to calculate relevance score
+function calculateRelevanceScore(title: string, content: string): number {
+  // Simple relevance scoring based on content length and business keywords
+  const businessKeywords = ['company', 'business', 'startup', 'technology', 'product', 'service', 'customer', 'market'];
+  const text = `${title} ${content}`.toLowerCase();
+  
+  let score = 0.5; // Base score
+  
+  // Boost score for business-related keywords
+  const keywordMatches = businessKeywords.filter(word => text.includes(word)).length;
+  score += keywordMatches * 0.1;
+  
+  // Boost score for longer content (indicates more detailed coverage)
+  if (content.length > 200) score += 0.2;
+  if (content.length > 500) score += 0.2;
+  
+  // Cap at 1.0
+  return Math.min(score, 1.0);
+}
+
 // Internal mutation to save enrichment results
 export const saveEnrichmentResults = internalMutation({
   args: {
@@ -229,6 +300,9 @@ export const saveEnrichmentResults = internalMutation({
         last_activity_timestamp: Date.now(),
       });
     }
+
+    // Process and save news/social content to news_content table
+    await processNewsAndSocialContent(ctx, args.companyId, successfulResults);
 
     // Log enrichment completion event
     await ctx.db.insert("event_log", {

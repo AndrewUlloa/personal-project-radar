@@ -417,14 +417,18 @@ function categorizeNewsAlerts(events: any[], newsContent: any[]) {
     errors: events.filter(e => e.event_type.includes("error")).length,
   };
 
-  // Convert to radar chart format
+  // Ensure minimum values for proper radar chart shape (hexagon)
+  // This prevents segments from collapsing to center when there's no data
+  const minValue = 1;
+  
+  // Convert to radar chart format with minimum values to maintain shape
   return [
-    { category: "Enrichment", value: categories.enrichment, max: 100 },
-    { category: "AI Scoring", value: categories.scoring, max: 100 },
-    { category: "Discovery", value: categories.discovery, max: 100 },
-    { category: "News", value: categories.news, max: 50 },
-    { category: "Social", value: categories.social, max: 50 },
-    { category: "Errors", value: categories.errors, max: 10 },
+    { category: "Enrichment", value: Math.max(categories.enrichment, minValue) },
+    { category: "AI Scoring", value: Math.max(categories.scoring, minValue) },
+    { category: "Discovery", value: Math.max(categories.discovery, minValue) },
+    { category: "News", value: Math.max(categories.news, minValue) },
+    { category: "Social", value: Math.max(categories.social, minValue) },
+    { category: "Errors", value: Math.max(categories.errors, minValue) },
   ];
 }
 

@@ -8,6 +8,8 @@ import {
   RadialBar,
   RadialBarChart,
 } from "recharts"
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
 
 import {
   Card,
@@ -18,6 +20,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { ChartConfig, ChartContainer } from "@/components/ui/chart"
+import { LoadingDisplay } from "@/components/ui/error-boundary"
 
 export const description = "A radial chart with text"
 
@@ -36,11 +39,28 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function ChartRadialText() {
+  // Fetch live average lead score data
+  const scoreData = useQuery(api.dashboard.getAverageLeadScore, {})
+  
+  if (!scoreData) {
+    return <LoadingDisplay message="Loading average score..." />
+  }
+
+  const chartData = [
+    { 
+      browser: "score", 
+      visitors: scoreData.current || 0, 
+      fill: "var(--color-safari)" 
+    },
+  ]
+
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="items-center pb-2">
         <CardTitle className="font-medium leading-none tracking-tight" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)' }}>Average Lead Score</CardTitle>
-        <CardDescription style={{ fontSize: 'clamp(0.75rem, 2vw, 1rem)' }}>0-100 quality index</CardDescription>
+        <CardDescription style={{ fontSize: 'clamp(0.75rem, 2vw, 1rem)' }}>
+          {scoreData.change > 0 ? '+' : ''}{scoreData.change} vs last month
+        </CardDescription>
       </CardHeader>
       <div className="flex-1 min-h-0 flex items-center justify-center px-6">
         <ChartContainer
@@ -79,7 +99,7 @@ export function ChartRadialText() {
                           className="fill-foreground font-bold"
                           style={{ fontSize: 'clamp(1rem, 3vw, 1.5rem)' }}
                         >
-                          74.3
+                          {scoreData?.current ?? 0}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
@@ -100,10 +120,10 @@ export function ChartRadialText() {
       </div>
       <CardFooter className="pt-2 flex-col gap-1">
         <div className="flex items-center gap-2 leading-none font-medium" style={{ fontSize: 'clamp(0.75rem, 2vw, 0.875rem)' }}>
-          +4.1 pts past 30 d 📈
+          {scoreData?.change > 0 ? '+' : ''}{scoreData?.change ?? 0} pts vs last month {scoreData?.trend === 'up' ? '📈' : scoreData?.trend === 'down' ? '📉' : '➡️'}
         </div>
         <div className="text-muted-foreground leading-none" style={{ fontSize: 'clamp(0.625rem, 1.5vw, 0.75rem)' }}>
-          Lead qualification performance
+          Overall lead quality health metric
         </div>
       </CardFooter>
     </Card>

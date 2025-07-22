@@ -7,12 +7,14 @@ import { ChartRadialShape } from "@/components/dashboard/ChartRadialShape";
 import { ChartRadialText } from "@/components/dashboard/ChartRadialText";
 import { ChartRadarGridCustom } from "@/components/dashboard/ChartRadarGridCustom";
 import { ChartBarStacked } from "@/components/dashboard/ChartBarStacked";
+import { ConvexTestDashboard } from "@/components/dashboard/ConvexTestDashboard";
 import { NoSSR } from "@/components/ui/no-ssr";
 import { useState, useEffect } from "react";
 import { Monitor } from "lucide-react";
 
 export default function Dashboard() {
   const [isDesktop, setIsDesktop] = useState(true);
+  const [showConvexTest, setShowConvexTest] = useState(true); // Show Convex test by default
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -61,8 +63,32 @@ export default function Dashboard() {
     return <DesktopOnlyMessage />;
   }
 
+  // Show Convex test dashboard if enabled
+  if (showConvexTest) {
+    return (
+      <div className="relative">
+        {/* Toggle Button */}
+        <button
+          onClick={() => setShowConvexTest(false)}
+          className="absolute top-4 right-4 z-10 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+        >
+          Switch to Original Dashboard
+        </button>
+        <ConvexTestDashboard />
+      </div>
+    );
+  }
+
   // Regular dashboard widgets for desktop screens
   return (
+    <div className="relative">
+      {/* Toggle Button */}
+      <button
+        onClick={() => setShowConvexTest(true)}
+        className="absolute top-4 right-4 z-10 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+      >
+        View Convex Integration Test
+      </button>
     <div className="grid grid-rows-3 gap-6 h-[calc(100vh-9rem)]">
       {/* Chart Widget - takes exactly 1/3 of available height (same as each row in 3x2 grid) */}
       <div className="h-full widget-animate" style={{ animation: 'fadeUp 600ms ease-out 2400ms forwards' }}>
@@ -168,6 +194,7 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 } 

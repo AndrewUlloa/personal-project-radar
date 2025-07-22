@@ -19,46 +19,58 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
+import { LoadingDisplay } from "@/components/ui/error-boundary"
 
 export const description = "A stacked bar chart with a legend"
 
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80, high: 120 },
-  { month: "February", desktop: 305, mobile: 200, high: 150 },
-  { month: "March", desktop: 237, mobile: 120, high: 180 },
-  { month: "April", desktop: 73, mobile: 190, high: 95 },
-  { month: "May", desktop: 209, mobile: 130, high: 165 },
-  { month: "June", desktop: 214, mobile: 140, high: 190 },
-]
-
 const chartConfig = {
-  desktop: {
+  low: {
     label: "Low",
     color: "hsl(215, 20%, 65%)", // Muted slate gray
   },
-  mobile: {
+  mid: {
     label: "Mid", 
-    color: "hsl(43, 96%, 56%)", // Vibrant amber
+    color: "hsl(43, 96%, 56%)", // Warm amber for moderate scores
   },
   high: {
     label: "High",
-    color: "hsl(142, 76%, 36%)", // Success green
+    color: "hsl(0, 84%, 60%)", // Attention red for high priority
   },
 } satisfies ChartConfig
 
 export function ChartBarStacked() {
+  // Fetch live score distribution data
+  const distributionData = useQuery(api.dashboard.getScoreDistribution, {});
+
+  const isLoading = distributionData === undefined;
+
+  const chartData = [
+    { 
+      category: "Score Distribution", 
+      low: distributionData?.low ?? 0,
+      mid: distributionData?.mid ?? 0, 
+      high: distributionData?.high ?? 0 
+    },
+  ];
+
+  if (isLoading) {
+    return <LoadingDisplay message="Loading score distribution..." />;
+  }
+
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="pb-2">
-        <CardTitle className="font-medium leading-none tracking-tight" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)' }}>Lead Quality Distribution</CardTitle>
-        <CardDescription style={{ fontSize: 'clamp(0.75rem, 2vw, 1rem)' }}>Band counts — Low | Mid | High</CardDescription>
+        <CardTitle className="font-medium leading-none tracking-tight" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)' }}>Score Distribution (Low / Mid / High)</CardTitle>
+        <CardDescription style={{ fontSize: 'clamp(0.75rem, 2vw, 1rem)' }}>Quality bands reveal balance across pipeline</CardDescription>
       </CardHeader>
       <div className="flex-1 min-h-0 px-6">
         <ChartContainer config={chartConfig} className="w-full h-full">
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="category"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
@@ -74,15 +86,15 @@ export function ChartBarStacked() {
             }} />
             <ChartLegend content={<ChartLegendContent />} />
             <Bar
-              dataKey="desktop"
+              dataKey="low"
               stackId="a"
-              fill="var(--color-desktop)"
+              fill="var(--color-low)"
               radius={[0, 0, 4, 4]}
             />
             <Bar
-              dataKey="mobile"
+              dataKey="mid"
               stackId="a"
-              fill="var(--color-mobile)"
+              fill="var(--color-mid)"
               radius={[0, 0, 0, 0]}
             />
             <Bar
@@ -96,10 +108,10 @@ export function ChartBarStacked() {
       </div>
       <CardFooter className="pt-2 flex-col items-start gap-1">
         <div className="flex gap-2 leading-none font-medium" style={{ fontSize: 'clamp(0.75rem, 2vw, 0.875rem)' }}>
-          +15% high-band vs. prior month 📈
+          Total scored: {distributionData?.total ?? 0} leads ({Math.round(((distributionData?.high ?? 0) / (distributionData?.total || 1)) * 100)}% high quality) 🎯
         </div>
         <div className="text-muted-foreground leading-none" style={{ fontSize: 'clamp(0.625rem, 1.5vw, 0.75rem)' }}>
-          Stacked bars = count per month
+          Low: &lt;40 • Mid: 40-80 • High: ≥80
         </div>
       </CardFooter>
     </Card>

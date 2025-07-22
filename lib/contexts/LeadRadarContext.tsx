@@ -54,13 +54,19 @@ export function LeadRadarProvider({ children }: { children: ReactNode }) {
     setLeads(prev => prev.filter(lead => lead.id !== id));
     
     if (lead) {
-      toast.success(`Removed ${lead.companyName} from lead radar`);
+      toast.success(`Removed ${lead.companyName} from lead radar`, {
+        position: "top-center",
+        duration: 3000,
+      });
     }
   };
 
   const clearAllLeads = () => {
     setLeads([]);
-    toast.success('All leads cleared from radar');
+    toast.success('All leads cleared from radar', {
+      position: "top-center",
+      duration: 3000,
+    });
   };
 
   const updateLeadStatus = (id: string, status: LeadItem['status'], assignedTo?: string) => {
@@ -71,9 +77,7 @@ export function LeadRadarProvider({ children }: { children: ReactNode }) {
     ));
     
     const lead = leads.find(l => l.id === id);
-    if (lead) {
-      toast.success(`${lead.companyName} status updated to ${status}`);
-    }
+    // Status updated silently without toast notification
   };
 
   const getLeadById = (id: string) => {

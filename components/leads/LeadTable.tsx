@@ -217,18 +217,6 @@ export function LeadTable() {
               <DropdownMenuItem onClick={() => handleViewProfile(lead.id)}>
                 View Profile
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                Add Note
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                Assign to Me
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => updateLeadStatus(lead.id, 'contacted')}
-                disabled={lead.status === 'contacted'}
-              >
-                Mark as Contacted
-              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => navigator.clipboard.writeText(lead.website)}

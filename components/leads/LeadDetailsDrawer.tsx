@@ -322,7 +322,13 @@ export default function LeadDetailsDrawer({ leadId, open, onOpenChange }: LeadDe
                 >
                   Mark as Activated
                 </Button>
-                <Button variant="outline">
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    // You can replace "System" with actual rep name when user management is implemented
+                    updateLeadStatus(lead.id, lead.status, "System");
+                  }}
+                >
                   Assign to Rep
                 </Button>
               </div>

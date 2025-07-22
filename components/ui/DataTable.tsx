@@ -235,10 +235,19 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id} className="h-9">
                 {headerGroup.headers.map((header) => {
                   const isSelectColumn = header.column.id === 'select';
+                  const isKeySignals = header.column.id === 'keySignals';
+                  const isActions = header.column.id === 'actions';
+                  
+                  let columnWidth = 'w-[14.28%]'; // Default equal width
+                  if (isSelectColumn) columnWidth = 'w-12';
+                  else if (isKeySignals) columnWidth = 'w-32'; // Narrower for key signals
+                  else if (isActions) columnWidth = 'w-16'; // Narrow for actions
+                  else if (header.column.id === 'companyName') columnWidth = 'w-48'; // Wider for company name
+                  
                   return (
                     <TableHead 
                       key={header.id} 
-                      className={`text-gray-700 ${isSelectColumn ? 'w-12' : 'w-[14.28%]'}`}
+                      className={`text-gray-700 ${columnWidth}`}
                     >
                       {header.isPlaceholder
                         ? null
@@ -262,10 +271,19 @@ export function DataTable<TData, TValue>({
                 >
                   {row.getVisibleCells().map((cell) => {
                     const isSelectColumn = cell.column.id === 'select';
+                    const isKeySignals = cell.column.id === 'keySignals';
+                    const isActions = cell.column.id === 'actions';
+                    
+                    let columnWidth = 'w-[14.28%]'; // Default equal width
+                    if (isSelectColumn) columnWidth = 'w-12';
+                    else if (isKeySignals) columnWidth = 'w-32'; // Narrower for key signals
+                    else if (isActions) columnWidth = 'w-16'; // Narrow for actions
+                    else if (cell.column.id === 'companyName') columnWidth = 'w-48'; // Wider for company name
+                    
                     return (
                       <TableCell 
                         key={cell.id} 
-                        className={isSelectColumn ? 'w-12' : 'w-[14.28%]'}
+                        className={columnWidth}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,

@@ -2,6 +2,8 @@ import { action, internalAction, internalMutation, internalQuery } from "./_gene
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import { Id } from "./_generated/dataModel";
+// @ts-ignore - EXA SDK may not have perfect Convex compatibility
+import Exa from "exa-js";
 
 // Main public action to enrich a company by website URL
 export const enrichCompany = action({
@@ -97,12 +99,25 @@ export const performComprehensiveEnrichment = internalAction({
           'github', 'wikipedia', 'youtube'
         ];
         
-        return {
+        const enrichmentResult = {
           source: sources[index],
           status: result.status,
           data: result.status === 'fulfilled' ? result.value : {},
           error: result.status === 'rejected' ? (result.reason?.message || 'Unknown error') : undefined,
         };
+
+        // Debug logging for key sources
+        if (['website_content', 'linkedin', 'crunchbase', 'funding'].includes(sources[index])) {
+          console.log(`📊 ${sources[index]} enrichment result:`, {
+            status: enrichmentResult.status,
+            hasData: !!enrichmentResult.data,
+            dataLength: Array.isArray(enrichmentResult.data) ? enrichmentResult.data.length : 'not array',
+            firstItemKeys: enrichmentResult.data?.[0] ? Object.keys(enrichmentResult.data[0]) : 'no first item',
+            error: enrichmentResult.error
+          });
+        }
+
+        return enrichmentResult;
       });
 
       // Save all enrichment data
@@ -272,60 +287,212 @@ function extractCompanyNameFromUrl(url: string): string {
 // Helper function to extract company information from enrichment results
 async function extractCompanyUpdates(results: Array<{ source: string; data: any }>) {
   const updates: any = {};
+  let extractedData: any = {};
 
+  // First pass: collect all data from different sources
   for (const result of results) {
     const { source, data } = result;
     
-    if (!data || !Array.isArray(data)) continue;
+    if (!data) continue;
+    
+    // Handle both array and object data structures
+    const sourceData = Array.isArray(data) ? data[0] : data;
+    if (!sourceData) continue;
+    
+    extractedData[source] = sourceData;
+  }
 
-    switch (source) {
-      case 'website_content':
-        if (data[0]?.summary) {
-          updates.description = data[0].summary;
-        }
-        break;
-        
-      case 'linkedin':
-        // Extract employee count, industry, etc. from LinkedIn data
-        if (data[0]) {
-          // This would need to be enhanced based on actual LinkedIn data structure
-          const linkedinData = data[0];
-          if (linkedinData.title) {
-            updates.industry = extractIndustry(linkedinData.title);
-          }
-        }
-        break;
-        
-      case 'funding':
-        // Extract funding information
-        if (data[0]?.summary && data[0].summary !== 'NO') {
-          updates.arpu_band = estimateArpuFromFunding(data[0].summary);
-        }
-        break;
-        
-      case 'crunchbase':
-        // Extract structured company data from Crunchbase
-        if (data[0]) {
-          const crunchbaseData = data[0];
-          if (crunchbaseData.title) {
-            updates.industry = extractIndustry(crunchbaseData.title);
-          }
-        }
-        break;
+  // Second pass: extract structured information with priority order
+  
+  // Industry extraction (priority: crunchbase -> linkedin -> website -> other)
+  if (!updates.industry) {
+    const industry = extractIndustryFromSources(extractedData);
+    if (industry && industry !== 'Unknown') {
+      updates.industry = industry;
     }
   }
 
+  // Location/geo_market extraction (priority: crunchbase -> linkedin -> website)
+  if (!updates.geo_market) {
+    const location = extractLocationFromSources(extractedData);
+    if (location && location !== 'Unknown') {
+      updates.geo_market = location;
+    }
+  }
+
+  // Employee size extraction (priority: linkedin -> crunchbase -> website)
+  if (!updates.employee_range && !updates.size_fte) {
+    const employeeInfo = extractEmployeeSizeFromSources(extractedData);
+    if (employeeInfo.range && employeeInfo.range !== 'Unknown') {
+      updates.employee_range = employeeInfo.range;
+      updates.size_fte = employeeInfo.midpoint;
+    }
+  }
+
+  // Description extraction (priority: website -> crunchbase -> linkedin)
+  if (!updates.description) {
+    if (extractedData.website_content?.summary) {
+      updates.description = extractedData.website_content.summary;
+    } else if (extractedData.crunchbase?.text) {
+      updates.description = extractedData.crunchbase.text.substring(0, 200) + '...';
+    } else if (extractedData.linkedin?.text) {
+      updates.description = extractedData.linkedin.text.substring(0, 200) + '...';
+    }
+  }
+
+  // Founded year extraction
+  if (!updates.founded) {
+    const founded = extractFoundedYearFromSources(extractedData);
+    if (founded) {
+      updates.founded = founded;
+    }
+  }
+
+  // Address extraction
+  if (!updates.address) {
+    const address = extractAddressFromSources(extractedData);
+    if (address && address !== 'Unknown') {
+      updates.address = address;
+    }
+  }
+
+  // ARPU band estimation (from funding data)
+  if (!updates.arpu_band && extractedData.funding?.summary && extractedData.funding.summary !== 'NO') {
+    updates.arpu_band = estimateArpuFromFunding(extractedData.funding.summary);
+  }
+
+  console.log(`📊 Extracted company updates:`, updates);
   return updates;
 }
 
-// Helper function to extract industry from text
-function extractIndustry(text: string): string {
+// Helper function to extract industry from multiple sources
+function extractIndustryFromSources(sources: any): string {
+  // Priority order: crunchbase -> linkedin -> website -> other
+  const searchOrder = ['crunchbase', 'linkedin', 'website_content', 'pitchbook', 'tracxn'];
+  
+  for (const source of searchOrder) {
+    if (sources[source]) {
+      const data = sources[source];
+      let textToAnalyze = '';
+      
+      // Combine title and text for analysis
+      if (data.title) textToAnalyze += data.title + ' ';
+      if (data.text) textToAnalyze += data.text.substring(0, 500) + ' ';
+      if (data.summary) textToAnalyze += data.summary + ' ';
+      
+      if (textToAnalyze) {
+        const industry = extractIndustryFromText(textToAnalyze);
+        if (industry !== 'Unknown') return industry;
+      }
+    }
+  }
+  
+  return 'Unknown';
+}
+
+// Helper function to extract location from multiple sources
+function extractLocationFromSources(sources: any): string {
+  // Priority order: crunchbase -> linkedin -> website
+  const searchOrder = ['crunchbase', 'linkedin', 'website_content'];
+  
+  for (const source of searchOrder) {
+    if (sources[source]) {
+      const data = sources[source];
+      let textToAnalyze = '';
+      
+      if (data.title) textToAnalyze += data.title + ' ';
+      if (data.text) textToAnalyze += data.text.substring(0, 1000) + ' ';
+      
+      if (textToAnalyze) {
+        const location = extractLocationFromText(textToAnalyze);
+        if (location !== 'Unknown') return location;
+      }
+    }
+  }
+  
+  return 'Unknown';
+}
+
+// Helper function to extract employee size from multiple sources
+function extractEmployeeSizeFromSources(sources: any): { range: string; midpoint: number } {
+  // Priority order: linkedin -> crunchbase -> website
+  const searchOrder = ['linkedin', 'crunchbase', 'website_content'];
+  
+  for (const source of searchOrder) {
+    if (sources[source]) {
+      const data = sources[source];
+      let textToAnalyze = '';
+      
+      if (data.title) textToAnalyze += data.title + ' ';
+      if (data.text) textToAnalyze += data.text.substring(0, 1000) + ' ';
+      
+      if (textToAnalyze) {
+        const employeeInfo = extractEmployeeSizeFromText(textToAnalyze);
+        if (employeeInfo.range !== 'Unknown') return employeeInfo;
+      }
+    }
+  }
+  
+  return { range: 'Unknown', midpoint: 0 };
+}
+
+// Helper function to extract founded year from multiple sources
+function extractFoundedYearFromSources(sources: any): number | null {
+  const searchOrder = ['crunchbase', 'linkedin', 'website_content'];
+  
+  for (const source of searchOrder) {
+    if (sources[source]) {
+      const data = sources[source];
+      let textToAnalyze = '';
+      
+      if (data.title) textToAnalyze += data.title + ' ';
+      if (data.text) textToAnalyze += data.text.substring(0, 1000) + ' ';
+      
+      if (textToAnalyze) {
+        const founded = extractFoundedYearFromText(textToAnalyze);
+        if (founded) return founded;
+      }
+    }
+  }
+  
+  return null;
+}
+
+// Helper function to extract address from multiple sources
+function extractAddressFromSources(sources: any): string {
+  const searchOrder = ['crunchbase', 'linkedin', 'website_content'];
+  
+  for (const source of searchOrder) {
+    if (sources[source]) {
+      const data = sources[source];
+      let textToAnalyze = '';
+      
+      if (data.title) textToAnalyze += data.title + ' ';
+      if (data.text) textToAnalyze += data.text.substring(0, 1000) + ' ';
+      
+      if (textToAnalyze) {
+        const address = extractAddressFromText(textToAnalyze);
+        if (address !== 'Unknown') return address;
+      }
+    }
+  }
+  
+  return 'Unknown';
+}
+
+// Enhanced industry extraction with better keyword matching
+function extractIndustryFromText(text: string): string {
   const industryKeywords = {
-    'software': ['software', 'saas', 'platform', 'app', 'tech'],
-    'ecommerce': ['ecommerce', 'retail', 'marketplace', 'store'],
-    'fintech': ['fintech', 'finance', 'payment', 'banking'],
-    'healthcare': ['healthcare', 'medical', 'health'],
-    'education': ['education', 'learning', 'edtech'],
+    'Jewelry & Luxury': ['jewelry', 'jewellery', 'diamond', 'engagement ring', 'wedding ring', 'luxury jewelry', 'fine jewelry', 'precious metals', 'gemstone'],
+    'E-commerce & Retail': ['ecommerce', 'e-commerce', 'retail', 'marketplace', 'online store', 'shopping', 'merchandise'],
+    'Software & Technology': ['software', 'saas', 'platform', 'app', 'tech', 'technology', 'digital', 'analytics', 'cloud'],
+    'Financial Services': ['fintech', 'finance', 'payment', 'banking', 'financial', 'investment', 'insurance'],
+    'Healthcare': ['healthcare', 'medical', 'health', 'pharmaceutical', 'biotech', 'clinic'],
+    'Education': ['education', 'learning', 'edtech', 'training', 'university', 'school'],
+    'Manufacturing': ['manufacturing', 'production', 'factory', 'industrial', 'automotive'],
+    'Real Estate': ['real estate', 'property', 'construction', 'housing'],
+    'Food & Beverage': ['food', 'restaurant', 'beverage', 'culinary', 'hospitality'],
+    'Fashion & Apparel': ['fashion', 'apparel', 'clothing', 'textile', 'design'],
   };
 
   const lowercaseText = text.toLowerCase();
@@ -339,83 +506,200 @@ function extractIndustry(text: string): string {
   return 'Unknown';
 }
 
-// Helper function to estimate ARPU band from funding information
+// Extract location/geo market from text
+function extractLocationFromText(text: string): string {
+  const locationPatterns = [
+    // US states and cities
+    /\b(New York|California|Texas|Florida|Illinois|Pennsylvania|Ohio|Georgia|North Carolina|Michigan|SF|San Francisco|Los Angeles|Chicago|Houston|Phoenix|Philadelphia|San Antonio|San Diego|Dallas|Austin|NYC)\b/i,
+    // Countries
+    /\b(United States|USA|US|United Kingdom|UK|Canada|Australia|Germany|France|Japan|Singapore|Netherlands|Sweden|Denmark)\b/i,
+    // Regions
+    /\b(North America|Europe|EMEA|APAC|Asia Pacific)\b/i,
+    // Common location phrases
+    /\bbased in ([^,\n]+)/i,
+    /\bheadquartered in ([^,\n]+)/i,
+    /\blocated in ([^,\n]+)/i,
+  ];
+
+  for (const pattern of locationPatterns) {
+    const match = text.match(pattern);
+    if (match) {
+      return match[1] || match[0];
+    }
+  }
+  
+  return 'Unknown';
+}
+
+// Extract employee size from text
+function extractEmployeeSizeFromText(text: string): { range: string; midpoint: number } {
+  const sizePatterns = [
+    { pattern: /\b(\d+)-(\d+)\s*employees?\b/i, type: 'range' },
+    { pattern: /\b(\d+)\+?\s*employees?\b/i, type: 'minimum' },
+    { pattern: /\bteam of (\d+)-(\d+)\b/i, type: 'range' },
+    { pattern: /\b(\d+)\s*-\s*(\d+)\s*people\b/i, type: 'range' },
+    { pattern: /\bover (\d+)\s*employees?\b/i, type: 'minimum' },
+  ];
+
+  for (const { pattern, type } of sizePatterns) {
+    const match = text.match(pattern);
+    if (match) {
+      if (type === 'range' && match[2]) {
+        const min = parseInt(match[1]);
+        const max = parseInt(match[2]);
+        const midpoint = Math.floor((min + max) / 2);
+        return { range: `${min}-${max}`, midpoint };
+      } else if (type === 'minimum') {
+        const min = parseInt(match[1]);
+        // Estimate range based on minimum
+        if (min < 10) return { range: '1-10', midpoint: 5 };
+        if (min < 50) return { range: '11-50', midpoint: 30 };
+        if (min < 200) return { range: '51-200', midpoint: 125 };
+        if (min < 1000) return { range: '201-1K', midpoint: 600 };
+        return { range: '1K+', midpoint: 1500 };
+      }
+    }
+  }
+
+  // Check for company size keywords
+  const sizeKeywords = {
+    'startup': { range: '1-10', midpoint: 5 },
+    'small business': { range: '1-50', midpoint: 25 },
+    'mid-size': { range: '51-200', midpoint: 125 },
+    'enterprise': { range: '201-1K', midpoint: 600 },
+    'large corporation': { range: '1K+', midpoint: 1500 },
+  };
+
+  const lowercaseText = text.toLowerCase();
+  for (const [keyword, size] of Object.entries(sizeKeywords)) {
+    if (lowercaseText.includes(keyword)) {
+      return size;
+    }
+  }
+  
+  return { range: 'Unknown', midpoint: 0 };
+}
+
+// Extract founded year from text
+function extractFoundedYearFromText(text: string): number | null {
+  const yearPatterns = [
+    /\bfounded in (\d{4})\b/i,
+    /\bestablished in (\d{4})\b/i,
+    /\bstarted in (\d{4})\b/i,
+    /\bsince (\d{4})\b/i,
+    /\b(\d{4})\s*-\s*present\b/i,
+  ];
+
+  for (const pattern of yearPatterns) {
+    const match = text.match(pattern);
+    if (match) {
+      const year = parseInt(match[1]);
+      if (year >= 1800 && year <= new Date().getFullYear()) {
+        return year;
+      }
+    }
+  }
+  
+  return null;
+}
+
+// Extract address from text
+function extractAddressFromText(text: string): string {
+  const addressPatterns = [
+    /\b\d+\s+[A-Za-z\s]+(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Drive|Dr|Lane|Ln)\b[^,\n]*/i,
+    /\b[A-Za-z\s]+,\s*[A-Z]{2}\s*\d{5}/i, // City, State ZIP
+    /\b[A-Za-z\s]+,\s*[A-Za-z\s]+\s*\d{5}/i, // City, State ZIP (full state name)
+  ];
+
+  for (const pattern of addressPatterns) {
+    const match = text.match(pattern);
+    if (match) {
+      return match[0].trim();
+    }
+  }
+  
+  return 'Unknown';
+}
+
+// Estimate ARPU band from funding information
 function estimateArpuFromFunding(fundingText: string): string {
   const lowercaseText = fundingText.toLowerCase();
   
-  if (lowercaseText.includes('series a') || lowercaseText.includes('seed')) {
-    return '$0-10K';
-  } else if (lowercaseText.includes('series b')) {
-    return '$10-50K';
-  } else if (lowercaseText.includes('series c') || lowercaseText.includes('growth')) {
-    return '$50-100K';
-  } else if (lowercaseText.includes('ipo') || lowercaseText.includes('public')) {
-    return '$100K+';
-  }
+  // Look for funding amounts
+  const fundingPatterns = [
+    /\$(\d+(?:\.\d+)?)\s*million/i,
+    /\$(\d+(?:\.\d+)?)\s*m\b/i,
+    /\$(\d+(?:\.\d+)?)\s*billion/i,
+    /\$(\d+(?:\.\d+)?)\s*b\b/i,
+  ];
+
+  let totalFunding = 0;
   
-  return '$0-10K'; // Default
+  for (const pattern of fundingPatterns) {
+    const matches = fundingText.match(new RegExp(pattern.source, 'gi'));
+    if (matches) {
+      for (const match of matches) {
+        const amount = parseFloat(match.match(/(\d+(?:\.\d+)?)/)?.[1] || '0');
+        if (match.toLowerCase().includes('billion') || match.toLowerCase().includes('b')) {
+          totalFunding += amount * 1000; // Convert to millions
+        } else {
+          totalFunding += amount;
+        }
+      }
+    }
+  }
+
+  // Estimate ARPU based on funding level
+  if (totalFunding >= 100) return '$100K+'; // $100M+ funding
+  if (totalFunding >= 20) return '$50-100K'; // $20M+ funding
+  if (totalFunding >= 5) return '$10-50K'; // $5M+ funding
+  return '$0-10K'; // Less than $5M or no significant funding
 }
+
+
 
 // Helper function to scrape website content (replaces /api/scrapewebsiteurl)
 async function scrapeWebsiteContent(websiteUrl: string, apiKey: string) {
-  const response = await fetch('https://api.exa.ai/contents', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      ids: [websiteUrl],
+  try {
+    const exa = new Exa(apiKey);
+    const result = await exa.getContents([websiteUrl], {
       text: true,
       summary: {
         query: "Describe the company in few word. It should be very simple and explicity tell what does the company do/is. Do not include the name of the company."
       }
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Website scraping failed: ${response.statusText}`);
+    });
+    
+    return result.results;
+  } catch (error) {
+    console.error('Website scraping failed:', error);
+    throw new Error(`Website scraping failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
-
-  const data = await response.json();
-  return data.results;
 }
 
 // Helper function to fetch Crunchbase data (replaces /api/fetchcrunchbase)
 async function fetchCrunchbaseData(websiteUrl: string, apiKey: string) {
-  const response = await fetch('https://api.exa.ai/search', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      query: `${websiteUrl} crunchbase page:`,
+  try {
+    const exa = new Exa(apiKey);
+    const result = await exa.searchAndContents(`${websiteUrl} crunchbase page:`, {
       type: "keyword",
       numResults: 1,
       includeDomains: ["crunchbase.com"],
-      includeText: [websiteUrl]
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Crunchbase fetch failed: ${response.statusText}`);
+      includeText: [websiteUrl],
+      text: true
+    });
+    
+    return result.results;
+  } catch (error) {
+    console.error('Crunchbase fetch failed:', error);
+    throw new Error(`Crunchbase fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
-
-  const data = await response.json();
-  return data.results;
 }
 
 // Helper function to fetch funding data (replaces /api/fetchfunding)
 async function fetchFundingData(websiteUrl: string, apiKey: string) {
-  const response = await fetch('https://api.exa.ai/searchAndContents', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      query: `${websiteUrl} Funding:`,
+  try {
+    const exa = new Exa(apiKey);
+    const result = await exa.searchAndContents(`${websiteUrl} Funding:`, {
       type: "keyword",
       numResults: 1,
       text: true,
@@ -424,90 +708,68 @@ async function fetchFundingData(websiteUrl: string, apiKey: string) {
       },
       livecrawl: "always",
       includeText: [websiteUrl]
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Funding fetch failed: ${response.statusText}`);
+    });
+    
+    return result.results;
+  } catch (error) {
+    console.error('Funding fetch failed:', error);
+    throw new Error(`Funding fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
-
-  const data = await response.json();
-  return data.results;
 }
 
 // Helper function to fetch LinkedIn data (replaces /api/scrapelinkedin)
 async function fetchLinkedInData(websiteUrl: string, apiKey: string) {
-  const response = await fetch('https://api.exa.ai/search', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      query: `${websiteUrl} linkedin page:`,
-      type: "keyword",
+  try {
+    const exa = new Exa(apiKey);
+    const result = await exa.searchAndContents(`${websiteUrl} company Linkedin profile:`, {
+      text: true,
       numResults: 1,
-      includeDomains: ["linkedin.com"],
-      includeText: [websiteUrl]
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`LinkedIn fetch failed: ${response.statusText}`);
+      includeDomains: ["linkedin.com"]
+    });
+    
+    return result.results;
+  } catch (error) {
+    console.error('LinkedIn fetch failed:', error);
+    throw new Error(`LinkedIn fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
-
-  const data = await response.json();
-  return data.results;
 }
 
 // Helper function to fetch PitchBook data (replaces /api/fetchpitchbook)
 async function fetchPitchBookData(websiteUrl: string, apiKey: string) {
-  const response = await fetch('https://api.exa.ai/search', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      query: `${websiteUrl} pitchbook page:`,
+  try {
+    const exa = new Exa(apiKey);
+    const result = await exa.searchAndContents(`${websiteUrl} pitchbook page:`, {
       type: "keyword",
       numResults: 1,
       includeDomains: ["pitchbook.com"],
-      includeText: [websiteUrl]
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`PitchBook fetch failed: ${response.statusText}`);
+      includeText: [websiteUrl],
+      text: true
+    });
+    
+    return result.results;
+  } catch (error) {
+    console.error('PitchBook fetch failed:', error);
+    throw new Error(`PitchBook fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
-
-  const data = await response.json();
-  return data.results;
 }
 
 // Helper function to fetch Tracxn data (replaces /api/fetchtracxn)
 async function fetchTracxnData(websiteUrl: string, apiKey: string) {
-  const response = await fetch('https://api.exa.ai/search', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      query: `${websiteUrl} tracxn page:`,
+  try {
+    const exa = new Exa(apiKey);
+    const result = await exa.searchAndContents(`${websiteUrl} tracxn page:`, {
       type: "keyword",
       numResults: 1,
       includeDomains: ["tracxn.com"],
-      includeText: [websiteUrl]
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Tracxn fetch failed: ${response.statusText}`);
+      includeText: [websiteUrl],
+      text: true
+    });
+    
+    return result.results;
+  } catch (error) {
+    console.error('Tracxn fetch failed:', error);
+    throw new Error(`Tracxn fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
-
-  const data = await response.json();
-  return data.results;
 }
 
 // Helper function to fetch news data (replaces /api/findnews)
@@ -653,4 +915,4 @@ async function fetchYouTubeData(websiteUrl: string, apiKey: string) {
 
   const data = await response.json();
   return data.results;
-} 
+}

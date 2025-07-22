@@ -28,6 +28,8 @@ export interface AutoHideDockProps extends DockProps {
   triggerHeight?: number;
   hideDelay?: number;
   showAnimation?: boolean;
+  showOnLoad?: boolean;
+  initialShowDuration?: number;
 }
 
 const DEFAULT_SIZE = 40;
@@ -104,13 +106,30 @@ const AutoHideDock = React.forwardRef<HTMLDivElement, AutoHideDockProps>(
       triggerHeight = 20,
       hideDelay = 2000,
       showAnimation = true,
+      showOnLoad = false,
+      initialShowDuration = 3000,
       ...props
     },
     ref,
   ) => {
-    const [isVisible, setIsVisible] = useState(false);
+    const [isVisible, setIsVisible] = useState(showOnLoad);
     const [isHovered, setIsHovered] = useState(false);
+    const [hasInitiallyShown, setHasInitiallyShown] = useState(!showOnLoad);
     const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Handle initial show timeout
+    useEffect(() => {
+      if (showOnLoad && !hasInitiallyShown) {
+        const initialTimeout = setTimeout(() => {
+          if (!isHovered) {
+            setIsVisible(false);
+          }
+          setHasInitiallyShown(true);
+        }, initialShowDuration);
+
+        return () => clearTimeout(initialTimeout);
+      }
+    }, [showOnLoad, hasInitiallyShown, isHovered, initialShowDuration]);
 
     useEffect(() => {
       const handleMouseMove = (e: MouseEvent) => {
@@ -133,6 +152,7 @@ const AutoHideDock = React.forwardRef<HTMLDivElement, AutoHideDockProps>(
 
         if (isInTriggerZone && !isVisible) {
           setIsVisible(true);
+          setHasInitiallyShown(true); // Mark as having been shown through interaction
           if (hideTimeoutRef.current) {
             clearTimeout(hideTimeoutRef.current);
             hideTimeoutRef.current = null;

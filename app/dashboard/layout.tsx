@@ -288,6 +288,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               triggerHeight={128}
               hideDelay={175}
               showAnimation={true}
+              showOnLoad={true}
+              initialShowDuration={5000}
             >
             <DockTooltip content="Home" shortcut="G then H">
               <DockIcon 

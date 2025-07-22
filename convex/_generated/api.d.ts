@@ -18,6 +18,7 @@ import type * as enrichment from "../enrichment.js";
 import type * as leads from "../leads.js";
 import type * as leadsCrud from "../leadsCrud.js";
 import type * as scoring from "../scoring.js";
+import type * as search from "../search.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -33,6 +34,7 @@ declare const fullApi: ApiFromModules<{
   leads: typeof leads;
   leadsCrud: typeof leadsCrud;
   scoring: typeof scoring;
+  search: typeof search;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

@@ -6,7 +6,7 @@ import { Search, Home, User, Settings, Sun, Moon, X } from "lucide-react";
 import { BookmarkCheckIcon } from "@/components/ui/icons";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -118,7 +118,7 @@ export function CommandPalette({
     // Use capture phase to intercept events before they reach dashboard layout
     document.addEventListener('keydown', handleKeyDown, true);
     return () => document.removeEventListener('keydown', handleKeyDown, true);
-  }, [isOpen, onClose, onToggleTheme, onCloseAllDrawers]);
+  }, [isOpen, onClose, onToggleTheme, onCloseAllDrawers]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Auto-focus the input when the command palette opens
   useEffect(() => {
@@ -130,7 +130,7 @@ export function CommandPalette({
     }
   }, [isOpen]);
 
-  const handleSearchCommand = () => {
+  const handleSearchCommand = useCallback(() => {
     // Close any open drawers first
     onCloseAllDrawers?.();
     // Delay to ensure smooth ease-out transition completes before opening new drawer
@@ -138,9 +138,9 @@ export function CommandPalette({
       onOpenSearch?.();
     }, 150);
     onClose();
-  };
+  }, [onCloseAllDrawers, onOpenSearch, onClose]);
 
-  const handleLeadRadarCommand = () => {
+  const handleLeadRadarCommand = useCallback(() => {
     // Close any open drawers first
     onCloseAllDrawers?.();
     // Delay to ensure smooth ease-out transition completes before opening new drawer
@@ -148,7 +148,7 @@ export function CommandPalette({
       onOpenLeadRadar?.();
     }, 150);
     onClose();
-  };
+  }, [onCloseAllDrawers, onOpenLeadRadar, onClose]);
 
   const handleHomeCommand = () => {
     // Close all drawers and command palette

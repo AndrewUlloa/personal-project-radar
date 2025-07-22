@@ -8,13 +8,15 @@ import { ChartRadialText } from "@/components/dashboard/ChartRadialText";
 import { ChartRadarGridCustom } from "@/components/dashboard/ChartRadarGridCustom";
 import { ChartBarStacked } from "@/components/dashboard/ChartBarStacked";
 import { ConvexTestDashboard } from "@/components/dashboard/ConvexTestDashboard";
+import { Phase6TestDashboard } from "@/components/dashboard/Phase6TestDashboard";
 import { NoSSR } from "@/components/ui/no-ssr";
 import { useState, useEffect } from "react";
 import { Monitor } from "lucide-react";
 
 export default function Dashboard() {
   const [isDesktop, setIsDesktop] = useState(true);
-  const [showConvexTest, setShowConvexTest] = useState(true); // Show Convex test by default
+  const [showConvexTest, setShowConvexTest] = useState(false);
+  const [showPhase6Test, setShowPhase6Test] = useState(true); // Show Phase 6 test by default
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -63,17 +65,49 @@ export default function Dashboard() {
     return <DesktopOnlyMessage />;
   }
 
+  // Show Phase 6 test dashboard if enabled
+  if (showPhase6Test) {
+    return (
+      <div className="relative">
+        {/* Toggle Buttons */}
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          <button
+            onClick={() => { setShowConvexTest(true); setShowPhase6Test(false); }}
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            Phase 5 Dashboard
+          </button>
+          <button
+            onClick={() => setShowPhase6Test(false)}
+            className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            Back to Dashboard
+          </button>
+        </div>
+        <Phase6TestDashboard />
+      </div>
+    );
+  }
+
   // Show Convex test dashboard if enabled
   if (showConvexTest) {
     return (
       <div className="relative">
-        {/* Toggle Button */}
-        <button
-          onClick={() => setShowConvexTest(false)}
-          className="absolute top-4 right-4 z-10 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-        >
-          Switch to Original Dashboard
-        </button>
+        {/* Toggle Buttons */}
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          <button
+            onClick={() => setShowPhase6Test(true)}
+            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            Phase 6 Search
+          </button>
+          <button
+            onClick={() => setShowConvexTest(false)}
+            className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            Back to Dashboard
+          </button>
+        </div>
         <ConvexTestDashboard />
       </div>
     );
@@ -82,13 +116,21 @@ export default function Dashboard() {
   // Regular dashboard widgets for desktop screens
   return (
     <div className="relative">
-      {/* Toggle Button */}
-      <button
-        onClick={() => setShowConvexTest(true)}
-        className="absolute top-4 right-4 z-10 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-      >
-        View Convex Integration Test
-      </button>
+      {/* Toggle Buttons */}
+      <div className="absolute top-4 right-4 z-10 flex gap-2">
+        <button
+          onClick={() => setShowPhase6Test(true)}
+          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+        >
+          View Phase 6: Search Integration
+        </button>
+        <button
+          onClick={() => setShowConvexTest(true)}
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+        >
+          View Phase 5: Dashboard
+        </button>
+      </div>
     <div className="grid grid-rows-3 gap-6 h-[calc(100vh-9rem)]">
       {/* Chart Widget - takes exactly 1/3 of available height (same as each row in 3x2 grid) */}
       <div className="h-full widget-animate" style={{ animation: 'fadeUp 600ms ease-out 2400ms forwards' }}>

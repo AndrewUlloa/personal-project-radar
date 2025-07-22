@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { useEffect } from "react";
-import { Search, Command, History, TrendingUp, Users, FileText } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Search, Command, History, TrendingUp, Users, FileText, Plus, Check, AlertCircle } from "lucide-react";
 import {
   Drawer,
   DrawerClose,
@@ -14,6 +14,9 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { buttonVariants } from "@/components/ui/button";
+import { useAction, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { toast } from "sonner";
 
 interface SearchDrawerProps {
   isDarkMode: boolean;
@@ -24,6 +27,12 @@ interface SearchDrawerProps {
 export default function SearchDrawer({ isDarkMode, children, onOpenChange }: SearchDrawerProps) {
   const [searchValue, setSearchValue] = React.useState("");
   const [open, setOpen] = React.useState(false);
+  const [companyName, setCompanyName] = useState("");
+  const [website, setWebsite] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Convex hooks
+  const searchAndAddCompany = useAction(api.search.searchAndAddCompany);
 
   // Disable text selection on the page while drawer is open
   useEffect(() => {
@@ -75,17 +84,78 @@ export default function SearchDrawer({ isDarkMode, children, onOpenChange }: Sea
 
   const recentSearches = [
     "OpenAI funding",
-    "AI startup trends",
+    "AI startup trends", 
     "SaaS metrics",
     "Y Combinator companies"
   ];
 
-  const searchSuggestions = [
+  const suggestionItems = [
     { icon: TrendingUp, label: "Market Trends", description: "Latest industry insights" },
     { icon: Users, label: "Company Profiles", description: "Search company information" },
     { icon: FileText, label: "Research Reports", description: "Access detailed reports" },
     { icon: Command, label: "Quick Actions", description: "Perform common tasks" }
   ];
+
+  // Handle adding company to Lead Radar
+  const handleAddCompany = async () => {
+    if (!companyName.trim() || !website.trim()) {
+      toast.error("Please enter both company name and website");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const result = await searchAndAddCompany({
+        companyName: companyName.trim(),
+        website: website.trim(),
+        source: "search_drawer",
+      });
+
+      if (result.isNew) {
+        toast.success(`🎉 ${companyName} added to Lead Radar! Enrichment in progress...`);
+      } else {
+        toast.info(`${companyName} is already in your Lead Radar`);
+      }
+
+      // Clear form and close drawer
+      setCompanyName("");
+      setWebsite("");
+      setSearchValue("");
+      setOpen(false);
+      onOpenChange?.(false);
+      
+    } catch (error) {
+      console.error("Failed to add company:", error);
+      toast.error(`Failed to add ${companyName}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Parse search input to extract company name and website
+  const parseSearchInput = (input: string) => {
+    // Simple parsing - users can type "Company Name - website.com" or just "website.com"
+    if (input.includes(" - ")) {
+      const [name, url] = input.split(" - ");
+      setCompanyName(name.trim());
+      setWebsite(url.trim());
+    } else if (input.includes(".")) {
+      // Looks like a website
+      setWebsite(input.trim());
+      setCompanyName("");
+    } else {
+      // Just a company name
+      setCompanyName(input.trim());
+      setWebsite("");
+    }
+  };
+
+  // Update parsing when search value changes
+  React.useEffect(() => {
+    if (searchValue) {
+      parseSearchInput(searchValue);
+    }
+  }, [searchValue]);
 
   return (
     <Drawer 
@@ -122,16 +192,44 @@ export default function SearchDrawer({ isDarkMode, children, onOpenChange }: Sea
             </DrawerHeader>
 
             {/* Search Input */}
-            <div className="relative mb-8">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <input
-                type="text"
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                placeholder="Search for companies, markets, or insights..."
-                className="w-full pl-12 pr-4 py-4 text-lg rounded-xl border border-gray-200/60 bg-white/80 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-300 transition-all duration-200"
-                autoFocus
-              />
+            <div className="space-y-4 mb-8">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <input
+                  type="text"
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  placeholder="Type: Company Name - website.com (or just website.com)"
+                  className="w-full pl-12 pr-4 py-4 text-lg rounded-xl border border-gray-200/60 bg-white/80 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-300 transition-all duration-200"
+                  autoFocus
+                />
+              </div>
+              
+              {/* Parsed fields preview */}
+              {(companyName || website) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="relative">
+                    <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <input
+                      type="text"
+                      value={companyName}
+                      onChange={(e) => setCompanyName(e.target.value)}
+                      placeholder="Company Name"
+                      className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200/60 bg-white/80 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-300 transition-all duration-200"
+                    />
+                  </div>
+                  <div className="relative">
+                    <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <input
+                      type="text"
+                      value={website}
+                      onChange={(e) => setWebsite(e.target.value)}
+                      placeholder="website.com"
+                      className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200/60 bg-white/80 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-300 transition-all duration-200"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Recent Searches */}
@@ -157,7 +255,7 @@ export default function SearchDrawer({ isDarkMode, children, onOpenChange }: Sea
 
             {/* Search Suggestions */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-              {searchSuggestions.map((suggestion) => {
+              {suggestionItems.map((suggestion) => {
                 const IconComponent = suggestion.icon;
                 return (
                   <button
@@ -180,10 +278,21 @@ export default function SearchDrawer({ isDarkMode, children, onOpenChange }: Sea
 
             <DrawerFooter className="flex flex-row gap-3 pt-0">
               <button
-                className="flex-1 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={!searchValue}
+                onClick={handleAddCompany}
+                disabled={!companyName.trim() || !website.trim() || isSubmitting}
+                className="flex-1 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                Search
+                {isSubmitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                    Adding...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="h-4 w-4" />
+                    Add to Lead Radar
+                  </>
+                )}
               </button>
               <DrawerClose asChild>
                 <button className="px-6 py-3 bg-white/60 border border-gray-200/60 hover:bg-gray-50/60 rounded-lg font-medium transition-colors duration-200">

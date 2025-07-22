@@ -102,7 +102,7 @@ export function ConvexTestDashboard() {
       {/* Today's Activity */}
       <Card>
         <CardHeader>
-          <CardTitle>Today's Hourly Activity</CardTitle>
+          <CardTitle>Today&apos;s Hourly Activity</CardTitle>
           <CardDescription>New leads discovered by hour</CardDescription>
         </CardHeader>
         <CardContent>

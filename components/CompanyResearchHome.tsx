@@ -2,6 +2,9 @@
 
 "use client";
 import { useState, FormEvent } from "react";
+import { useAction } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { toast } from "sonner";
 import LinkedInDisplay from "./linkedin/LinkedinDisplay";
 import CompetitorsDisplay from "./competitors/CompetitorsDisplay";
 import NewsDisplay from "./news/NewsDisplay";
@@ -107,6 +110,10 @@ export default function CompanyResearcher() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [companyUrl, setCompanyUrl] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isAddingToRadar, setIsAddingToRadar] = useState(false);
+  
+  // Convex integration
+  const searchAndAddCompany = useAction(api.search.searchAndAddCompany);
   const [linkedinData, setLinkedinData] = useState<LinkedInData | null>(null);
   const [competitors, setCompetitors] = useState<Competitor[] | null>(null);
   const [news, setNews] = useState<NewsItem[] | null>(null);
@@ -736,6 +743,52 @@ export default function CompanyResearcher() {
     return parseInt(match[1].replace(/,/g, ''));
   };
 
+  // Add to Lead Radar functionality
+  const handleAddToRadar = async () => {
+    if (!companyUrl.trim()) {
+      toast.error("Please enter a company URL first");
+      return;
+    }
+
+    const domain = extractDomain(companyUrl);
+    if (!domain) {
+      toast.error("Please enter a valid company URL");
+      return;
+    }
+
+    // Extract company name from LinkedIn data or website
+    let companyName = "";
+    if (linkedinData?.text) {
+      // Try to extract company name from LinkedIn text
+      const lines = linkedinData.text.split('\n');
+      companyName = lines[0] || domain.split('.')[0];
+    } else {
+      // Use domain as fallback
+      companyName = domain.split('.')[0];
+    }
+
+    setIsAddingToRadar(true);
+    try {
+      const result = await searchAndAddCompany({
+        companyName: companyName,
+        website: domain,
+        source: "company_research",
+      });
+
+      if (result.isNew) {
+        toast.success(`🎉 ${companyName} added to Lead Radar! Enrichment in progress...`);
+      } else {
+        toast.info(`${companyName} is already in your Lead Radar`);
+      }
+      
+    } catch (error) {
+      console.error("Failed to add company to radar:", error);
+      toast.error(`Failed to add ${companyName}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsAddingToRadar(false);
+    }
+  };
+
   // Main Research Function
   const handleResearch = async (e: FormEvent) => {
     e.preventDefault();
@@ -874,15 +927,40 @@ export default function CompanyResearcher() {
           placeholder="Enter Company URL (e.g., example.com)"
           className="w-full bg-pb-surface p-3 border box-border outline-none rounded-sm ring-2 ring-pb-ring resize-none opacity-0 animate-fade-up [animation-delay:600ms]"
         />
-        <button
-          type="submit"
-          className={`w-full text-white font-semibold px-2 py-2 rounded-sm transition-opacity opacity-0 animate-fade-up [animation-delay:800ms] min-h-[50px] ${
-            isGenerating ? 'bg-pb-muted' : 'bg-pb-primary ring-2 ring-pb-ring'
-          } transition-colors`}
-          disabled={isGenerating}
-        >
-          {isGenerating ? 'Researching...' : 'Research Now'}
-        </button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <button
+            type="submit"
+            className={`text-white font-semibold px-2 py-2 rounded-sm transition-opacity opacity-0 animate-fade-up [animation-delay:800ms] min-h-[50px] ${
+              isGenerating ? 'bg-pb-muted' : 'bg-pb-primary ring-2 ring-pb-ring'
+            } transition-colors`}
+            disabled={isGenerating}
+          >
+            {isGenerating ? 'Researching...' : 'Research Now'}
+          </button>
+          
+          <button
+            type="button"
+            onClick={handleAddToRadar}
+            className={`text-white font-semibold px-2 py-2 rounded-sm transition-opacity opacity-0 animate-fade-up [animation-delay:900ms] min-h-[50px] flex items-center justify-center gap-2 ${
+              isAddingToRadar ? 'bg-pb-muted' : 'bg-green-600 hover:bg-green-700 ring-2 ring-green-500'
+            } transition-colors`}
+            disabled={isAddingToRadar || !companyUrl.trim()}
+          >
+            {isAddingToRadar ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                Adding...
+              </>
+            ) : (
+              <>
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Add to Lead Radar
+              </>
+            )}
+          </button>
+        </div>
 
         <div className="flex items-center justify-end gap-2 sm:gap-3 pt-4 opacity-0 animate-fade-up [animation-delay:1000ms]">
           <span className="text-pb-foreground">Powered by</span>

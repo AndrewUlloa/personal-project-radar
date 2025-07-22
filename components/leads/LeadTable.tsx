@@ -236,7 +236,7 @@ export function LeadTable() {
       enableSorting: false,
       enableHiding: false,
     },
-  ], [updateLeadStatus, removeLead]);
+  ], [removeLead]);
 
   return (
     <>

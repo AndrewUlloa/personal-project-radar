@@ -78,11 +78,11 @@ const lightThemeStyle = `
   }
 `;
 
-interface DashboardLayoutProps {
+interface DashboardLayoutClientProps {
   children: React.ReactNode;
 }
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+export default function DashboardLayoutClient({ children }: DashboardLayoutClientProps) {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [, setIsClient] = useState(false);

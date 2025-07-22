@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Analytics } from '@vercel/analytics/next';
 import { Figtree } from 'next/font/google';
 import "./globals.css";
+import DashboardLayoutClient from "./DashboardLayoutClient";
 
 const figtree = Figtree({
   subsets: ['latin'],
@@ -44,10 +45,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${figtree.variable} font-sans antialiased`}
-      >
-        {children}
+      <body className={`${figtree.variable} font-sans antialiased`}>
+        <DashboardLayoutClient>
+          {children}
+        </DashboardLayoutClient>
         <Analytics />
       </body>
     </html>

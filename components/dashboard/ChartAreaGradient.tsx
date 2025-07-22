@@ -43,9 +43,9 @@ export function ChartAreaGradient() {
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="pb-2">
-        <CardTitle className="font-medium leading-none tracking-tight" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)' }}>ARPU Forecast (rolling 30d)</CardTitle>
+        <CardTitle className="font-medium leading-none tracking-tight" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)' }}>Pipeline Growth (30d)</CardTitle>
         <CardDescription style={{ fontSize: 'clamp(0.75rem, 2vw, 1rem)' }}>
-          Average revenue potential per lead — 7-day rolling average
+          Cumulative revenue potential growth — total pipeline expansion
         </CardDescription>
       </CardHeader>
       <div className="flex-1 min-h-0 px-6">
@@ -118,10 +118,10 @@ export function ChartAreaGradient() {
         <div className="flex w-full items-start gap-2">
           <div className="grid gap-1">
             <div className="flex items-center gap-2 leading-none font-medium" style={{ fontSize: 'clamp(0.75rem, 2vw, 0.875rem)' }}>
-              Total pipeline: ${((arpuData?.summary?.totalEstimatedARPU ?? 0) / 1000).toFixed(1)}K across {arpuData?.summary?.companiesCount ?? 0} leads 💰
+              Current pipeline: ${((arpuData?.summary?.totalEstimatedARPU ?? 0) / 1000).toFixed(1)}K across {arpuData?.summary?.companiesCount ?? 0} leads 💰
             </div>
             <div className="text-muted-foreground flex items-center gap-2 leading-none" style={{ fontSize: 'clamp(0.625rem, 1.5vw, 0.75rem)' }}>
-              Cumulative revenue potential forecast
+              Total estimated revenue potential — latest 30 days
             </div>
           </div>
         </div>

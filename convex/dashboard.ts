@@ -373,39 +373,33 @@ function calculateRollingARPU(companies: any[]) {
     dailyGroups[date].push(company);
   });
 
-  // Calculate rolling averages (up to 7 days)
+  // Calculate cumulative pipeline value over time instead of daily averages
   const sortedDates = Object.keys(dailyGroups).sort();
   const rollingData = [];
+  let cumulativeCompanies: any[] = [];
 
-  // If we have less than 7 days, start from day 0
-  const startIndex = Math.min(6, sortedDates.length - 1);
-  
-  for (let i = startIndex; i < sortedDates.length; i++) {
-    // Get up to 7 days of data ending at day i
-    const lookbackDays = Math.min(7, i + 1);
-    const weekDates = sortedDates.slice(Math.max(0, i - lookbackDays + 1), i + 1);
-    const weekCompanies = weekDates.flatMap(date => dailyGroups[date]);
+  for (let i = 0; i < sortedDates.length; i++) {
+    // Add companies from this day to cumulative total
+    cumulativeCompanies = cumulativeCompanies.concat(dailyGroups[sortedDates[i]]);
     
-    const avgARPU = weekCompanies.length > 0 
-      ? weekCompanies.reduce((sum, c) => sum + (c.estimated_arpu || 0), 0) / weekCompanies.length 
-      : 0;
+    // Calculate total pipeline value (sum of all estimated ARPU)
+    const totalPipeline = cumulativeCompanies.reduce((sum, c) => sum + (c.estimated_arpu || 0), 0);
 
     rollingData.push({
       date: sortedDates[i],
-      value: Math.round(avgARPU),
-      count: weekCompanies.length,
+      value: Math.round(totalPipeline), // Total cumulative pipeline
+      count: cumulativeCompanies.length,
     });
   }
 
-  // If we have no data for rolling average but have companies, 
-  // show at least the current average
+  // If we have no daily data but have companies, show current total
   if (rollingData.length === 0 && companies.length > 0) {
     const today = new Date().toISOString().split('T')[0];
-    const avgARPU = companies.reduce((sum, c) => sum + (c.estimated_arpu || 0), 0) / companies.length;
+    const totalPipeline = companies.reduce((sum, c) => sum + (c.estimated_arpu || 0), 0);
     
     rollingData.push({
       date: today,
-      value: Math.round(avgARPU),
+      value: Math.round(totalPipeline),
       count: companies.length,
     });
   }

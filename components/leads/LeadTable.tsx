@@ -162,10 +162,15 @@ export function LeadTable() {
       cell: ({ row }) => {
         const signals = row.getValue("keySignals") as string[];
         return (
-          <div className="flex flex-wrap gap-1 max-w-40">
+          <div className="flex flex-wrap gap-1 max-w-32">
             {signals.slice(0, 2).map((signal, index) => (
-              <Badge key={index} variant="outline" className="text-xs py-0 h-4">
-                {signal}
+              <Badge 
+                key={index} 
+                variant="outline" 
+                className="text-xs py-0 h-4 max-w-fit truncate"
+                title={signal} // Show full text on hover
+              >
+                {signal.length > 12 ? signal.substring(0, 12) + '...' : signal}
               </Badge>
             ))}
             {signals.length > 2 && (

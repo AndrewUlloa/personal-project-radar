@@ -14,11 +14,13 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as automation from "../automation.js";
+import type * as caching from "../caching.js";
 import type * as crons from "../crons.js";
 import type * as dashboard from "../dashboard.js";
 import type * as enrichment from "../enrichment.js";
 import type * as leads from "../leads.js";
 import type * as leadsCrud from "../leadsCrud.js";
+import type * as monitoring from "../monitoring.js";
 import type * as scoring from "../scoring.js";
 import type * as search from "../search.js";
 
@@ -32,11 +34,13 @@ import type * as search from "../search.js";
  */
 declare const fullApi: ApiFromModules<{
   automation: typeof automation;
+  caching: typeof caching;
   crons: typeof crons;
   dashboard: typeof dashboard;
   enrichment: typeof enrichment;
   leads: typeof leads;
   leadsCrud: typeof leadsCrud;
+  monitoring: typeof monitoring;
   scoring: typeof scoring;
   search: typeof search;
 }>;

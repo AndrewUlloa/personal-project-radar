@@ -60,12 +60,103 @@ export const list = query({
         factors: company.score_factors || [],
       },
 
-      // Raw data for debugging
+      // Raw data for debugging - populated by detailed query
       rawData: {
         enrichment: {},
         scoreFeatures: {},
       },
     }));
+  },
+});
+
+// Detailed query for individual company with enrichment data
+export const getDetails = query({
+  args: {
+    companyId: v.id("companies"),
+  },
+  handler: async (ctx, args) => {
+    const company = await ctx.db.get(args.companyId);
+    if (!company) return null;
+
+    // Get enrichment data from raw_enrichment table
+    const enrichmentRecords = await ctx.db
+      .query("raw_enrichment")
+      .withIndex("by_company", (q) => q.eq("company_id", args.companyId))
+      .collect();
+
+    // Get event timeline
+    const events = await ctx.db
+      .query("event_log")
+      .withIndex("by_company_and_time", (q) => q.eq("company_id", args.companyId))
+      .order("desc")
+      .take(20);
+
+    // Organize enrichment data by source
+    const enrichmentData: Record<string, any> = {};
+    for (const record of enrichmentRecords) {
+      try {
+        enrichmentData[record.source] = JSON.parse(record.json_payload);
+      } catch (error) {
+        console.warn(`Failed to parse enrichment data for source ${record.source}`);
+        enrichmentData[record.source] = { error: "Invalid JSON data" };
+      }
+    }
+
+    // Transform company to LeadItem format with full enrichment data
+    return {
+      id: company._id,
+      companyName: company.company_name,
+      website: company.website,
+      logoUrl: null,
+      geoMarket: company.geo_market || "Unknown",
+      leadScore: company.lead_score || 0,
+      arpuBand: mapToARPUBand(company.arpu_band),
+      keySignals: company.key_signals || [],
+      sizeFTE: company.employee_range || "Unknown",
+      lastActivity: {
+        type: getActivityType(company.last_activity_description),
+        description: company.last_activity_description || "No activity",
+        timeAgo: formatTimeAgo(company.last_activity_timestamp),
+      },
+      status: company.status || "new",
+      assignedTo: company.assigned_to || null,
+      estimatedARPU: company.estimated_arpu || 0,
+      addedAt: company._creationTime,
+
+      // Rich context data
+      overview: {
+        address: company.address || "Unknown",
+        industry: company.industry || "Unknown",
+        founded: company.founded || null,
+        description: company.description || "No description available",
+      },
+
+      // Timeline from events
+      timeline: events.map((event) => ({
+        id: event._id,
+        type: event.event_type as any,
+        description: event.description || event.event_type,
+        timestamp: new Date(event._creationTime),
+        metadata: event.metadata,
+      })),
+
+      // AI scoring rationale
+      rationale: {
+        explanation: company.score_rationale || "No scoring rationale available",
+        factors: company.score_factors || [],
+      },
+
+      // REAL enrichment data from database
+      rawData: {
+        enrichment: enrichmentData,
+        scoreFeatures: {
+          leadScore: company.lead_score,
+          arpuBand: company.arpu_band,
+          keySignals: company.key_signals,
+          scoreRationale: company.score_rationale,
+        },
+      },
+    };
   },
 });
 

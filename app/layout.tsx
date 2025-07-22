@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     url: 'https://personal-project-radar.vercel.app',
     siteName: 'Personal Project Radar',
     images: [{
-      url: '/opengraph-image.png',
+      url: 'https://gb4pqrhxyr1ffqke.public.blob.vercel-storage.com/personalproject_og_image.png',
       width: 3840,
       height: 2500,
       alt: 'Personal Project Radar',
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Personal Project Radar',
     description: 'Personal Project Radar powered researchers analyze faster. Advanced research and insights platform.',
-    images: ['/opengraph-image.png'],
+    images: ['https://gb4pqrhxyr1ffqke.public.blob.vercel-storage.com/personalproject_og_image.png'],
   },
   metadataBase: new URL('https://personal-project-radar.vercel.app'),
   alternates: {

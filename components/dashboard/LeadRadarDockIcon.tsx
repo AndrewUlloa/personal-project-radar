@@ -305,40 +305,7 @@ export default function LeadRadarDockIcon({
                 <LeadTable />
               </div>
 
-              <DrawerFooter className="flex flex-row gap-3 pt-4 mt-4">
-                <Button
-                  className="flex-1 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors duration-200"
-                  onClick={() => {
-                    const csvData = leads.map(lead => ({
-                      company: lead.companyName,
-                      website: lead.website,
-                      score: lead.leadScore,
-                      market: lead.geoMarket,
-                      arpu: lead.estimatedARPU,
-                      status: lead.status
-                    }));
-                    console.log("Export lead pipeline:", csvData);
-                  }}
-                >
-                  Export Pipeline
-                </Button>
-                <Button
-                  className="px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors duration-200"
-                  onClick={() => {
-                    clearAllLeads();
-                  }}
-                >
-                  Clear Radar
-                </Button>
-                <DrawerClose asChild>
-                  <Button 
-                    variant="outline" 
-                    className="px-6 py-3 bg-white/60 border border-gray-200/60 hover:bg-gray-50/60 rounded-lg font-medium transition-colors duration-200"
-                  >
-                    Close
-                  </Button>
-                </DrawerClose>
-              </DrawerFooter>
+
             </div>
           </div>
         </DrawerContent>

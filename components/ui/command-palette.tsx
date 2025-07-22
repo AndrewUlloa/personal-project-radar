@@ -6,7 +6,7 @@ import { Search, Home, User, Settings, Sun, Moon, X } from "lucide-react";
 import { BookmarkCheckIcon } from "@/components/ui/icons";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -28,7 +28,6 @@ export function CommandPalette({
   onCloseAllDrawers 
 }: CommandPaletteProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const gPressedRef = useRef(false);
 
   // Handle keyboard events when command palette is open
   useEffect(() => {
@@ -48,48 +47,29 @@ export function CommandPalette({
         e.preventDefault();
         e.stopPropagation();
         onClose();
-        gPressedRef.current = false;
         return;
       }
 
-      // Handle G key combinations within command palette
-      if (e.key.toLowerCase() === 'g' && !gPressedRef.current) {
+      // Handle Command shortcuts within command palette
+      if ((e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         e.stopPropagation();
-        gPressedRef.current = true;
-        // Reset G key after 2 seconds
-        setTimeout(() => {
-          gPressedRef.current = false;
-        }, 2000);
-        return;
-      }
-
-      // G + [key] combinations
-      if (gPressedRef.current) {
-        e.preventDefault();
-        e.stopPropagation();
-        gPressedRef.current = false;
         
-        switch (e.key.toLowerCase()) {
-          case 'h':
+        switch (e.key) {
+          case '1':
             // Close all overlays including command palette
             onCloseAllDrawers?.();
             onClose();
             break;
-          case 's':
+          case '2':
             // Open Search
             handleSearchCommand();
             break;
-          case 'w':
+          case '3':
             // Open Lead Radar
             handleLeadRadarCommand();
             break;
-          case ';':
-            // Settings - for now just close palette
-            onClose();
-            console.log('Open Settings');
-            break;
-          case 't':
+          case '\\':
             // Toggle theme
             onToggleTheme();
             onClose();
@@ -100,13 +80,10 @@ export function CommandPalette({
       
       // Block dock shortcuts when command palette is open to prevent interference
       const isDockShortcut = (
-        e.key.toLowerCase() === 'g' ||
-        (e.key.toLowerCase() === 's' && !e.metaKey && !e.ctrlKey) ||
-        (e.key.toLowerCase() === 'w' && !e.metaKey && !e.ctrlKey) ||
-        (e.key.toLowerCase() === 'h' && !e.metaKey && !e.ctrlKey) ||
-        (e.key.toLowerCase() === 'u' && !e.metaKey && !e.ctrlKey) ||
-        (e.key.toLowerCase() === 't' && !e.metaKey && !e.ctrlKey) ||
-        (e.key === ';' && !e.metaKey && !e.ctrlKey)
+        (e.key === '1' && (e.metaKey || e.ctrlKey)) ||
+        (e.key === '2' && (e.metaKey || e.ctrlKey)) ||
+        (e.key === '3' && (e.metaKey || e.ctrlKey)) ||
+        (e.key === '\\' && (e.metaKey || e.ctrlKey))
       );
       
       if (isDockShortcut) {
@@ -118,7 +95,7 @@ export function CommandPalette({
     // Use capture phase to intercept events before they reach dashboard layout
     document.addEventListener('keydown', handleKeyDown, true);
     return () => document.removeEventListener('keydown', handleKeyDown, true);
-  }, [isOpen, onClose, onToggleTheme, onCloseAllDrawers]);
+  }, [isOpen, onClose, onToggleTheme, onCloseAllDrawers]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Auto-focus the input when the command palette opens
   useEffect(() => {
@@ -130,7 +107,7 @@ export function CommandPalette({
     }
   }, [isOpen]);
 
-  const handleSearchCommand = () => {
+  const handleSearchCommand = useCallback(() => {
     // Close any open drawers first
     onCloseAllDrawers?.();
     // Delay to ensure smooth ease-out transition completes before opening new drawer
@@ -138,9 +115,9 @@ export function CommandPalette({
       onOpenSearch?.();
     }, 150);
     onClose();
-  };
+  }, [onCloseAllDrawers, onOpenSearch, onClose]);
 
-  const handleLeadRadarCommand = () => {
+  const handleLeadRadarCommand = useCallback(() => {
     // Close any open drawers first
     onCloseAllDrawers?.();
     // Delay to ensure smooth ease-out transition completes before opening new drawer
@@ -148,7 +125,7 @@ export function CommandPalette({
       onOpenLeadRadar?.();
     }, 150);
     onClose();
-  };
+  }, [onCloseAllDrawers, onOpenLeadRadar, onClose]);
 
   const handleHomeCommand = () => {
     // Close all drawers and command palette
@@ -276,18 +253,7 @@ export function CommandPalette({
                           ? "bg-gray-800 border-gray-600 text-gray-300" 
                           : "bg-gray-100 border-gray-300 text-gray-600"
                       )}>
-                        G
-                      </kbd>
-                      <span className={cn("text-xs", isDarkMode ? "text-gray-400" : "text-gray-500")}>
-                        then
-                      </span>
-                      <kbd className={cn(
-                        "px-1.5 py-0.5 text-xs font-mono rounded border",
-                        isDarkMode 
-                          ? "bg-gray-800 border-gray-600 text-gray-300" 
-                          : "bg-gray-100 border-gray-300 text-gray-600"
-                      )}>
-                        S
+                        ⌘2
                       </kbd>
                     </div>
                   </Command.Item>
@@ -311,18 +277,7 @@ export function CommandPalette({
                           ? "bg-gray-800 border-gray-600 text-gray-300" 
                           : "bg-gray-100 border-gray-300 text-gray-600"
                       )}>
-                        G
-                      </kbd>
-                      <span className={cn("text-xs", isDarkMode ? "text-gray-400" : "text-gray-500")}>
-                        then
-                      </span>
-                      <kbd className={cn(
-                        "px-1.5 py-0.5 text-xs font-mono rounded border",
-                        isDarkMode 
-                          ? "bg-gray-800 border-gray-600 text-gray-300" 
-                          : "bg-gray-100 border-gray-300 text-gray-600"
-                      )}>
-                        W
+                        ⌘3
                       </kbd>
                     </div>
                   </Command.Item>
@@ -354,18 +309,7 @@ export function CommandPalette({
                           ? "bg-gray-800 border-gray-600 text-gray-300" 
                           : "bg-gray-100 border-gray-300 text-gray-600"
                       )}>
-                        G
-                      </kbd>
-                      <span className={cn("text-xs", isDarkMode ? "text-gray-400" : "text-gray-500")}>
-                        then
-                      </span>
-                      <kbd className={cn(
-                        "px-1.5 py-0.5 text-xs font-mono rounded border",
-                        isDarkMode 
-                          ? "bg-gray-800 border-gray-600 text-gray-300" 
-                          : "bg-gray-100 border-gray-300 text-gray-600"
-                      )}>
-                        H
+                        ⌘1
                       </kbd>
                     </div>
                   </Command.Item>
@@ -389,18 +333,7 @@ export function CommandPalette({
                           ? "bg-gray-800 border-gray-600 text-gray-300" 
                           : "bg-gray-100 border-gray-300 text-gray-600"
                       )}>
-                        G
-                      </kbd>
-                      <span className={cn("text-xs", isDarkMode ? "text-gray-400" : "text-gray-500")}>
-                        then
-                      </span>
-                      <kbd className={cn(
-                        "px-1.5 py-0.5 text-xs font-mono rounded border",
-                        isDarkMode 
-                          ? "bg-gray-800 border-gray-600 text-gray-300" 
-                          : "bg-gray-100 border-gray-300 text-gray-600"
-                      )}>
-                        ;
+                        ⌘;
                       </kbd>
                     </div>
                   </Command.Item>
@@ -444,18 +377,7 @@ export function CommandPalette({
                           ? "bg-gray-800 border-gray-600 text-gray-300" 
                           : "bg-gray-100 border-gray-300 text-gray-600"
                       )}>
-                        G
-                      </kbd>
-                      <span className={cn("text-xs", isDarkMode ? "text-gray-400" : "text-gray-500")}>
-                        then
-                      </span>
-                      <kbd className={cn(
-                        "px-1.5 py-0.5 text-xs font-mono rounded border",
-                        isDarkMode 
-                          ? "bg-gray-800 border-gray-600 text-gray-300" 
-                          : "bg-gray-100 border-gray-300 text-gray-600"
-                      )}>
-                        T
+                        ⌘\
                       </kbd>
                     </div>
                   </Command.Item>

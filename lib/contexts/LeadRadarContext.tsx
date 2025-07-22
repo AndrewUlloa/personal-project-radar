@@ -1,15 +1,17 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { LeadItem, sampleLeadData } from '@/lib/types';
+import React, { createContext, useContext, ReactNode } from 'react';
+import { LeadItem } from '@/lib/types';
 import { toast } from 'sonner';
+import { useQuery, useMutation, useAction } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 
 interface LeadRadarContextType {
   leads: LeadItem[];
-  addLead: (item: Omit<LeadItem, 'id' | 'addedAt'>) => void;
-  removeLead: (id: string) => void;
-  clearAllLeads: () => void;
-  updateLeadStatus: (id: string, status: LeadItem['status'], assignedTo?: string) => void;
+  addLead: (item: Omit<LeadItem, 'id' | 'addedAt'>) => Promise<void>;
+  removeLead: (id: string) => Promise<void>;
+  clearAllLeads: () => Promise<void>;
+  updateLeadStatus: (id: string, status: LeadItem['status'], assignedTo?: string) => Promise<void>;
   getLeadById: (id: string) => LeadItem | undefined;
   getNewLeadsLast24h: () => number;
   getAverageLeadScore: () => number;
@@ -20,64 +22,102 @@ interface LeadRadarContextType {
 const LeadRadarContext = createContext<LeadRadarContextType | undefined>(undefined);
 
 export function LeadRadarProvider({ children }: { children: ReactNode }) {
-  const [leads, setLeads] = useState<LeadItem[]>(sampleLeadData);
+  // Use Convex queries for real-time data
+  const convexLeads = useQuery(api.leads.list, {}) || [];
+  // Temporary type assertions until Convex types stabilize 
+  const enrichCompanyAction = useAction((api as any).enrichment.enrichCompany);
 
-  const addLead = (newLead: Omit<LeadItem, 'id' | 'addedAt'>) => {
-    // Check if lead already exists
-    if (leads.some(lead => lead.website === newLead.website)) {
-      toast.error(`${newLead.companyName} is already in your lead radar`);
-      return;
-    }
+  // Transform Convex data to LeadItem format with proper type mapping
+  const leads: LeadItem[] = convexLeads.map((lead: any) => ({
+    id: lead.id,
+    companyName: lead.companyName,
+    website: lead.website,
+    logoUrl: lead.logoUrl || undefined,
+    geoMarket: lead.geoMarket,
+    leadScore: lead.leadScore,
+    arpuBand: lead.arpuBand,
+    keySignals: lead.keySignals,
+    sizeFTE: lead.sizeFTE,
+    lastActivity: lead.lastActivity,
+    status: lead.status as LeadItem['status'],
+    assignedTo: lead.assignedTo || undefined,
+    estimatedARPU: lead.estimatedARPU,
+    addedAt: new Date(lead.addedAt),
+    overview: {
+      address: lead.overview.address,
+      industry: lead.overview.industry,
+      founded: lead.overview.founded || undefined,
+      description: lead.overview.description,
+    },
+    timeline: lead.timeline,
+    rationale: {
+      explanation: lead.rationale.explanation,
+      factors: lead.rationale.factors || [], // Use the structured factors directly from Convex
+    },
+    rawData: lead.rawData,
+  }));
 
-    const leadItem: LeadItem = {
-      ...newLead,
-      id: Math.random().toString(36).substr(2, 9),
-      addedAt: new Date(),
-      status: 'new',
-    };
-
-    setLeads(prev => [...prev, leadItem]);
-    
-    toast.success(
-      <div className="flex items-center gap-2">
-        <span>Added {newLead.companyName} to lead radar</span>
-      </div>,
-      {
-        duration: 3000,
-        position: "top-center",
+  const addLead = async (newLead: Omit<LeadItem, 'id' | 'addedAt'>) => {
+    try {
+      // Check if lead already exists
+      if (leads.some(lead => lead.website === newLead.website)) {
+        toast.error(`${newLead.companyName} is already in your lead radar`);
+        return;
       }
-    );
-  };
 
-  const removeLead = (id: string) => {
-    const lead = leads.find(lead => lead.id === id);
-    setLeads(prev => prev.filter(lead => lead.id !== id));
-    
-    if (lead) {
-      toast.success(`Removed ${lead.companyName} from lead radar`, {
-        position: "top-center",
-        duration: 3000,
+      // Use Convex mutation to enrich and add the company
+      await enrichCompanyAction({ 
+        websiteUrl: newLead.website,
+        companyName: newLead.companyName 
       });
+      
+      toast.success(`Added ${newLead.companyName} to lead radar`);
+    } catch (error) {
+      toast.error(`Failed to add ${newLead.companyName}: ${error}`);
     }
   };
 
-  const clearAllLeads = () => {
-    setLeads([]);
-    toast.success('All leads cleared from radar', {
-      position: "top-center",
-      duration: 3000,
-    });
+  const deleteLeadMutation = useMutation((api as any).leadsCrud.deleteLead);
+  const updateStatusMutation = useMutation((api as any).leadsCrud.updateLeadStatus);
+  const bulkDeleteMutation = useMutation((api as any).leadsCrud.bulkDeleteLeads);
+
+  const removeLead = async (id: string) => {
+    try {
+      const lead = leads.find(lead => lead.id === id);
+      if (!lead) return;
+
+      const result = await deleteLeadMutation({ companyId: id as any });
+      toast.success(`Removed ${result.companyName} from lead radar`);
+    } catch (error) {
+      toast.error(`Failed to remove lead: ${error}`);
+    }
   };
 
-  const updateLeadStatus = (id: string, status: LeadItem['status'], assignedTo?: string) => {
-    setLeads(prev => prev.map(lead => 
-      lead.id === id 
-        ? { ...lead, status, assignedTo } 
-        : lead
-    ));
-    
-    const lead = leads.find(l => l.id === id);
-    // Status updated silently without toast notification
+  const clearAllLeads = async () => {
+    try {
+      const companyIds = leads.map(lead => lead.id as any);
+      if (companyIds.length === 0) return;
+
+      const result = await bulkDeleteMutation({ companyIds });
+      toast.success(`Removed ${result.successful} leads from radar`);
+    } catch (error) {
+      toast.error(`Failed to clear leads: ${error}`);
+    }
+  };
+
+  const updateLeadStatus = async (id: string, status: LeadItem['status'], assignedTo?: string) => {
+    try {
+      await updateStatusMutation({ 
+        companyId: id as any, 
+        status, 
+        assignedTo 
+      });
+      
+      const lead = leads.find(l => l.id === id);
+      toast.success(`Updated ${lead?.companyName} status to ${status}`);
+    } catch (error) {
+      toast.error(`Failed to update status: ${error}`);
+    }
   };
 
   const getLeadById = (id: string) => {
@@ -85,8 +125,8 @@ export function LeadRadarProvider({ children }: { children: ReactNode }) {
   };
 
   const getNewLeadsLast24h = () => {
-    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    return leads.filter(lead => lead.addedAt > yesterday).length;
+    const yesterday = Date.now() - 24 * 60 * 60 * 1000;
+    return leads.filter(lead => new Date(lead.addedAt).getTime() > yesterday).length;
   };
 
   const getAverageLeadScore = () => {

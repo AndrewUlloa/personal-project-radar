@@ -17,44 +17,47 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
+import { LoadingDisplay } from "@/components/ui/error-boundary"
 
 export const description = "A bar chart with a label"
 
-const chartData = [
-  { month: "00:00", desktop: 186 },
-  { month: "04:00", desktop: 305 },
-  { month: "08:00", desktop: 237 },
-  { month: "12:00", desktop: 73 },
-  { month: "16:00", desktop: 209 },
-  { month: "20:00", desktop: 214 },
-]
-
 const chartConfig = {
-  desktop: {
+  count: {
     label: "New Leads",
-    color: "hsl(262, 83%, 58%)", // Professional purple for activity
+    color: "hsl(142, 76%, 36%)", // Fresh green for new discoveries
   },
 } satisfies ChartConfig
 
 export function ChartBarLabel() {
+  // Fetch live new leads data for today
+  const todayData = useQuery(api.dashboard.getNewLeadsToday, {});
+
+  const isLoading = todayData === undefined;
+
+  if (isLoading) {
+    return <LoadingDisplay message="Loading today's leads..." />;
+  }
+
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="pb-2">
-        <CardTitle className="font-medium leading-none tracking-tight" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)' }}>New Leads Added Today</CardTitle>
-        <CardDescription style={{ fontSize: 'clamp(0.75rem, 2vw, 1rem)' }}>Today&apos;s hourly import velocity</CardDescription>
+        <CardTitle className="font-medium leading-none tracking-tight" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)' }}>New Leads Discovered ★ Today</CardTitle>
+        <CardDescription style={{ fontSize: 'clamp(0.75rem, 2vw, 1rem)' }}>Hourly discovery velocity — cron automation</CardDescription>
       </CardHeader>
       <div className="flex-1 min-h-0 px-6">
         <ChartContainer config={chartConfig} className="w-full h-full">
           <BarChart
             accessibilityLayer
-            data={chartData}
+            data={todayData}
             margin={{
               top: 20,
             }}
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="hour"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
@@ -64,7 +67,7 @@ export function ChartBarLabel() {
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={8}>
+                         <Bar dataKey="count" fill="var(--color-count)" radius={8}>
               <LabelList
                 position="top"
                 offset={12}
@@ -77,10 +80,10 @@ export function ChartBarLabel() {
       </div>
       <CardFooter className="pt-2 flex-col items-start gap-1">
         <div className="flex gap-2 leading-none font-medium" style={{ fontSize: 'clamp(0.75rem, 2vw, 0.875rem)' }}>
-          Peak window: 14:00–15:00 UTC 📈
+          Total today: {todayData?.reduce((sum, hour) => sum + hour.count, 0) || 0} new leads 🎯
         </div>
         <div className="text-muted-foreground leading-none" style={{ fontSize: 'clamp(0.625rem, 1.5vw, 0.75rem)' }}>
-          Automated research pipeline performance
+          Automated discovery pipeline velocity
         </div>
       </CardFooter>
     </Card>

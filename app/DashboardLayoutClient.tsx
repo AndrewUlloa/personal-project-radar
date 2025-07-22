@@ -88,8 +88,7 @@ export default function DashboardLayoutClient({ children }: DashboardLayoutClien
   const [, setIsClient] = useState(false);
   const [isSearchDrawerOpen, setIsSearchDrawerOpen] = useState(false);
   const [isLeadRadarDrawerOpen, setIsLeadRadarDrawerOpen] = useState(false);
-  // Ref to track if 'g' was pressed for combo shortcuts
-  const gPressedRef = useRef(false);
+  // Remove G key tracking since we're switching to Cmd shortcuts
   const [triggerSearch, setTriggerSearch] = useState(false);
   const [triggerLeadRadar, setTriggerLeadRadar] = useState(false);
   const [closeDrawersSignal, setCloseDrawersSignal] = useState(0);
@@ -154,7 +153,7 @@ export default function DashboardLayoutClient({ children }: DashboardLayoutClien
               <kbd className="px-2 py-1 text-xs font-mono bg-gray-100 border border-gray-300 rounded-md shadow-sm">
                 {key}
               </kbd>
-              {index < keys.length - 1 && <span className="text-gray-500">then</span>}
+              {index < keys.length - 1 && <span className="text-gray-500">+</span>}
             </div>
           ))}
         </div>
@@ -226,7 +225,6 @@ export default function DashboardLayoutClient({ children }: DashboardLayoutClien
       if (e.key === 'Escape') {
         // Only close command palette with escape, drawers will handle their own escape
         setIsCommandPaletteOpenRef.current(false);
-        gPressedRef.current = false;
         if (searchTimeoutRef.current) {
           clearTimeout(searchTimeoutRef.current);
           searchTimeoutRef.current = null;
@@ -235,29 +233,17 @@ export default function DashboardLayoutClient({ children }: DashboardLayoutClien
         return;
       }
 
-      // G key shortcuts
-      if (e.key.toLowerCase() === 'g' && !gPressedRef.current) {
-        e.preventDefault();
-        gPressedRef.current = true;
-        // Reset G key after 2 seconds
-        setTimeout(() => {
-          gPressedRef.current = false;
-        }, 2000);
-        return;
-      }
-
-      // G + [key] combinations
-      if (gPressedRef.current) {
-        e.preventDefault();
-        gPressedRef.current = false;
-        
-        switch (e.key.toLowerCase()) {
-          case 'h':
+      // New Cmd + number shortcuts
+      if ((e.metaKey || e.ctrlKey)) {
+        switch (e.key) {
+          case '1':
+            e.preventDefault();
             // Close overlays (search drawer, command palette, etc.)
             setIsCommandPaletteOpenRef.current(false);
             handleCloseAllDrawersRef.current();
             break;
-          case 's':
+          case '2':
+            e.preventDefault();
             // Close other drawers first, then trigger search drawer with ease-out timing
             handleCloseAllDrawersRef.current();
             setTimeout(() => {
@@ -269,7 +255,8 @@ export default function DashboardLayoutClient({ children }: DashboardLayoutClien
               }, 100);
             }, 150);
             break;
-          case 'w':
+          case '3':
+            e.preventDefault();
             // Close other drawers first, then trigger lead radar drawer with ease-out timing
             handleCloseAllDrawersRef.current();
             setTimeout(() => {
@@ -281,12 +268,8 @@ export default function DashboardLayoutClient({ children }: DashboardLayoutClien
               }, 100);
             }, 150);
             break;
-
-          case ';':
-            // Open settings - could add routing here
-            console.log('Open Settings');
-            break;
-          case 't':
+          case '\\':
+            e.preventDefault();
             // Toggle theme
             toggleThemeRef.current();
             break;
@@ -351,9 +334,9 @@ export default function DashboardLayoutClient({ children }: DashboardLayoutClien
               showOnLoad={true}
               initialShowDuration={5000}
             >
-            <DockTooltip content="Home" shortcut="G then H">
+            <DockTooltip content="Home" shortcut="⌘1">
               <DockIcon 
-                onClick={() => showKeyboardShortcutToast("to go Home", ["G", "H"])}
+                onClick={() => showKeyboardShortcutToast("to go Home", ["⌘1"])}
                 className="cursor-pointer"
               >
                 <Home className={`h-6 w-6 transition-colors duration-300 ${
@@ -387,9 +370,9 @@ export default function DashboardLayoutClient({ children }: DashboardLayoutClien
                 }`} />
               </DockIcon>
             </DockTooltip>
-            <DockTooltip content="Settings" shortcut="G then ;">
+            <DockTooltip content="Settings" shortcut="⌘;">
               <DockIcon 
-                onClick={() => showKeyboardShortcutToast("to go to Settings", ["G", ";"])}
+                onClick={() => showKeyboardShortcutToast("to go to Settings", ["⌘;"])}
                 className="cursor-pointer"
               >
                 <Settings className={`h-6 w-6 transition-colors duration-300 ${
@@ -397,11 +380,11 @@ export default function DashboardLayoutClient({ children }: DashboardLayoutClien
                 }`} />
               </DockIcon>
             </DockTooltip>
-            <DockTooltip content={isDarkMode ? "Light Mode" : "Dark Mode"} shortcut="G then T">
+            <DockTooltip content={isDarkMode ? "Light Mode" : "Dark Mode"} shortcut="⌘\">
               <DockIcon 
                 onClick={() => {
                   toggleTheme();
-                  showKeyboardShortcutToast("to swap theme", ["G", "T"]);
+                  showKeyboardShortcutToast("to swap theme", ["⌘\\"]);
                 }} 
                 className="cursor-pointer"
               >

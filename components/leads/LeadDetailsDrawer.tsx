@@ -5,6 +5,8 @@ import { useEffect } from "react";
 import { X, Building2, Globe, Users, Calendar, TrendingUp, FileText, Code, Clock, Tag } from "lucide-react";
 import { LeadItem } from "@/lib/types";
 import { useLeadRadar } from "@/lib/contexts/LeadRadarContext";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import {
   Drawer,
   DrawerClose,
@@ -25,8 +27,15 @@ interface LeadDetailsDrawerProps {
 }
 
 export default function LeadDetailsDrawer({ leadId, open, onOpenChange }: LeadDetailsDrawerProps) {
-  const { getLeadById, updateLeadStatus } = useLeadRadar();
-  const lead = leadId ? getLeadById(leadId) : null;
+  const { updateLeadStatus } = useLeadRadar();
+  
+  // Use detailed query to get enrichment data when drawer is open
+  const detailedLead = useQuery(
+    api.leads.getDetails, 
+    leadId && open ? { companyId: leadId as any } : "skip"
+  );
+  
+  const lead = detailedLead || null;
 
   // Handle escape key
   useEffect(() => {
@@ -71,9 +80,10 @@ export default function LeadDetailsDrawer({ leadId, open, onOpenChange }: LeadDe
     }).format(amount);
   };
 
-  const formatTimeAgo = (date: Date) => {
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
+  const formatTimeAgo = (timestamp: number | Date) => {
+    const now = Date.now();
+    const timestampMs = typeof timestamp === 'number' ? timestamp : timestamp.getTime();
+    const diffMs = now - timestampMs;
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffHours / 24);
     
@@ -309,7 +319,7 @@ export default function LeadDetailsDrawer({ leadId, open, onOpenChange }: LeadDe
               <div className="flex gap-3">
                 <Button 
                   className="flex-1"
-                  onClick={() => updateLeadStatus(lead.id, 'contacted')}
+                  onClick={() => updateLeadStatus(lead.id, 'contacted' as any)}
                   disabled={lead.status === 'contacted'}
                 >
                   Initiate Partnership
@@ -317,7 +327,7 @@ export default function LeadDetailsDrawer({ leadId, open, onOpenChange }: LeadDe
                 <Button 
                   variant="outline" 
                   className="flex-1"
-                  onClick={() => updateLeadStatus(lead.id, 'qualified')}
+                  onClick={() => updateLeadStatus(lead.id, 'qualified' as any)}
                   disabled={lead.status === 'qualified'}
                 >
                   Mark as Activated
@@ -326,7 +336,7 @@ export default function LeadDetailsDrawer({ leadId, open, onOpenChange }: LeadDe
                   variant="outline"
                   onClick={() => {
                     // You can replace "System" with actual rep name when user management is implemented
-                    updateLeadStatus(lead.id, lead.status, "System");
+                    updateLeadStatus(lead.id, lead.status as any, "System");
                   }}
                 >
                   Assign to Rep

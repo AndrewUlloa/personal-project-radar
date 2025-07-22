@@ -62,11 +62,7 @@ export default function SearchDockIcon({ isDarkMode, onOpenChange, shouldOpen, i
           <span>Next time, hit</span>
           <div className="flex items-center gap-1 mx-1">
             <kbd className="px-2 py-1 text-xs font-mono bg-gray-100 border border-gray-300 rounded-md shadow-sm">
-              G
-            </kbd>
-            <span className="text-gray-500">then</span>
-            <kbd className="px-2 py-1 text-xs font-mono bg-gray-100 border border-gray-300 rounded-md shadow-sm">
-              S
+              ⌘2
             </kbd>
           </div>
           <span>to use Search</span>
@@ -155,7 +151,7 @@ export default function SearchDockIcon({ isDarkMode, onOpenChange, shouldOpen, i
             <div className="flex items-center gap-2">
               <span>Search</span>
               <span className="text-xs text-gray-600 bg-gray-100/60 px-1.5 py-0.5 rounded border border-gray-200/60">
-                G then S
+                ⌘2
               </span>
             </div>
           </TooltipContent>

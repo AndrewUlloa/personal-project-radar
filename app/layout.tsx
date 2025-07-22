@@ -3,6 +3,7 @@ import { Analytics } from '@vercel/analytics/next';
 import { Figtree } from 'next/font/google';
 import "./globals.css";
 import DashboardLayoutClient from "./DashboardLayoutClient";
+import { ConvexClientProvider } from "./ConvexClientProvider";
 
 const figtree = Figtree({
   subsets: ['latin'],
@@ -46,9 +47,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${figtree.variable} font-sans antialiased`}>
-        <DashboardLayoutClient>
-          {children}
-        </DashboardLayoutClient>
+        <ConvexClientProvider>
+          <DashboardLayoutClient>
+            {children}
+          </DashboardLayoutClient>
+        </ConvexClientProvider>
         <Analytics />
       </body>
     </html>

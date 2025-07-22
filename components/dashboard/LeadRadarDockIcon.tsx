@@ -72,33 +72,11 @@ export default function LeadRadarDockIcon({
     setOpen(newOpen);
     onOpenChange?.(newOpen);
     
-    // Show toast only when opened via click (not keyboard)
+    // Show simple toast hint when opened via click (not keyboard)
     if (newOpen && fromClick && !isKeyboardTriggered) {
-      toast((
-        <div className="flex items-center justify-center gap-1 text-sm text-center w-full">
-          <span>Next time, hit</span>
-          <div className="flex items-center gap-1 mx-1">
-            <kbd className="px-2 py-1 text-xs font-mono bg-gray-100 border border-gray-300 rounded-md shadow-sm">
-              G
-            </kbd>
-            <span className="text-gray-500">then</span>
-            <kbd className="px-2 py-1 text-xs font-mono bg-gray-100 border border-gray-300 rounded-md shadow-sm">
-              W
-            </kbd>
-          </div>
-          <span>to use Lead Radar</span>
-        </div>
-      ), {
-        duration: 4000,
-        position: "top-center",
-        style: {
-          textAlign: 'center',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '100%'
-        },
-        className: "!justify-center !text-center"
+      toast("Next time, hit ⌘3 to use Lead Radar", {
+        duration: 3000,
+        position: "top-center"
       });
     }
   }, [onOpenChange, isKeyboardTriggered]);
@@ -221,7 +199,7 @@ export default function LeadRadarDockIcon({
             <div className="flex items-center gap-2">
               <span>Lead Radar</span>
               <span className="text-xs text-gray-600 bg-gray-100/60 px-1.5 py-0.5 rounded border border-gray-200/60">
-                G then W
+                ⌘3
               </span>
             </div>
           </TooltipContent>

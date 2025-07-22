@@ -7,12 +7,21 @@ import { ChartRadialShape } from "@/components/dashboard/ChartRadialShape";
 import { ChartRadialText } from "@/components/dashboard/ChartRadialText";
 import { ChartRadarGridCustom } from "@/components/dashboard/ChartRadarGridCustom";
 import { ChartBarStacked } from "@/components/dashboard/ChartBarStacked";
+import { ConvexTestDashboard } from "@/components/dashboard/ConvexTestDashboard";
+import { Phase6TestDashboard } from "@/components/dashboard/Phase6TestDashboard";
+import { Phase7AutomationDashboard } from "@/components/dashboard/Phase7AutomationDashboard";
 import { NoSSR } from "@/components/ui/no-ssr";
 import { useState, useEffect } from "react";
 import { Monitor } from "lucide-react";
 
 export default function Dashboard() {
   const [isDesktop, setIsDesktop] = useState(true);
+  
+  // Only enable test dashboards in development mode
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const [showConvexTest, setShowConvexTest] = useState(false);
+  const [showPhase6Test, setShowPhase6Test] = useState(false);
+  const [showPhase7Test, setShowPhase7Test] = useState(false); // Default to main dashboard
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -61,110 +70,223 @@ export default function Dashboard() {
     return <DesktopOnlyMessage />;
   }
 
-  // Regular dashboard widgets for desktop screens
-  return (
-    <div className="grid grid-rows-3 gap-6 h-[calc(100vh-9rem)]">
-      {/* Chart Widget - takes exactly 1/3 of available height (same as each row in 3x2 grid) */}
-      <div className="h-full widget-animate" style={{ animation: 'fadeUp 600ms ease-out 2400ms forwards' }}>
-        <NoSSR fallback={
-          <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
-            <div className="p-6 h-full flex flex-col gap-4">
-              <div className="h-4 bg-gray-200 rounded w-1/4" />
-              <div className="h-3 bg-gray-200 rounded w-1/3" />
-              <div className="flex-1 bg-gray-100 rounded" />
-            </div>
-          </div>
-        }>
-          <ChartLineInteractive />
-        </NoSSR>
+  // Show Phase 7 test dashboard if enabled (dev mode only)
+  if (isDevelopment && showPhase7Test) {
+    return (
+      <div className="relative">
+        {/* Dev Mode Toggle Buttons */}
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          <button
+            onClick={() => { setShowPhase6Test(true); setShowPhase7Test(false); }}
+            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            Phase 6 Search
+          </button>
+          <button
+            onClick={() => { setShowConvexTest(true); setShowPhase7Test(false); }}
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            Phase 5 Dashboard
+          </button>
+          <button
+            onClick={() => setShowPhase7Test(false)}
+            className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            Back to Dashboard
+          </button>
+        </div>
+        <Phase7AutomationDashboard />
       </div>
+    );
+  }
+
+  // Show Phase 6 test dashboard if enabled (dev mode only)
+  if (isDevelopment && showPhase6Test) {
+    return (
+      <div className="relative">
+        {/* Dev Mode Toggle Buttons */}
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          <button
+            onClick={() => { setShowPhase7Test(true); setShowPhase6Test(false); }}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            Phase 7 Automation
+          </button>
+          <button
+            onClick={() => { setShowConvexTest(true); setShowPhase6Test(false); }}
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            Phase 5 Dashboard
+          </button>
+          <button
+            onClick={() => setShowPhase6Test(false)}
+            className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            Back to Dashboard
+          </button>
+        </div>
+        <Phase6TestDashboard />
+      </div>
+    );
+  }
+
+  // Show Convex test dashboard if enabled (dev mode only)
+  if (isDevelopment && showConvexTest) {
+    return (
+      <div className="relative">
+        {/* Dev Mode Toggle Buttons */}
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          <button
+            onClick={() => setShowPhase6Test(true)}
+            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            Phase 6 Search
+          </button>
+          <button
+            onClick={() => setShowConvexTest(false)}
+            className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            Back to Dashboard
+          </button>
+        </div>
+        <ConvexTestDashboard />
+      </div>
+    );
+  }
+
+  // Main production dashboard
+  return (
+    <div className="relative">
+      {/* Dev Mode Toggle Buttons - Only show in development */}
+      {isDevelopment && (
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          <div className="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-medium mr-2">
+            DEV MODE
+          </div>
+          <button
+            onClick={() => setShowPhase7Test(true)}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            View Phase 7: Automation
+          </button>
+          <button
+            onClick={() => setShowPhase6Test(true)}
+            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            View Phase 6: Search Integration
+          </button>
+          <button
+            onClick={() => setShowConvexTest(true)}
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            View Phase 5: Dashboard
+          </button>
+        </div>
+      )}
       
-      {/* Grid of 6 widgets - takes exactly 2/3 of available height (2 rows in grid-rows-3) */}
-      <div className="row-span-2 h-full">
-        <div className="grid grid-cols-2 grid-rows-3 md:grid-cols-3 md:grid-rows-2 gap-6 h-full">
-          {/* Widget 2: New Leads Discovered Today */}
-          <div className="h-full widget-animate" style={{ animation: 'fadeUp 600ms ease-out 2600ms forwards' }}>
-            <NoSSR fallback={
-              <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
-                <div className="p-6 h-full flex flex-col gap-4">
-                  <div className="h-4 bg-gray-200 rounded w-1/4" />
-                  <div className="h-3 bg-gray-200 rounded w-1/3" />
-                  <div className="flex-1 bg-gray-100 rounded" />
-                </div>
+      <div className="grid grid-rows-3 gap-6 h-[calc(100vh-9rem)]">
+        {/* Chart Widget - takes exactly 1/3 of available height (same as each row in 3x2 grid) */}
+        <div className="h-full widget-animate" style={{ animation: 'fadeUp 600ms ease-out 2400ms forwards' }}>
+          <NoSSR fallback={
+            <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
+              <div className="p-6 h-full flex flex-col gap-4">
+                <div className="h-4 bg-gray-200 rounded w-1/4" />
+                <div className="h-3 bg-gray-200 rounded w-1/3" />
+                <div className="flex-1 bg-gray-100 rounded" />
               </div>
-            }>
-              <ChartBarLabel />
-            </NoSSR>
-          </div>
-          {/* Widget 3: High-Priority Leads (Score ≥ 80) */}
-          <div className="h-full widget-animate" style={{ animation: 'fadeUp 600ms ease-out 2800ms forwards' }}>
-            <NoSSR fallback={
-              <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
-                <div className="p-6 h-full flex flex-col gap-4">
-                  <div className="h-4 bg-gray-200 rounded w-1/4" />
-                  <div className="h-3 bg-gray-200 rounded w-1/3" />
-                  <div className="flex-1 bg-gray-100 rounded" />
+            </div>
+          }>
+            <ChartLineInteractive />
+          </NoSSR>
+        </div>
+        
+        {/* Grid of 6 widgets - takes exactly 2/3 of available height (2 rows in grid-rows-3) */}
+        <div className="row-span-2 h-full">
+          <div className="grid grid-cols-2 grid-rows-3 md:grid-cols-3 md:grid-rows-2 gap-6 h-full">
+            {/* Widget 2: New Leads Discovered Today */}
+            <div className="h-full widget-animate" style={{ animation: 'fadeUp 600ms ease-out 2600ms forwards' }}>
+              <NoSSR fallback={
+                <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
+                  <div className="p-6 h-full flex flex-col gap-4">
+                    <div className="h-4 bg-gray-200 rounded w-1/4" />
+                    <div className="h-3 bg-gray-200 rounded w-1/3" />
+                    <div className="flex-1 bg-gray-100 rounded" />
+                  </div>
                 </div>
-              </div>
-            }>
-              <ChartRadialShape />
-            </NoSSR>
-          </div>
-          {/* Widget 4: Average Lead Score */}
-          <div className="h-full widget-animate" style={{ animation: 'fadeUp 600ms ease-out 3000ms forwards' }}>
-            <NoSSR fallback={
-              <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
-                <div className="p-6 h-full flex flex-col gap-4">
-                  <div className="h-4 bg-gray-200 rounded w-1/4" />
-                  <div className="h-3 bg-gray-200 rounded w-1/3" />
-                  <div className="flex-1 bg-gray-100 rounded" />
+              }>
+                <ChartBarLabel />
+              </NoSSR>
+            </div>
+            {/* Widget 3: High-Priority Leads (Score ≥ 80) */}
+            <div className="h-full widget-animate" style={{ animation: 'fadeUp 600ms ease-out 2800ms forwards' }}>
+              <NoSSR fallback={
+                <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
+                  <div className="p-6 h-full flex flex-col gap-4">
+                    <div className="h-4 bg-gray-200 rounded w-1/4" />
+                    <div className="h-3 bg-gray-200 rounded w-1/3" />
+                    <div className="flex-1 bg-gray-100 rounded" />
+                  </div>
                 </div>
-              </div>
-            }>
-              <ChartRadialText />
-            </NoSSR>
-          </div>
-          {/* Widget 5: Score Distribution (Low/Mid/High) */}
-          <div className="h-full widget-animate" style={{ animation: 'fadeUp 600ms ease-out 3200ms forwards' }}>
-            <NoSSR fallback={
-              <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
-                <div className="p-6 h-full flex flex-col gap-4">
-                  <div className="h-4 bg-gray-200 rounded w-1/4" />
-                  <div className="h-3 bg-gray-200 rounded w-1/3" />
-                  <div className="flex-1 bg-gray-100 rounded" />
+              }>
+                <ChartRadialShape />
+              </NoSSR>
+            </div>
+            {/* Widget 4: Average Lead Score */}
+            <div className="h-full widget-animate" style={{ animation: 'fadeUp 600ms ease-out 3000ms forwards' }}>
+              <NoSSR fallback={
+                <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
+                  <div className="p-6 h-full flex flex-col gap-4">
+                    <div className="h-4 bg-gray-200 rounded w-1/4" />
+                    <div className="h-3 bg-gray-200 rounded w-1/3" />
+                    <div className="flex-1 bg-gray-100 rounded" />
+                  </div>
                 </div>
-              </div>
-            }>
-              <ChartBarStacked />
-            </NoSSR>
-          </div>
-          {/* Widget 6: ARPU Forecast (rolling 30d) */}
-          <div className="h-full widget-animate" style={{ animation: 'fadeUp 600ms ease-out 3400ms forwards' }}>
-            <NoSSR fallback={
-              <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
-                <div className="p-6 h-full flex flex-col gap-4">
-                  <div className="h-4 bg-gray-200 rounded w-1/4" />
-                  <div className="h-3 bg-gray-200 rounded w-1/3" />
-                  <div className="flex-1 bg-gray-100 rounded" />
+              }>
+                <ChartRadialText />
+              </NoSSR>
+            </div>
+            {/* Widget 5: Score Distribution (Low/Mid/High) */}
+            <div className="h-full widget-animate" style={{ animation: 'fadeUp 600ms ease-out 3200ms forwards' }}>
+              <NoSSR fallback={
+                <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
+                  <div className="p-6 h-full flex flex-col gap-4">
+                    <div className="h-4 bg-gray-200 rounded w-1/4" />
+                    <div className="h-3 bg-gray-200 rounded w-1/3" />
+                    <div className="flex-1 bg-gray-100 rounded" />
+                  </div>
                 </div>
-              </div>
-            }>
-              <ChartAreaGradient />
-            </NoSSR>
-          </div>
-          {/* Widget 7: Relevant News Alerts (24h) */}
-          <div className="h-full widget-animate" style={{ animation: 'fadeUp 600ms ease-out 3600ms forwards' }}>
-            <NoSSR fallback={
-              <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
-                <div className="p-6 h-full flex flex-col gap-4">
-                  <div className="h-4 bg-gray-200 rounded w-1/4" />
-                  <div className="h-3 bg-gray-200 rounded w-1/3" />
-                  <div className="flex-1 bg-gray-100 rounded" />
+              }>
+                <ChartBarStacked />
+              </NoSSR>
+            </div>
+            {/* Widget 6: Pipeline Growth (30d) */}
+            <div className="h-full widget-animate" style={{ animation: 'fadeUp 600ms ease-out 3400ms forwards' }}>
+              <NoSSR fallback={
+                <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
+                  <div className="p-6 h-full flex flex-col gap-4">
+                    <div className="h-4 bg-gray-200 rounded w-1/4" />
+                    <div className="h-3 bg-gray-200 rounded w-1/3" />
+                    <div className="flex-1 bg-gray-100 rounded" />
+                  </div>
                 </div>
-              </div>
-            }>
-              <ChartRadarGridCustom />
-            </NoSSR>
+              }>
+                <ChartAreaGradient />
+              </NoSSR>
+            </div>
+            {/* Widget 7: Relevant News Alerts (24h) */}
+            <div className="h-full widget-animate" style={{ animation: 'fadeUp 600ms ease-out 3600ms forwards' }}>
+              <NoSSR fallback={
+                <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm animate-pulse">
+                  <div className="p-6 h-full flex flex-col gap-4">
+                    <div className="h-4 bg-gray-200 rounded w-1/4" />
+                    <div className="h-3 bg-gray-200 rounded w-1/3" />
+                    <div className="flex-1 bg-gray-100 rounded" />
+                  </div>
+                </div>
+              }>
+                <ChartRadarGridCustom />
+              </NoSSR>
+            </div>
           </div>
         </div>
       </div>

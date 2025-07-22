@@ -18,12 +18,11 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { ChartConfig, ChartContainer } from "@/components/ui/chart"
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
+import { LoadingDisplay } from "@/components/ui/error-boundary"
 
 export const description = "A radial chart with a custom shape"
-
-const chartData = [
-  { browser: "safari", visitors: 1260, fill: "var(--color-safari)" },
-]
 
 const chartConfig = {
   visitors: {
@@ -36,11 +35,30 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function ChartRadialShape() {
+  // Fetch live high-priority leads data
+  const priorityData = useQuery(api.dashboard.getHighPriorityLeads, {});
+
+  const isLoading = priorityData === undefined;
+
+  const chartData = [
+    { 
+      browser: "safari", 
+      visitors: priorityData?.count ?? 0, 
+      fill: "var(--color-safari)" 
+    },
+  ];
+
+  const percentageText = priorityData?.percentage ?? 0;
+
+  if (isLoading) {
+    return <LoadingDisplay message="Loading priority data..." />;
+  }
+
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="items-center pb-2">
         <CardTitle className="font-medium leading-none tracking-tight" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)' }}>High-Priority Leads</CardTitle>
-        <CardDescription style={{ fontSize: 'clamp(0.75rem, 2vw, 1rem)' }}>Score ≥ 80 — 18% of total</CardDescription>
+        <CardDescription style={{ fontSize: 'clamp(0.75rem, 2vw, 1rem)' }}>Score ≥ 80 — {percentageText}% of total</CardDescription>
       </CardHeader>
       <div className="flex-1 min-h-0 flex items-center justify-center px-6">
         <ChartContainer

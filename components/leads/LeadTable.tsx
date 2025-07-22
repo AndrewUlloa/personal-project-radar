@@ -44,11 +44,20 @@ export function LeadTable() {
   };
 
   const formatSizeRange = (size: number) => {
-    if (size <= 10) return '1-10';
-    if (size <= 50) return '11-50';
-    if (size <= 200) return '51-200';
-    if (size <= 1000) return '201-1K';
-    return '1K+';
+    // Handle jewelry industry ranges (most relevant for Nivoda)
+    if (size <= 10) return '1-10';          // Independent jewelers, small shops
+    if (size <= 50) return '11-50';         // Established local jewelers, small chains
+    if (size <= 200) return '51-200';       // Regional jewelry chains, mid-size retailers
+    if (size <= 500) return '201-500';      // Large regional chains, established retailers
+    if (size <= 1000) return '501-1K';      // Major jewelry retail chains
+    if (size <= 2500) return '1K-2.5K';     // Large jewelry conglomerates
+    
+    // Handle enterprise/test data ranges (non-jewelry companies)
+    if (size <= 5000) return '2.5K-5K';     // Mid-size enterprises
+    if (size <= 10000) return '5K-10K';     // Large enterprises
+    if (size <= 25000) return '10K-25K';    // Major corporations
+    if (size <= 50000) return '25K-50K';    // Massive corporations
+    return '50K+';                          // Global enterprises
   };
 
   const columns: ColumnDef<LeadItem>[] = React.useMemo(() => [
@@ -162,10 +171,15 @@ export function LeadTable() {
       cell: ({ row }) => {
         const signals = row.getValue("keySignals") as string[];
         return (
-          <div className="flex flex-wrap gap-1 max-w-40">
+          <div className="flex flex-wrap gap-1 max-w-32">
             {signals.slice(0, 2).map((signal, index) => (
-              <Badge key={index} variant="outline" className="text-xs py-0 h-4">
-                {signal}
+              <Badge 
+                key={index} 
+                variant="outline" 
+                className="text-xs py-0 h-4 max-w-fit truncate"
+                title={signal} // Show full text on hover
+              >
+                {signal.length > 12 ? signal.substring(0, 12) + '...' : signal}
               </Badge>
             ))}
             {signals.length > 2 && (
@@ -236,7 +250,7 @@ export function LeadTable() {
       enableSorting: false,
       enableHiding: false,
     },
-  ], [updateLeadStatus, removeLead]);
+  ], [removeLead]);
 
   return (
     <>

@@ -150,7 +150,7 @@ export function ChartLineInteractive() {
           return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       }
     }
-  }, [selectedPeriod]);
+  }, [selectedPeriod, chartRows.length]);
 
   // Format tooltip labels for consistency and context
   const formatTooltipLabel = React.useCallback((value: string) => {

@@ -1,6 +1,7 @@
 import { action, internalAction, internalMutation, internalQuery } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
+import { Id } from "./_generated/dataModel";
 
 // Main public action to enrich a company by website URL
 export const enrichCompany = action({
@@ -9,7 +10,7 @@ export const enrichCompany = action({
     companyName: v.optional(v.string()),
     discoverySource: v.optional(v.string()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<Id<"companies">> => {
     console.log(`🔍 Starting enrichment for: ${args.websiteUrl}`);
     
     // Check if company already exists
@@ -23,7 +24,7 @@ export const enrichCompany = action({
     }
 
     // Create initial company record
-    const companyId = await ctx.runMutation(
+    const companyId: Id<"companies"> = await ctx.runMutation(
       internal.enrichment.createInitialCompany,
       {
         websiteUrl: args.websiteUrl,

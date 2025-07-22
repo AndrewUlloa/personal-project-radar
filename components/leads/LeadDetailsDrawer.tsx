@@ -80,9 +80,10 @@ export default function LeadDetailsDrawer({ leadId, open, onOpenChange }: LeadDe
     }).format(amount);
   };
 
-  const formatTimeAgo = (date: Date) => {
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
+  const formatTimeAgo = (timestamp: number | Date) => {
+    const now = Date.now();
+    const timestampMs = typeof timestamp === 'number' ? timestamp : timestamp.getTime();
+    const diffMs = now - timestampMs;
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffHours / 24);
     

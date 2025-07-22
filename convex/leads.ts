@@ -136,7 +136,7 @@ export const getDetails = query({
         id: event._id,
         type: event.event_type as any,
         description: event.description || event.event_type,
-        timestamp: new Date(event._creationTime),
+        timestamp: event._creationTime, // Return Unix timestamp, not Date object
         metadata: event.metadata,
       })),
 

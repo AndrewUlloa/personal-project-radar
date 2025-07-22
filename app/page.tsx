@@ -9,6 +9,7 @@ import { ChartRadarGridCustom } from "@/components/dashboard/ChartRadarGridCusto
 import { ChartBarStacked } from "@/components/dashboard/ChartBarStacked";
 import { ConvexTestDashboard } from "@/components/dashboard/ConvexTestDashboard";
 import { Phase6TestDashboard } from "@/components/dashboard/Phase6TestDashboard";
+import { Phase7AutomationDashboard } from "@/components/dashboard/Phase7AutomationDashboard";
 import { NoSSR } from "@/components/ui/no-ssr";
 import { useState, useEffect } from "react";
 import { Monitor } from "lucide-react";
@@ -16,7 +17,8 @@ import { Monitor } from "lucide-react";
 export default function Dashboard() {
   const [isDesktop, setIsDesktop] = useState(true);
   const [showConvexTest, setShowConvexTest] = useState(false);
-  const [showPhase6Test, setShowPhase6Test] = useState(true); // Show Phase 6 test by default
+  const [showPhase6Test, setShowPhase6Test] = useState(false);
+  const [showPhase7Test, setShowPhase7Test] = useState(true); // Show Phase 7 test by default
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -65,12 +67,48 @@ export default function Dashboard() {
     return <DesktopOnlyMessage />;
   }
 
+  // Show Phase 7 test dashboard if enabled
+  if (showPhase7Test) {
+    return (
+      <div className="relative">
+        {/* Toggle Buttons */}
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          <button
+            onClick={() => { setShowPhase6Test(true); setShowPhase7Test(false); }}
+            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            Phase 6 Search
+          </button>
+          <button
+            onClick={() => { setShowConvexTest(true); setShowPhase7Test(false); }}
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            Phase 5 Dashboard
+          </button>
+          <button
+            onClick={() => setShowPhase7Test(false)}
+            className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            Back to Dashboard
+          </button>
+        </div>
+        <Phase7AutomationDashboard />
+      </div>
+    );
+  }
+
   // Show Phase 6 test dashboard if enabled
   if (showPhase6Test) {
     return (
       <div className="relative">
         {/* Toggle Buttons */}
         <div className="absolute top-4 right-4 z-10 flex gap-2">
+          <button
+            onClick={() => { setShowPhase7Test(true); setShowPhase6Test(false); }}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            Phase 7 Automation
+          </button>
           <button
             onClick={() => { setShowConvexTest(true); setShowPhase6Test(false); }}
             className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
@@ -118,6 +156,12 @@ export default function Dashboard() {
     <div className="relative">
       {/* Toggle Buttons */}
       <div className="absolute top-4 right-4 z-10 flex gap-2">
+        <button
+          onClick={() => setShowPhase7Test(true)}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+        >
+          View Phase 7: Automation
+        </button>
         <button
           onClick={() => setShowPhase6Test(true)}
           className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"

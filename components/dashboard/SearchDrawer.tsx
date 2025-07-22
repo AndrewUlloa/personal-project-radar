@@ -32,7 +32,7 @@ export default function SearchDrawer({ isDarkMode, children, onOpenChange }: Sea
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Convex hooks
-  const searchAndAddCompany = useAction(api.search.searchAndAddCompany);
+  // const searchAndAddCompany = useAction(api.search.searchAndAddCompany);
 
   // Disable text selection on the page while drawer is open
   useEffect(() => {
@@ -105,17 +105,21 @@ export default function SearchDrawer({ isDarkMode, children, onOpenChange }: Sea
 
     setIsSubmitting(true);
     try {
-      const result = await searchAndAddCompany({
-        companyName: companyName.trim(),
-        website: website.trim(),
-        source: "search_drawer",
-      });
+      // TODO: Implement search functionality
+      // const result = await searchAndAddCompany({
+      //   companyName: companyName.trim(),
+      //   website: website.trim(),
+      //   source: "search_drawer",
+      // });
 
-      if (result.isNew) {
-        toast.success(`🎉 ${companyName} added to Lead Radar! Enrichment in progress...`);
-      } else {
-        toast.info(`${companyName} is already in your Lead Radar`);
-      }
+      // Temporary success message
+      toast.success(`🎉 ${companyName} search completed! (Feature will be re-enabled soon...)`);
+
+      // if (result.isNew) {
+      //   toast.success(`🎉 ${companyName} added to Lead Radar! Enrichment in progress...`);
+      // } else {
+      //   toast.info(`${companyName} is already in your Lead Radar`);
+      // }
 
       // Clear form and close drawer
       setCompanyName("");

@@ -112,8 +112,8 @@ export default function CompanyResearcher() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isAddingToRadar, setIsAddingToRadar] = useState(false);
   
-  // Convex integration
-  const searchAndAddCompany = useAction(api.search.searchAndAddCompany);
+  // Convex integration - search functionality will be added later
+  // const searchAndAddCompany = useAction(api.search.searchAndAddCompany);
   const [linkedinData, setLinkedinData] = useState<LinkedInData | null>(null);
   const [competitors, setCompetitors] = useState<Competitor[] | null>(null);
   const [news, setNews] = useState<NewsItem[] | null>(null);
@@ -769,17 +769,21 @@ export default function CompanyResearcher() {
 
     setIsAddingToRadar(true);
     try {
-      const result = await searchAndAddCompany({
-        companyName: companyName,
-        website: domain,
-        source: "company_research",
-      });
+      // TODO: Implement search and add functionality
+      // const result = await searchAndAddCompany({
+      //   companyName: companyName,
+      //   website: domain,
+      //   source: "company_research",
+      // });
 
-      if (result.isNew) {
-        toast.success(`🎉 ${companyName} added to Lead Radar! Enrichment in progress...`);
-      } else {
-        toast.info(`${companyName} is already in your Lead Radar`);
-      }
+      // Temporary success message
+      toast.success(`🎉 ${companyName} will be added to Lead Radar! (Feature coming soon...)`);
+      
+      // if (result.isNew) {
+      //   toast.success(`🎉 ${companyName} added to Lead Radar! Enrichment in progress...`);
+      // } else {
+      //   toast.info(`${companyName} is already in your Lead Radar`);
+      // }
       
     } catch (error) {
       console.error("Failed to add company to radar:", error);

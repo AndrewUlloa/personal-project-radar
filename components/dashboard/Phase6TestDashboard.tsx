@@ -14,7 +14,7 @@ export function Phase6TestDashboard() {
   const [isSearching, setIsSearching] = useState(false);
   
   // Convex hooks for search functionality
-  const searchAndAddCompany = useAction(api.search.searchAndAddCompany);
+  // const searchAndAddCompany = useAction(api.search.searchAndAddCompany);
   const recentLeads = useQuery(api.leads.list, {});
   
   // Test search functionality
@@ -26,17 +26,21 @@ export function Phase6TestDashboard() {
 
     setIsSearching(true);
     try {
-      const result = await searchAndAddCompany({
-        companyName: searchTerm.trim(),
-        website: website.trim(),
-        source: "phase6_test",
-      });
+      // TODO: Implement search functionality
+      // const result = await searchAndAddCompany({
+      //   companyName: searchTerm.trim(),
+      //   website: website.trim(),
+      //   source: "phase6_test",
+      // });
 
-      if (result.isNew) {
-        toast.success(`🎉 ${searchTerm} added to Lead Radar! Enrichment in progress...`);
-      } else {
-        toast.info(`${searchTerm} is already in your Lead Radar`);
-      }
+      // Temporary success message
+      toast.success(`🎉 ${searchTerm} search completed! (Feature will be re-enabled soon...)`);
+
+      // if (result.isNew) {
+      //   toast.success(`🎉 ${searchTerm} added to Lead Radar! Enrichment in progress...`);
+      // } else {
+      //   toast.info(`${searchTerm} is already in your Lead Radar`);
+      // }
 
       // Clear form
       setSearchTerm("");

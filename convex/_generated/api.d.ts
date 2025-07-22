@@ -13,6 +13,8 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as automation from "../automation.js";
+import type * as crons from "../crons.js";
 import type * as dashboard from "../dashboard.js";
 import type * as enrichment from "../enrichment.js";
 import type * as leads from "../leads.js";
@@ -29,6 +31,8 @@ import type * as search from "../search.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  automation: typeof automation;
+  crons: typeof crons;
   dashboard: typeof dashboard;
   enrichment: typeof enrichment;
   leads: typeof leads;

@@ -118,14 +118,4 @@ export default defineSchema({
   })
     .index("by_key", ["key"])
     .index("by_expires", ["expires"]),
-
-  // Dashboard metrics for charts
-  dashboard_metrics: defineTable({
-    metric_type: v.string(), // 'daily_leads', 'score_distribution', 'arpu_forecast'
-    date: v.string(), // YYYY-MM-DD format
-    value: v.number(),
-    metadata: v.optional(v.any()),
-  })
-    .index("by_type_and_date", ["metric_type", "date"])
-    .index("by_date", ["date"]),
 }); 

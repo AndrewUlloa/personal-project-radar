@@ -124,20 +124,30 @@ export const searchAndAddCompany = action({
   handler: async (ctx, args): Promise<{ companyId: Id<"companies">; isNew: boolean }> => {
     console.log(`🔍 Search request: ${args.companyName} (${args.website})`);
     
-    // Create or get existing company
+    // First check if company already exists using createCompany mutation
     const result = await ctx.runMutation(internal.search.createCompany, {
       companyName: args.companyName,
       website: args.website,
       discoverySource: args.source || 'search',
     });
     
-    if (result.isNew) {
-      // Add to discovery queue for enrichment
-      await ctx.runMutation(internal.search.addToDiscoveryQueue, {
+    if (!result.isNew) {
+      console.log(`Company ${args.companyName} already exists`);
+      return result;
+    }
+    
+    // For new companies, trigger immediate enrichment instead of queueing
+    try {
+      await ctx.runAction(internal.enrichment.performComprehensiveEnrichment, {
         companyId: result.companyId,
-        companyName: args.companyName,
-        website: args.website,
+        websiteUrl: args.website,
       });
+      
+      console.log(`✅ Company ${args.companyName} added and enrichment started immediately`);
+    } catch (error) {
+      console.error(`❌ Failed to start enrichment for ${args.companyName}:`, error);
+      // Company was created but enrichment failed - still return success
+      // The enrichment can be retried later via queue processing
     }
     
     return result;

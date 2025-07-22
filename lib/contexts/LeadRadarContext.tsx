@@ -52,13 +52,7 @@ export function LeadRadarProvider({ children }: { children: ReactNode }) {
     timeline: lead.timeline,
     rationale: {
       explanation: lead.rationale.explanation,
-      factors: Array.isArray(lead.rationale.factors) 
-        ? lead.rationale.factors.map((factor: any) => ({
-            factor: typeof factor === 'string' ? factor : String(factor),
-            impact: "neutral" as const,
-            weight: 1,
-          }))
-        : [],
+      factors: lead.rationale.factors || [], // Use the structured factors directly from Convex
     },
     rawData: lead.rawData,
   }));

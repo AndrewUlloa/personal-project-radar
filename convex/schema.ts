@@ -30,7 +30,11 @@ export default defineSchema({
     
     // AI scoring rationale
     score_rationale: v.optional(v.string()),
-    score_factors: v.optional(v.array(v.string())),
+    score_factors: v.optional(v.array(v.object({
+      factor: v.string(),
+      impact: v.string(), // "positive", "negative", "neutral"
+      weight: v.number(), // 0.01 to 0.40 representing percentage contribution
+    }))),
     
     // Discovery tracking
     discovery_source: v.optional(v.string()), // 'web_crawler', 'linkedin', 'manual', 'api'

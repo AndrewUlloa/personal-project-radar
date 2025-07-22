@@ -95,7 +95,11 @@ export const saveScore = internalMutation({
     arpuBand: v.string(),
     keySignals: v.array(v.string()),
     scoreRationale: v.string(),
-    scoreFactors: v.array(v.string()),
+    scoreFactors: v.array(v.object({
+      factor: v.string(),
+      impact: v.string(),
+      weight: v.number(),
+    })),
   },
   handler: async (ctx, args): Promise<void> => {
     // Calculate estimated ARPU based on band
@@ -204,21 +208,46 @@ Please provide a JSON response with the following structure:
   "arpu_band": string ("$0-10K", "$10-50K", "$50-100K", or "$100K+"),
   "key_signals": array of 5 short strings describing key positive indicators,
   "score_rationale": string (max 500 chars explaining the score),
-  "score_factors": array of strings listing the main factors that influenced the score
+  "score_factors": array of objects with this structure: [
+    {
+      "factor": "string describing the factor",
+      "impact": "positive" | "negative" | "neutral",
+      "weight": number (0.01 to 0.40 representing percentage contribution)
+    }
+  ]
 }
 
-Focus your analysis on:
-- Company size and growth indicators
-- Technology stack and digital maturity  
-- Market position and competitive landscape
-- Funding status and financial health
-- Recent activities and momentum
-- Product-market fit indicators
-- Revenue potential and pricing power
+Use the Nivoda-style strategic value framework for scoring:
 
-Score high (80-100) for companies with strong growth signals, significant funding, large market opportunity, and clear revenue potential.
-Score medium (40-79) for stable companies with moderate signals.
-Score low (0-39) for early-stage companies or those with weak indicators.`;
+**Strategic Integration (Highest Value - 25-40% weights):**
+- API/Platform integration capabilities
+- Enterprise-grade technology infrastructure  
+- B2B marketplace positioning
+
+**Financial Health & Scale (High Value - 15-25% weights):**
+- Revenue metrics and funding rounds
+- Financial stability indicators
+- Growth capital availability
+
+**Market Position & Growth (Medium-High Value - 10-20% weights):**
+- Global expansion and market presence
+- Team scaling and operational growth
+- Leadership expertise and industry positioning
+
+**Customer & Product Strength (Medium Value - 5-15% weights):**
+- Customer retention and market fit
+- Product differentiation and competitive advantage
+- Operational scale and efficiency
+
+**Risk Factors (Negative weights -5% to -15%):**
+- Market concerns or competitive threats
+- Financial instability or operational weaknesses
+
+For score_factors, provide 6-10 factors with strategic weights that sum to approximately 100%. Higher weights (20-40%) for strategic integration factors, medium weights (10-20%) for financial/market factors, lower weights (5-15%) for product factors, and negative weights for risks.
+
+Score high (80-100) for companies with strong strategic integration potential, significant financial foundation, and clear expansion opportunities.
+Score medium (40-79) for stable companies with moderate strategic value.
+Score low (0-39) for early-stage companies or those with limited strategic alignment.`;
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -267,6 +296,16 @@ Score low (0-39) for early-stage companies or those with weak indicators.`;
         typeof scoringResult.score_rationale !== 'string' ||
         !Array.isArray(scoringResult.score_factors)) {
       throw new Error("Invalid response structure from Anthropic API");
+    }
+
+    // Validate score_factors structure
+    for (const factor of scoringResult.score_factors) {
+      if (typeof factor !== 'object' || 
+          typeof factor.factor !== 'string' ||
+          typeof factor.impact !== 'string' ||
+          typeof factor.weight !== 'number') {
+        throw new Error("Invalid score_factors structure from Anthropic API");
+      }
     }
 
     // Ensure score is within valid range

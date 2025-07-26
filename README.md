@@ -4,38 +4,54 @@ This project implements a sophisticated, real-time lead researcher dashboard des
 
 ## Architecture & Tech Stack
 
-The application is a modern, server-rendered React application built on the **Next.js 14 App Router**. This provides a robust foundation with features like server-side rendering, API routes, optimized performance, and Turbopack development acceleration.
+The application is a modern, server-rendered React application built on the **Next.js 15.3.4 App Router**. This provides a robust foundation with features like server-side rendering, API routes, optimized performance, and Turbopack development acceleration.
 
-- **Framework:** Next.js 15 with React 18
+- **Framework:** Next.js 15.3.4 with React 18
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS with custom design system
-- **UI Components:** shadcn/ui, Magic UI (dock components)
-- **Animations:** `framer-motion` via `motion/react` (modern import)
+- **UI Components:** shadcn/ui, custom dock components
+- **Animations:** `framer-motion` and `motion` for comprehensive motion capabilities
 - **Data Visualization:** Recharts with interactive charts
 - **Icons:** Lucide React
 - **Real-time Backend & Database:** Convex
-- **Testing:** Vitest with comprehensive test coverage
+- **Testing:** Vitest with 44 test cases across 1,148+ lines of test code
 - **Deployment:** Vercel
 
 ### Key Dependencies & Rationale
 
-- **`convex` & `@convex-dev/react`**: Chosen for its seamless real-time data synchronization capabilities. Convex eliminates the need for complex state management by providing automatic reactivity and real-time updates across all connected clients. The built-in authentication, cron jobs, and serverless functions make it ideal for a lead generation platform requiring automated workflows.
+- **`convex`**: Chosen for its seamless real-time data synchronization capabilities. Convex eliminates the need for complex state management by providing automatic reactivity and real-time updates across all connected clients. The built-in authentication, cron jobs, and serverless functions make it ideal for a lead generation platform requiring automated workflows.
+
+- **`@ai-sdk/anthropic` & `ai`**: Integrated for AI-powered lead scoring and analysis. The Vercel AI SDK provides a unified interface for working with multiple AI providers, while Anthropic's Claude provides sophisticated reasoning capabilities for evaluating company data and generating lead scores based on strategic criteria.
 
 - **`recharts`**: Selected for its rich ecosystem of customizable charting components. Unlike other charting libraries, Recharts provides excellent TypeScript support, responsive design capabilities, and smooth animations that align with the dashboard's modern aesthetic. It enables complex data visualizations like trend analysis, score distributions, and interactive filtering.
 
-- **`framer-motion` via `motion/react`**: Used to create a polished, app-like experience with smooth animations and micro-interactions. The newer `motion/react` import provides better tree-shaking and performance. Animations are carefully orchestrated to provide visual feedback, guide user attention, and create delightful transitions between states.
+- **`framer-motion` & `motion`**: Dual animation libraries providing comprehensive motion capabilities. `framer-motion` handles component animations while `motion` provides advanced physics-based interactions. The newer motion package offers better tree-shaking and performance, creating a polished, app-like experience with carefully orchestrated transitions.
 
-- **`shadcn/ui` & `@radix-ui/*`**: These component libraries provide a robust foundation for building accessible, customizable UI components. Radix UI handles complex accessibility patterns, while shadcn/ui provides beautiful styling that can be easily customized with Tailwind CSS. This combination ensures both excellent UX and developer productivity.
+- **`@radix-ui/*`**: A comprehensive collection of unstyled, accessible UI primitives including dialog, dropdown-menu, tooltip, tabs, and slot components. Chosen for accessibility compliance and design flexibility, these components handle complex interaction patterns while maintaining semantic HTML and keyboard navigation.
 
-- **`sonner`**: Implemented for comprehensive user feedback through toast notifications. Unlike basic notification systems, Sonner provides contextual, actionable feedback with custom styling that matches the design system. It ensures users receive immediate feedback for all actions, from successful operations to detailed error messages.
+- **`@tanstack/react-table`**: Powers the sophisticated lead management tables with advanced sorting, filtering, pagination, and column management capabilities. Essential for handling large datasets efficiently while providing an intuitive user experience for data exploration.
 
-- **`@ai-sdk/anthropic` & `ai`**: Integrated for AI-powered lead scoring and analysis. The Vercel AI SDK provides a unified interface for working with multiple AI providers, while Anthropic's Claude provides sophisticated reasoning capabilities for evaluating company data and generating lead scores based on strategic criteria.
+- **`cmdk`**: Implements the command palette functionality, providing keyboard-driven navigation and quick actions throughout the dashboard. This enables power users to navigate and perform actions efficiently without mouse interaction.
+
+- **`exa-js`**: Integrates with Exa's neural search API for enhanced web scraping and company research capabilities. This expands data collection beyond traditional sources by leveraging AI-powered search to find relevant company information across the web.
+
+- **`react-d3-tree`**: Enables the interactive company mind map visualization, providing a unique hierarchical view of company relationships, subsidiaries, and corporate structures. Essential for understanding complex business relationships.
+
+- **`react-tweet`**: Allows for seamless embedding and display of Twitter/X content within research results, maintaining proper styling and functionality while providing social media insights.
+
+- **`vaul`**: Provides the drawer component system used for detailed lead information panels and mobile-responsive interfaces, ensuring smooth transitions and proper touch interactions.
+
+- **`sonner`**: Implemented for comprehensive user feedback through toast notifications. Unlike basic notification systems, Sonner provides contextual, actionable feedback with custom styling that matches the design system.
+
+- **`class-variance-authority`**: Used to create powerful, reusable, and variant-based components. This promotes design consistency across the application and simplifies the creation of new component styles with type-safe variant management.
+
+- **`clsx` & `tailwind-merge`**: Essential utilities for robust and conflict-free management of conditional CSS classes, preventing style conflicts and keeping component code clean and maintainable.
 
 ### Project Configuration & Developer Experience
 
 The initial project scaffold was enhanced with careful attention to developer experience and code quality:
 
-- **TypeScript (`tsconfig.json`):** Configured with strict type checking, path mapping for clean imports (`@/components`, `@/convex`), and optimized for Next.js App Router. This prevents runtime errors and improves IDE support throughout the development process.
+- **TypeScript (`tsconfig.json`):** Configured with strict type checking and path mapping for clean imports (`@/*` for all project paths), and optimized for Next.js App Router. This prevents runtime errors and improves IDE support throughout the development process.
 
 - **Next.js (`next.config.mjs`):** Optimized for performance with Turbopack enabled in development for faster builds. Image optimization is configured for external sources like LinkedIn profile images, ensuring fast loading times while maintaining visual quality.
 

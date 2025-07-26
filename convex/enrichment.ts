@@ -5,6 +5,19 @@ import { Id } from "./_generated/dataModel";
 // @ts-ignore - EXA SDK may not have perfect Convex compatibility
 import Exa from "exa-js";
 
+// Helper function to format website URLs for Exa API calls
+function formatWebsiteForExa(website: string): string {
+  // Remove any existing protocol and www
+  let cleanUrl = website
+    .replace(/^https?:\/\//, '')
+    .replace(/^www\./, '')
+    .replace(/\/+$/, '')
+    .toLowerCase();
+  
+  // Add https://www. for optimal Exa results
+  return `https://www.${cleanUrl}`;
+}
+
 // Main public action to enrich a company by website URL
 export const enrichCompany = action({
   args: {
@@ -35,13 +48,14 @@ export const enrichCompany = action({
       }
     );
 
-    // Schedule comprehensive enrichment
+    // Schedule comprehensive enrichment with properly formatted URL
+    const formattedWebsiteUrl = formatWebsiteForExa(args.websiteUrl);
     await ctx.scheduler.runAfter(
       0,
       internal.enrichment.performComprehensiveEnrichment,
       {
         companyId,
-        websiteUrl: args.websiteUrl,
+        websiteUrl: formattedWebsiteUrl,
       }
     );
 

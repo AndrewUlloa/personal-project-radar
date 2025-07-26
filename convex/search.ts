@@ -3,13 +3,26 @@ import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import { Id } from "./_generated/dataModel";
 
-// Helper function to normalize website URLs
+// Helper function to normalize website URLs for storage
 function normalizeWebsite(website: string): string {
   return website
     .replace(/^https?:\/\//, '')
     .replace(/^www\./, '')
     .replace(/\/+$/, '')
     .toLowerCase();
+}
+
+// Helper function to format website URLs for Exa API calls
+function formatWebsiteForExa(website: string): string {
+  // Remove any existing protocol and www
+  let cleanUrl = website
+    .replace(/^https?:\/\//, '')
+    .replace(/^www\./, '')
+    .replace(/\/+$/, '')
+    .toLowerCase();
+  
+  // Add https://www. for optimal Exa results
+  return `https://www.${cleanUrl}`;
 }
 
 // Internal mutation to create a company
@@ -138,9 +151,12 @@ export const searchAndAddCompany = action({
     
     // For new companies, trigger immediate enrichment instead of queueing
     try {
+      // Format the website URL properly for Exa API calls
+      const formattedWebsiteUrl = formatWebsiteForExa(args.website);
+      
       await ctx.runAction(internal.enrichment.performComprehensiveEnrichment, {
         companyId: result.companyId,
-        websiteUrl: args.website,
+        websiteUrl: formattedWebsiteUrl,
       });
       
       console.log(`✅ Company ${args.companyName} added and enrichment started immediately`);

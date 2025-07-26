@@ -156,6 +156,21 @@ export default function CompanyResearcher() {
     }
   };
 
+  // Function to format website URLs for better Exa results
+  const formatWebsiteForExa = (url: string): string => {
+    if (!url || !url.includes(".")) return url;
+    
+    // Remove any existing protocol and www
+    let cleanUrl = url
+      .replace(/^https?:\/\//, '')
+      .replace(/^www\./, '')
+      .replace(/\/+$/, '')
+      .toLowerCase();
+    
+    // Add https://www. for optimal Exa results
+    return `https://www.${cleanUrl}`;
+  };
+
   // Function to validate and extract domain name from URL
   const extractDomain = (url: string): string | null => {
     try {
@@ -772,7 +787,7 @@ export default function CompanyResearcher() {
     try {
       const result = await searchAndAddCompany({
         companyName: companyName,
-        website: domain,
+        website: formatWebsiteForExa(domain),
         source: "company_research",
       });
 

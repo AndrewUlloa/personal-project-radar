@@ -135,16 +135,31 @@ export default function SearchDrawer({ isDarkMode, children, onOpenChange }: Sea
     }
   };
 
+  // Helper function to format website URLs for better Exa results
+  const formatWebsiteForDisplay = (website: string): string => {
+    if (!website || !website.includes(".")) return website;
+    
+    // Remove any existing protocol and www
+    let cleanUrl = website
+      .replace(/^https?:\/\//, '')
+      .replace(/^www\./, '')
+      .replace(/\/+$/, '')
+      .toLowerCase();
+    
+    // Add https://www. for optimal results
+    return `https://www.${cleanUrl}`;
+  };
+
   // Parse search input to extract company name and website
   const parseSearchInput = (input: string) => {
     // Simple parsing - users can type "Company Name - website.com" or just "website.com"
     if (input.includes(" - ")) {
       const [name, url] = input.split(" - ");
       setCompanyName(name.trim());
-      setWebsite(url.trim());
+      setWebsite(formatWebsiteForDisplay(url.trim()));
     } else if (input.includes(".")) {
-      // Looks like a website
-      setWebsite(input.trim());
+      // Looks like a website - format it properly
+      setWebsite(formatWebsiteForDisplay(input.trim()));
       setCompanyName("");
     } else {
       // Just a company name
@@ -231,6 +246,16 @@ export default function SearchDrawer({ isDarkMode, children, onOpenChange }: Sea
                       className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200/60 bg-white/80 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-300 transition-all duration-200"
                     />
                   </div>
+                </div>
+              )}
+              
+              {/* URL formatting indicator */}
+              {website && website.startsWith('https://www.') && (
+                <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50/80 backdrop-blur-sm rounded-lg px-3 py-2 border border-green-200/60">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  URL formatted for optimal search results
                 </div>
               )}
             </div>
